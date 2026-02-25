@@ -1,0 +1,10 @@
+{
+  "/auth/login": "/login",
+  "/auth/logout": "/logout",
+  "/users/:id": "/users/:id",
+  "/users": "/users",
+  "/posts/:id": "/posts/:id",
+  "/posts": "/posts",
+  "/categories/:id": "/categories/:id",
+  "/categories": "/categories"
+}

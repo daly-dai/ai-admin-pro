@@ -1,0 +1,21 @@
+{
+  "pluginSearchDirs": false,
+  "importOrder": ["^(react|react-dom)$", "^([a-z]|@[a-z])", "", ".*"],
+  "plugins": [
+    "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-packagejson"
+  ],
+  "printWidth": 80,
+  "proseWrap": "never",
+  "singleQuote": true,
+  "trailingComma": "all",
+  "ignorePath": ["**/node_modules/**"],
+  "overrides": [
+    {
+      "files": "*.md",
+      "options": {
+        "proseWrap": "preserve"
+      }
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "admin",
+      "nickname": "管理员",
+      "email": "admin@example.com",
+      "phone": "13800138000",
+      "status": "active",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=admin",
+      "createTime": "2024-01-01T00:00:00.000Z",
+      "updateTime": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "username": "user1",
+      "nickname": "张三",
+      "email": "zhangsan@example.com",
+      "phone": "13800138001",
+      "status": "active",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=user1",
+      "createTime": "2024-01-02T00:00:00.000Z",
+      "updateTime": "2024-01-02T00:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "username": "user2",
+      "nickname": "李四",
+      "email": "lisi@example.com",
+      "phone": "13800138002",
+      "status": "inactive",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=user2",
+      "createTime": "2024-01-03T00:00:00.000Z",
+      "updateTime": "2024-01-03T00:00:00.000Z"
+    }
+  ],
+  "posts": [
+    {
+      "id": "1",
+      "title": "欢迎使用AI Frontend开发体系",
+      "content": "这是一套基于AI驱动的现代化前端开发体系，帮助你快速构建高质量的Web应用。",
+      "author": "admin",
+      "status": "published",
+      "category": "公告",
+      "tags": ["AI", "前端", "React"],
+      "viewCount": 100,
+      "createTime": "2024-01-01T00:00:00.000Z",
+      "updateTime": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "title": "快速开始指南",
+      "content": "本文将介绍如何快速上手使用本开发体系进行项目开发。",
+      "author": "admin",
+      "status": "published",
+      "category": "教程",
+      "tags": ["入门", "教程"],
+      "viewCount": 50,
+      "createTime": "2024-01-02T00:00:00.000Z",
+      "updateTime": "2024-01-02T00:00:00.000Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "1",
+      "name": "公告",
+      "description": "系统公告和重要通知",
+      "sort": 1,
+      "status": "active"
+    },
+    {
+      "id": "2",
+      "name": "教程",
+      "description": "使用教程和开发文档",
+      "sort": 2,
+      "status": "active"
+    },
+    {
+      "id": "3",
+      "name": "新闻",
+      "description": "行业新闻和动态",
+      "sort": 3,
+      "status": "active"
+    }
+  ]
+}
