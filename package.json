@@ -13,12 +13,12 @@
     "prettier-import-sort": "npm run prettier -- --plugin=@ianvs/prettier-plugin-sort-imports",
     "preview": "rsbuild preview",
     "type-check": "tsc --noEmit",
-    "update-context": "node scripts/update-context.cjs"
+    "update-context": "node .ai/tools/update-context.js"
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
     "@ant-design/pro-components": "^2.8.0",
-    "@dalydb/sdesign": "^1.1.5",
+    "@dalydb/sdesign": "^1.2.1",
     "ahooks": "^3.8.0",
     "antd": "^5.20.0",
     "axios": "^1.7.0",
@@ -46,6 +46,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.0",
+    "glob": "^13.0.6",
     "json-server": "^1.0.0-beta.0",
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",

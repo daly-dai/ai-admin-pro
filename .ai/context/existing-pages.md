@@ -1,7 +1,7 @@
-# 已有页面清单
+#已有页面清单
 
-- /login - 登录页
-- / - 首页
-- dashboard - dashboard
-- user-management - user-management
-- - - 404页面
+> 自动扫描生成于 2026/2/26 19:47:50
+
+- /src\pages\user - src\pages\user (src\pages\user\index.tsx)
+- /src\pages\login - src\pages\login (src\pages\login\index.tsx)
+- /src\pages\dashboard - src\pages\dashboard (src\pages\dashboard\index.tsx)

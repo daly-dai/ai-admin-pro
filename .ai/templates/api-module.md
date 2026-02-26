@@ -1,10 +1,10 @@
-# Prompt: 生成API模块
+# Prompt: 生成API模块 (基于 @dalydb/sdesign项目)
 
 ## 使用方式
 
-提供接口定义，AI生成完整的API模块代码。
+提供接口定义，AI生成基于 @dalydb/sdesign项目的完整API模块代码。
 
-## 模板
+##模板
 
 ```markdown
 请根据以下接口定义，生成API模块代码。
@@ -12,10 +12,10 @@
 ## 项目信息
 
 - HTTP客户端: 使用 `src/plugins/request` 中的 request
-- 类型定义: 单独放在 types.ts 文件中
-- 导出方式: 使用对象模式导出
+- 类型定义:单独放在 types.ts 文件中
+-导出方式: 使用对象模式导出
 
-## 接口定义
+##接口定义
 
 模块名: [MODULE_NAME]
 基础路径: [BASE_PATH]
@@ -25,14 +25,15 @@
 ## 生成要求
 
 1. 创建文件:
-   - `api/[module]/types.ts` - 类型定义（包含JSDoc注释）
-   - `api/[module]/index.ts` - API实现（使用对象模式）
+   - `src/api/[module]/types.ts` - 类型定义（包含JSDoc注释）
+   - `src/api/[module]/index.ts` - API实现（使用对象模式）
 
 2. 代码规范:
-   - 每个接口都有JSDoc注释
+   -接口都有JSDoc注释
    - 类型定义完整
    - 使用 request.get/post/put/delete
-   - 导出类型和API对象
+   -导出类型和API对象
+   - 与 @dalydb/sdesign组件库配合使用
 ```
 
 ## 示例
@@ -112,8 +113,8 @@ export interface TagFormData {
 ```typescript
 // api/tag/index.ts
 import type { Tag, TagFormData, TagQuery } from './types';
-import { request } from '@/plugins/request';
-import type { PageData } from '@/types';
+import { request } from 'src/plugins/request';
+import type { PageData } from 'src/types';
 
 export type { Tag, TagQuery, TagFormData };
 

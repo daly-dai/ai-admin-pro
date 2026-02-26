@@ -15,8 +15,8 @@ importers:
         specifier: ^2.8.0
         version: 2.8.10(antd@5.29.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(rc-field-form@2.7.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dalydb/sdesign':
-        specifier: ^1.1.5
-        version: 1.1.5(@ant-design/icons@5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.28)(antd@5.29.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(dayjs@1.11.19)(lucide-react@0.400.0(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-router@6.30.3(react@18.3.1))(react@18.3.1)
+        specifier: ^1.2.1
+        version: 1.2.1(@ant-design/icons@5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.28)(antd@5.29.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(dayjs@1.11.19)(lucide-react@0.400.0(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-router@6.30.3(react@18.3.1))(react@18.3.1)
       ahooks:
         specifier: ^3.8.0
         version: 3.9.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -93,6 +93,9 @@ importers:
       eslint-plugin-react-refresh:
         specifier: ^0.4.0
         version: 0.4.26(eslint@8.57.1)
+      glob:
+        specifier: ^13.0.6
+        version: 13.0.6
       json-server:
         specifier: ^1.0.0-beta.0
         version: 1.0.0-beta.9
@@ -275,17 +278,17 @@ packages:
     resolution: {integrity: sha512-SITSV6aIXsuVNV3f3O0f2n/cgyEDWoSqtZMYiAmcsYHydcKrOz3gUxB/iXd/Qf08+IZX4KpgNbvUdMBmWz+kcA==}
     engines: {node: '>=10'}
 
-  '@dalydb/sdesign@1.1.5':
-    resolution: {integrity: sha512-/xdWjvxjrkjMvEj6WhxNAio1HN5eI6cXUSo37nxw0Y00W3fzRsaQAvfiSzxNjIhExqDo4E7/Mloz09Rwn3wucQ==}
+  '@dalydb/sdesign@1.2.1':
+    resolution: {integrity: sha512-WPXWp9zKNcLSM/BAjpIJcJpDe2aHz5f44Md/tZciFFb0pCet21yT+taLO00nU1VDZ8ihuvIEMP5k6jhA7540vQ==}
     engines: {node: '>=16.14'}
     peerDependencies:
-      '@ant-design/icons': 6.0.0
-      antd: ^5.20.6
-      dayjs: ^1.11.10
-      lucide-react: ^0.562.0
-      react: '>=18.0.0'
-      react-dom: '>=18.0.0'
-      react-router: ^6.0.0
+      '@ant-design/icons': '>=5.0.0 || <=6.0.0'
+      antd: '>=5.20.6 || <6.0.0'
+      dayjs: ^1.11.0
+      lucide-react: '>=0.500.0 || <=0.572.0'
+      react: '>=18.0.0 || <19.0.0'
+      react-dom: '>=18.0.0 || <19.0.0'
+      react-router: '>=6.0.0 || <7.0.0'
 
   '@dnd-kit/accessibility@3.1.1':
     resolution: {integrity: sha512-2P+YgaXF+gRsIihwwY1gCsQSYnu9Zyj2py8kY5fFvUM1qm2WA2u639R6YNVfU4GWr+ZM5mqEsfHZZLoRONbemw==}
@@ -1126,6 +1129,10 @@ packages:
     resolution: {integrity: sha512-XxwI8EOhVQgWp6iDL+3b0r86f4d6AX6zSU55HfB4ydCEuXLXc5FcYeOu+nnGftS4TEju/11rt4KJPTMgbfmv4A==}
     engines: {node: '>=10.13.0'}
 
+  glob@13.0.6:
+    resolution: {integrity: sha512-Wjlyrolmm8uDpm/ogGyXZXb1Z+Ca2B8NbJwqBVg0axK9GbBeoS7yGV6vjXnYdGm6X53iehEuxxbyiKp8QmN4Vw==}
+    engines: {node: 18 || 20 || >=22}
+
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
     deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
@@ -1306,6 +1313,10 @@ packages:
     resolution: {integrity: sha512-neJAj8GwF0e8EpycYIDFqEPcx9Qz4GUho20jWFR7YiFeXzF1YMLdxB36PypcTSPMA+4+LvgyMacYhlr18Zlymw==}
     engines: {node: '>=18'}
 
+  lru-cache@11.2.6:
+    resolution: {integrity: sha512-ESL2CrkS/2wTPfuend7Zhkzo2u0daGJ/A2VucJOgQ/C48S/zB8MMeMHSGKYpXhIjbPxfuezITkaBH1wqv00DDQ==}
+    engines: {node: 20 || >=22}
+
   lucide-react@0.400.0:
     resolution: {integrity: sha512-rpp7pFHh3Xd93KHixNgB0SqThMHpYNzsGUu69UaQbSZ75Q/J3m5t6EhKyMT3m4w2WOxmJ2mY0tD3vebnXqQryQ==}
     peerDependencies:
@@ -1338,6 +1349,10 @@ packages:
 
   minimatch@3.1.3:
     resolution: {integrity: sha512-M2GCs7Vk83NxkUyQV1bkABc4yxgz9kILhHImZiBPAZ9ybuvCb0/H7lEl5XvIg3g+9d4eNotkZA5IWwYl0tibaA==}
+
+  minipass@7.1.3:
+    resolution: {integrity: sha512-tEBHqDnIoM/1rXME1zgka9g6Q2lcoCkxHLuc7ODJ5BxbP5d4c2Z5cGgtXAku59200Cx7diuHTOYfSBD8n6mm8A==}
+    engines: {node: '>=16 || 14 >=14.17'}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -1390,6 +1405,10 @@ packages:
 
   path-parse@1.0.7:
     resolution: {integrity: sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==}
+
+  path-scurry@2.0.2:
+    resolution: {integrity: sha512-3O/iVVsJAPsOnpwWIeD+d6z/7PmqApyQePUtCndjatj/9I5LylHvt5qluFaBT3I5h3r1ejfR056c+FCv+NnNXg==}
+    engines: {node: 18 || 20 || >=22}
 
   path-to-regexp@8.2.0:
     resolution: {integrity: sha512-TdrF7fW9Rphjq4RjrW0Kp2AW0Ahwu9sRGTkS6bvDi0SCwZlEZYmcfDbEsTz8RVk0EHIS/Vd1bv3JhG+1xZuAyQ==}
@@ -2267,7 +2286,7 @@ snapshots:
 
   '@ctrl/tinycolor@3.6.1': {}
 
-  '@dalydb/sdesign@1.1.5(@ant-design/icons@5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.28)(antd@5.29.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(dayjs@1.11.19)(lucide-react@0.400.0(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-router@6.30.3(react@18.3.1))(react@18.3.1)':
+  '@dalydb/sdesign@1.2.1(@ant-design/icons@5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.28)(antd@5.29.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(dayjs@1.11.19)(lucide-react@0.400.0(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-router@6.30.3(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@ant-design/icons': 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       ahooks: 3.9.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -3294,6 +3313,12 @@ snapshots:
     dependencies:
       is-glob: 4.0.3
 
+  glob@13.0.6:
+    dependencies:
+      minimatch: 10.2.2
+      minipass: 7.1.3
+      path-scurry: 2.0.2
+
   glob@7.2.3:
     dependencies:
       fs.realpath: 1.0.0
@@ -3446,6 +3471,8 @@ snapshots:
     dependencies:
       steno: 4.0.2
 
+  lru-cache@11.2.6: {}
+
   lucide-react@0.400.0(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -3469,6 +3496,8 @@ snapshots:
   minimatch@3.1.3:
     dependencies:
       brace-expansion: 1.1.12
+
+  minipass@7.1.3: {}
 
   mrmime@2.0.1: {}
 
@@ -3517,6 +3546,11 @@ snapshots:
   path-key@3.1.1: {}
 
   path-parse@1.0.7: {}
+
+  path-scurry@2.0.2:
+    dependencies:
+      lru-cache: 11.2.6
+      minipass: 7.1.3
 
   path-to-regexp@8.2.0: {}
 

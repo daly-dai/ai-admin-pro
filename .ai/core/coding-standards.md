@@ -219,15 +219,14 @@ interface StoreState {
 ```typescript
 // 1. React相关
 import React, { useEffect, useState } from 'react';
-// 3. 绝对路径（@/）
-import { userApi } from '@api/user';
-import type { User } from '@api/user/types';
-import { useUserStore } from '@stores';
-import { useRequest } from 'ahooks';
 // 2. 第三方库
 import { Button, Card } from 'antd';
-
-// 4. 相对路径（./）
+import { useRequest } from 'ahooks';
+// 3.绝路径（src/）
+import { userApi } from 'src/api/user';
+import type { User } from 'src/api/user/types';
+import { useUserStore } from 'src/stores';
+// 4.相对路径（./）
 import UserForm from './components/UserForm';
 
 import './index.css';

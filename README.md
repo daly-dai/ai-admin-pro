@@ -15,23 +15,29 @@
 my-project/
 ├── .ai/                      # AI配置目录（核心）
 │   ├── README.md             # AI配置说明
-│   ├── architecture.md       # 架构规范（AI必读）
-│   ├── coding-standards.md   # 代码规范（AI必读）
-│   ├── api-conventions.md    # API约定（AI必读）
-│   ├── incremental-development.md  # 增量开发规范
-│   ├── SUMMARY.md            # 项目概要
-│   ├── prompts/              # AI对话模板
-│   │   ├── crud-page.md       # 生成CRUD页面
-│   │   ├── api-module.md      # 生成API模块
+│   ├── QUICK-INDEX.md        # 快速索引
+│   ├── core/                 # 核心规范（AI必读）
+│   │   ├── architecture.md   # 架构规范
+│   │   ├── coding-standards.md # 代码规范
+│   │   └── tech-stack.md     # 技术栈定义
+│   ├── conventions/          # 开发规范
+│   │   ├── api-conventions.md # API约定
+│   │   └── incremental-development.md # 增量开发规范
+│   ├── templates/            # AI对话模板
+│   │   ├── README.md         # 模板说明
+│   │   ├── api-module.md     # 生成API模块
+│   │   ├── crud-page.md      # 生成CRUD页面
+│   │   ├── custom-hook.md    # 生成自定义Hook
 │   │   ├── data-visualization.md # 生成数据可视化页面
-│   │   ├── form-designer.md   # 生成表单设计器/动态表单
-│   │   ├── detail-page.md     # 生成详情页
-│   │   ├── custom-hook.md     # 生成自定义Hook
-│   │   └── workflow-page.md   # 生成工作流/审批页面
-│   └── context/              # 项目上下文
-│       ├── existing-apis.md   # 已有API列表
-│       ├── existing-components.md # 已有组件列表
-│       └── existing-pages.md  # 已有页面列表
+│   │   ├── detail-page.md    # 生成详情页
+│   │   ├── form-designer.md  # 生成表单设计器/动态表单
+│   │   └── workflow-page.md  # 生成工作流/审批页面
+│   ├── context/              # 项目上下文
+│   │   ├── existing-apis.md   # 已有API列表
+│   │   ├── existing-components.md # 已有组件列表
+│   │   └── existing-pages.md  # 已有页面列表
+│   └── tools/                # 工具脚本
+│       └── update-context.js # 自动化更新项目上下文脚本
 ├── scripts/                  # 脚本目录
 │   └── update-context.cjs    # 自动化更新项目上下文脚本
 ├── src/                      # 项目源代码
@@ -112,9 +118,9 @@ Product {
 
 AI会自动：
 
-1. 读取 `.ai/architecture.md` 了解技术栈
-2. 读取 `.ai/coding-standards.md` 了解代码规范
-3. 读取 `.ai/api-conventions.md` 了解API约定
+1. 读取 `.ai/core/architecture.md` 了解技术栈
+2. 读取 `.ai/core/coding-standards.md` 了解代码规范
+3. 读取 `.ai/conventions/api-conventions.md` 了解API约定
 4. 生成符合规范的代码
 
 ### 3. 自动化更新项目上下文
@@ -129,7 +135,7 @@ pnpm update-context
 
 - 扫描 `src/api/` 目录，更新 `existing-apis.md`
 - 扫描 `src/components/` 目录，更新 `existing-components.md`
-- 扫描 `src/router/` 配置，更新 `existing-pages.md`
+- 扫描 `src/pages/` 目录，更新 `existing-pages.md`
 
 **手动更新（可选）：**
 
@@ -163,11 +169,11 @@ pnpm update-context
 
 ## AI配置说明
 
-### architecture.md
+### core/architecture.md
 
 定义项目的技术栈、目录结构、核心约定。AI必须遵循这些规范生成代码。
 
-### coding-standards.md
+### core/coding-standards.md
 
 定义代码规范，包括：
 
@@ -177,7 +183,15 @@ pnpm update-context
 - 状态管理规范
 - 导入导出规范
 
-### api-conventions.md
+### core/tech-stack.md
+
+定义项目的技术栈，包括：
+
+- 核心技术
+- 依赖版本
+- 推荐库
+
+### conventions/api-conventions.md
 
 定义AI如何根据后端接口定义生成前端代码，包括：
 
@@ -186,7 +200,7 @@ pnpm update-context
 - API实现生成规则
 - 页面组件生成规则
 
-### incremental-development.md
+### conventions/incremental-development.md
 
 定义增量开发规范，包括：
 
@@ -271,11 +285,11 @@ A: 将 `.ai/` 目录提交到版本控制，团队成员共享相同的AI配置�
 
 ### 示例1: 生成用户管理CRUD
 
-见 `.ai/prompts/crud-page.md`
+见 `.ai/templates/crud-page.md`
 
 ### 示例2: 生成API模块
 
-见 `.ai/prompts/api-module.md`
+见 `.ai/templates/api-module.md`
 
 ## 贡献
 

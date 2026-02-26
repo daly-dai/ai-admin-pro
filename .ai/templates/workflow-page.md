@@ -130,7 +130,7 @@ operateTime?: string
 ## 项目信息
 
 - 技术栈: RSBuild + React 18 + TypeScript + Ant Design 5 + ahooks + Zustand
-- 路径别名: @/ 指向 src/
+-路径引用: 使用相对路径 (src/)
 
 ## 页面信息
 
