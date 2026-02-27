@@ -223,123 +223,193 @@ export const userApi = {
 ```typescript
 // pages/user/index.tsx
 import React, { useState } from 'react';
-import { Card, Button, Modal, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import { ProTable, ProColumns } from '@ant-design/pro-components';
-import { useRequest } from 'ahooks';
+import { Modal, Form, message } from 'antd';
+import {
+  SForm,
+  STable,
+  SDetail,
+  STitle,
+  SButton,
+  useSearchTable,
+} from '@dalydb/sdesign';
 import { userApi } from '@api/user';
 import type { User, UserQuery, UserFormData } from '@api/user';
-import UserForm from './components/UserForm';
 
 const UserPage: React.FC = () => {
-  const [formVisible, setFormVisible] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [detailVisible, setDetailVisible] = useState(false);
+  const [editVisible, setEditVisible] = useState(false);
+  const [currentRecord, setCurrentRecord] = useState<User | null>(null);
+  const [editForm] = Form.useForm();
 
-  const { data, loading, run: fetchList } = useRequest(userApi.getList);
-
-  const { run: deleteUser } = useRequest(userApi.delete, {
-    manual: true,
-    onSuccess: () => {
-      message.success('删除成功');
-      fetchList();
+  // 使用 useSearchTable 管理搜索和表格
+  const { tableProps, formConfig, form } = useSearchTable(userApi.getList, {
+    paginationFields: {
+      current: 'page',
+      pageSize: 'pageSize',
+      total: 'total',
+      list: 'list',
     },
   });
 
-  const columns: ProColumns<User>[] = [
-    {
-      title: '用户名',
-      dataIndex: 'name',
-      search: true,
-    },
-    {
-      title: '邮箱',
-      dataIndex: 'email',
-      search: true,
-    },
+  // 搜索表单配置
+  const searchItems = [
+    { type: 'input', label: '用户名', name: 'name' },
+    { type: 'input', label: '邮箱', name: 'email' },
+  ];
+
+  // 表格列配置
+  const tableColumns = [
+    { title: '用户名', dataIndex: 'name', width: 120 },
+    { title: '邮箱', dataIndex: 'email', width: 200 },
     {
       title: '状态',
       dataIndex: 'status',
-      valueEnum: {
-        active: { text: '启用', status: 'Success' },
-        inactive: { text: '禁用', status: 'Default' },
-      },
+      width: 100,
+      render: (value: string) => (
+        <span style={{ color: value === 'active' ? '#52c41a' : '#ff4d4f' }}>
+          {value === 'active' ? '启用' : '禁用'}
+        </span>
+      ),
     },
-    {
-      title: '创建时间',
-      dataIndex: 'createTime',
-      valueType: 'dateTime',
-      search: false,
-    },
+    { title: '创建时间', dataIndex: 'createTime', render: 'datetime', width: 180 },
     {
       title: '操作',
-      valueType: 'option',
-      render: (_, record) => [
-        <Button
-          key="edit"
-          type="link"
-          onClick={() => {
-            setEditingUser(record);
-            setFormVisible(true);
-          }}
-        >
-          编辑
-        </Button>,
-        <Button
-          key="delete"
-          type="link"
-          danger
-          onClick={() => {
-            Modal.confirm({
-              title: '确认删除',
-              content: `确定要删除用户 "${record.name}" 吗？`,
-              onOk: () => deleteUser(record.id),
-            });
-          }}
-        >
-          删除
-        </Button>,
-      ],
+      dataIndex: 'id',
+      width: 200,
+      fixed: 'right',
+      render: (_, record: User) => (
+        <SButton.Group
+          size="small"
+          items={[
+            {
+              actionType: 'view',
+              onClick: async () => {
+                const detail = await userApi.getById(record.id);
+                setCurrentRecord(detail);
+                setDetailVisible(true);
+              },
+            },
+            {
+              actionType: 'edit',
+              onClick: async () => {
+                const detail = await userApi.getById(record.id);
+                setCurrentRecord(detail);
+                editForm.setFieldsValue(detail);
+                setEditVisible(true);
+              },
+            },
+            {
+              actionType: 'delete',
+              danger: true,
+              onClick: () => {
+                Modal.confirm({
+                  title: '确认删除',
+                  content: `确定要删除用户 "${record.name}" 吗？`,
+                  onOk: async () => {
+                    await userApi.delete(record.id);
+                    message.success('删除成功');
+                    formConfig.onFinish();
+                  },
+                });
+              },
+            },
+          ]}
+        />
+      ),
     },
   ];
 
+  // 详情配置
+  const detailItems = [
+    { label: '用户名', name: 'name' },
+    { label: '邮箱', name: 'email' },
+    { label: '状态', name: 'status' },
+    { label: '创建时间', name: 'createTime' },
+  ];
+
+  // 编辑表单配置
+  const editItems = [
+    { type: 'input', label: '用户名', name: 'name', required: true },
+    { type: 'input', label: '邮箱', name: 'email', required: true },
+    {
+      type: 'select',
+      label: '状态',
+      name: 'status',
+      fieldProps: { options: [{ label: '启用', value: 'active' }, { label: '禁用', value: 'inactive' }] },
+      required: true,
+    },
+  ];
+
+  const handleEditSubmit = async () => {
+    await editForm.validateFields();
+    const values = editForm.getFieldsValue();
+    if (currentRecord?.id) {
+      await userApi.update(currentRecord.id, values);
+      message.success('更新成功');
+    } else {
+      await userApi.create(values);
+      message.success('创建成功');
+    }
+    setEditVisible(false);
+    formConfig.onFinish();
+  };
+
   return (
-    <Card>
-      <ProTable<User, UserQuery>
-        headerTitle="用户管理"
-        rowKey="id"
-        columns={columns}
-        dataSource={data?.list}
-        loading={loading}
-        pagination={{
-          pageSize: 10,
-          total: data?.total,
-        }}
-        toolBarRender={() => [
-          <Button
-            key="add"
+    <>
+      <STitle
+        actionNode={
+          <SButton
+            actionType="create"
             type="primary"
-            icon={<PlusOutlined />}
             onClick={() => {
-              setEditingUser(null);
-              setFormVisible(true);
+              setCurrentRecord(null);
+              editForm.resetFields();
+              setEditVisible(true);
             }}
           >
             新增
-          </Button>,
-        ]}
-        request={fetchList}
-      />
+          </SButton>
+        }
+      >
+        用户管理
+      </STitle>
 
-      <UserForm
-        visible={formVisible}
-        user={editingUser}
-        onCancel={() => setFormVisible(false)}
-        onSuccess={() => {
-          setFormVisible(false);
-          fetchList();
-        }}
-      />
-    </Card>
+      <SForm.Search form={form} items={searchItems} {...formConfig} />
+
+      <STable isSeq columns={tableColumns} {...tableProps} />
+
+      <Modal
+        title="用户详情"
+        open={detailVisible}
+        onCancel={() => setDetailVisible(false)}
+        footer={[
+          <SButton key="close" onClick={() => setDetailVisible(false)}>
+            关闭
+          </SButton>,
+        ]}
+        width={600}
+      >
+        <SDetail dataSource={currentRecord} items={detailItems} column={1} />
+      </Modal>
+
+      <Modal
+        title={currentRecord?.id ? '编辑用户' : '新增用户'}
+        open={editVisible}
+        onCancel={() => setEditVisible(false)}
+        footer={null}
+        width={600}
+      >
+        <SForm form={editForm} items={editItems} columns={1} />
+        <div style={{ textAlign: 'right', marginTop: 24 }}>
+          <SButton.Group
+            items={[
+              { children: '取消', onClick: () => setEditVisible(false) },
+              { children: '保存', type: 'primary', onClick: handleEditSubmit },
+            ]}
+          />
+        </div>
+      </Modal>
+    </>
   );
 };
 
@@ -351,8 +421,8 @@ export default UserPage;
 ```typescript
 // pages/user/components/UserForm.tsx
 import React, { useEffect } from 'react';
-import { Modal, Form, Input, Select, message } from 'antd';
-import { useRequest } from 'ahooks';
+import { Modal, Form, message } from 'antd';
+import { SForm, SButton } from '@dalydb/sdesign';
 import { userApi } from '@api/user';
 import type { User, UserFormData } from '@api/user';
 
@@ -373,75 +443,53 @@ const UserForm: React.FC<UserFormProps> = ({
   const isEdit = !!user;
 
   useEffect(() => {
-    if (visible) {
-      if (user) {
-        form.setFieldsValue(user);
-      } else {
-        form.resetFields();
-      }
+    if (visible && user) {
+      form.setFieldsValue(user);
     }
   }, [visible, user, form]);
 
-  const { run: submit, loading } = useRequest(
-    (values: UserFormData) => {
-      if (user) {
-        return userApi.update(user.id, values);
-      }
-      return userApi.create(values);
-    },
-    {
-      manual: true,
-      onSuccess: () => {
-        message.success(isEdit ? '更新成功' : '创建成功');
-        onSuccess();
-      },
+  const handleSubmit = async () => {
+    await form.validateFields();
+    const values = form.getFieldsValue();
+    if (isEdit) {
+      await userApi.update(user!.id, values);
+      message.success('更新成功');
+    } else {
+      await userApi.create(values);
+      message.success('创建成功');
     }
-  );
+    onSuccess();
+  };
+
+  const formItems = [
+    { type: 'input', label: '用户名', name: 'name', required: true },
+    { type: 'input', label: '邮箱', name: 'email', required: true },
+    {
+      type: 'select',
+      label: '状态',
+      name: 'status',
+      fieldProps: { options: [{ label: '启用', value: 'active' }, { label: '禁用', value: 'inactive' }] },
+      required: true,
+    },
+  ];
 
   return (
     <Modal
       title={isEdit ? '编辑用户' : '新增用户'}
       open={visible}
-      onOk={() => form.submit()}
       onCancel={onCancel}
-      confirmLoading={loading}
+      footer={null}
       width={600}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={submit}
-      >
-        <Form.Item
-          name="name"
-          label="用户名"
-          rules={[{ required: true, message: '请输入用户名' }]}
-        >
-          <Input placeholder="请输入用户名" />
-        </Form.Item>
-
-        <Form.Item
-          name="email"
-          label="邮箱"
-          rules={[
-            { required: true, message: '请输入邮箱' },
-            { type: 'email', message: '邮箱格式不正确' },
+      <SForm form={form} items={formItems} columns={1} />
+      <div style={{ textAlign: 'right', marginTop: 24 }}>
+        <SButton.Group
+          items={[
+            { children: '取消', onClick: onCancel },
+            { children: '保存', type: 'primary', onClick: handleSubmit },
           ]}
-        >
-          <Input placeholder="请输入邮箱" />
-        </Form.Item>
-
-        <Form.Item
-          name="status"
-          label="状态"
-          rules={[{ required: true, message: '请选择状态' }]}
-        >
-          <Select placeholder="请选择状态">
-            <Select.Option value="active">启用</Select.Option>
-            <Select.Option value="inactive">禁用</Select.Option>
-          </Select>
-        </Form.Item>
-      </Form>
+        />
+      </div>
     </Modal>
   );
 };
@@ -451,16 +499,16 @@ export default UserForm;
 
 ## 字段类型映射
 
-| 后端类型      | TypeScript类型 | Antd组件             | 备注     |
+| 后端类型      | TypeScript类型 | SForm组件类型        | 备注     |
 | ------------- | -------------- | -------------------- | -------- |
-| string        | string         | Input                | 默认     |
-| string (long) | string         | Input.TextArea       | 多行文本 |
-| number        | number         | InputNumber          | 数字     |
-| boolean       | boolean        | Switch               | 开关     |
-| date          | string         | DatePicker           | 日期     |
-| datetime      | string         | DatePicker(showTime) | 日期时间 |
-| enum          | string/number  | Select               | 枚举     |
-| array         | T[]            | -                    | 数组     |
+| string        | string         | input                | 默认     |
+| string (long) | string         | textarea             | 多行文本 |
+| number        | number         | inputNumber          | 数字     |
+| boolean       | boolean        | switch               | 开关     |
+| date          | string         | datePicker           | 日期     |
+| datetime      | string         | datePicker           | 日期时间 |
+| enum          | string/number  | select               | 枚举     |
+| array         | T[]            | checkbox             | 数组     |
 | object        | Record         | -                    | 对象     |
 
 ## 特殊字段处理

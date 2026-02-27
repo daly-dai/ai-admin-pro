@@ -50,9 +50,10 @@
 
 ## 通用组件 (components/common/)
 
-- DataTable - 数据表格
-- SearchForm - 搜索表单
-- ImageUpload - 图片上传
+- SSearchTable - 搜索表格一体化组件
+- SForm - 配置式表单组件
+- SDetail - 分组详情展示组件
+- SButton - 按钮组件
 ```
 
 ### 3. 已有页面清单
@@ -97,8 +98,9 @@ src/
 ```
 components/
 ├── common/                 # 全局通用（跨项目可复用）
-│   ├── DataTable/
-│   └── SearchForm/
+│   ├── SSearchTable/
+│   ├── SForm/
+│   └── SDetail/
 ├── business/               # 业务通用（本项目复用）
 │   ├── UserCard/
 │   └── OrderList/
@@ -241,13 +243,26 @@ const UserPage: React.FC = () => {
   );
 };
 
-// 阶段3: 使用ProTable
+// 阶段3: 使用STable + useSearchTable
 const UserPage: React.FC = () => {
+  const { tableProps, formConfig, form } = useSearchTable(fetchUsers, {
+    paginationFields: {
+      current: 'page',
+      pageSize: 'pageSize',
+      total: 'total',
+      list: 'list',
+    },
+  });
+
+  const searchItems = [
+    { type: 'input', label: '关键词', name: 'keyword' },
+  ];
+
   return (
-    <ProTable
-      columns={columns}
-      request={fetchUsers}
-    />
+    <>
+      <SForm.Search form={form} items={searchItems} {...formConfig} />
+      <STable isSeq columns={columns} {...tableProps} />
+    </>
   );
 };
 ```
@@ -278,9 +293,25 @@ const { data, loading } = useRequest(api.getList);
 // pages/order/index.tsx
 <Table columns={orderColumns} />
 
-// 抽象后: 统一DataTable组件
+// 抽象后: 统一STable + useSearchTable组件
 // components/business/DataTable/index.tsx
-<DataTable columns={columns} request={api.getList} />
+const { tableProps, formConfig, form } = useSearchTable(api.getList, {
+  paginationFields: {
+    current: 'page',
+    pageSize: 'pageSize',
+    total: 'total',
+    list: 'list',
+  },
+});
+
+const searchItems = [
+  { type: 'input', label: '关键词', name: 'keyword' },
+];
+
+<>
+  <SForm.Search form={form} items={searchItems} {...formConfig} />
+  <STable isSeq columns={columns} {...tableProps} />
+</>
 ```
 
 ## 代码审查清单
@@ -323,15 +354,19 @@ node scripts/update-context.js
 
 ### 1. 表单处理
 
-使用 ProForm 比手写 Form 效率更高
+使用 SForm 配置式表单比手写 Form 效率更高
 
 ### 2. 表格处理
 
-使用 ProTable 的 request 属性自动处理分页
+使用 SSearchTable 的 searchForm、table 和 requestFn 属性自动处理搜索、表格和分页
 
 ### 3. 状态管理
 
 服务端状态用 useRequest，客户端状态用 Zustand
+
+### 4. 组件库选择
+
+优先使用 @dalydb/sdesign 组件库，Ant Design 作为辅助
 ```
 
 ### 3. 更新规则文件

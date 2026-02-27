@@ -99,9 +99,21 @@ pnpm update-context
 
 ### 生成CRUD页面
 ```markdown
+使用模板: templates/crud-page-sdesign.md（推荐）
+场景: 新增业务模块CRUD页面
+输出: pages/[module]/index.tsx + pages/[module]/create.tsx + pages/[module]/edit.tsx + pages/[module]/detail.tsx
+```
+
+```markdown
 使用模板: templates/crud-page.md
 场景: 标准增删改查页面
-输出: pages/[module]/index.tsx +组件文件
+输出: pages/[module]/index.tsx + pages/[module]/create.tsx + pages/[module]/edit.tsx + pages/[module]/detail.tsx
+```
+
+### 组件使用规范
+```markdown
+参考文档: conventions/ui-component-conventions.md
+核心原则: @dalydb/sdesign (核心) + Ant Design 5 (辅助)
 ```
 
 ### 生成详情页面
