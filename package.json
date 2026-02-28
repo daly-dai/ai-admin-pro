@@ -17,8 +17,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
-    "@ant-design/pro-components": "^2.8.0",
-    "@dalydb/sdesign": "^1.2.1",
+    "@dalydb/sdesign": "^1.2.2",
     "ahooks": "^3.8.0",
     "antd": "^5.20.0",
     "axios": "^1.7.0",
