@@ -7,7 +7,7 @@
 ```yaml
 构建工具: RSBuild ^1.7.0
 框架: React ^18.3.0 + TypeScript ^5.5.0
-UI库: Ant Design ^5.20.0 + @ant-design/pro-components ^2.8.0
+UI库: Ant Design ^5.29.3+ @dalydb/sdesign^1.2.2
 状态管理: Zustand ^5.0.11 + immer ^10.1.0
 路由: React Router ^6.26.0
 HTTP: Axios ^1.7.0
@@ -100,85 +100,82 @@ export default ComponentName;
 ### 2. API层规范（强制）
 
 ```typescript
-// 2. API实现
-// api/user/index.ts
-import type { PageData } from '@types';
-import { request } from '@utils/request';
-
-import type { User, UserQuery } from './types';
-
-// 1. 类型定义（必须）
-// api/user/types.ts
-export interface User {
+// api/[module]/types.ts - 类型定义（必须）
+export interface [Entity] {
   id: string;
-  name: string;
+  [fieldName]: [fieldType];
 }
 
-export interface UserQuery {
+export interface [Entity]Query {
   page?: number;
   pageSize?: number;
-  keyword?: string;
+  [filterField]?: [filterType];
 }
 
-export const userApi = {
-  /** 获取用户列表 */
-  getList: (params?: UserQuery) =>
-    request.get<PageData<User>>('/api/users', { params }),
+// api/[module]/index.ts - API实现
+import type { PageData } from '@types';
+import { request } from '@utils/request';
+import type { [Entity], [Entity]Query } from './types';
 
-  /** 获取用户详情 */
-  getById: (id: string) => request.get<User>(`/api/users/${id}`),
+export const [module]Api = {
+  /** 获取[实体]列表 */
+  getList: (params?: [Entity]Query) =>
+    request.get<PageData<[Entity]>>('/api/[module]', { params }),
 
-  /** 创建用户 */
-  create: (data: Omit<User, 'id'>) => request.post<User>('/api/users', data),
+  /** 获取[实体]详情 */
+  getById: (id: string) => request.get<[Entity]>(`/api/[module]/${id}`),
 
-  /** 更新用户 */
-  update: (id: string, data: Partial<User>) =>
-    request.put<User>(`/api/users/${id}`, data),
+  /** 创建[实体] */
+  create: (data: Omit<[Entity], 'id'>) => request.post<[Entity]>('/api/[module]', data),
 
-  /** 删除用户 */
-  delete: (id: string) => request.delete(`/api/users/${id}`),
+  /** 更新[实体] */
+  update: (id: string, data: Partial<[Entity]>) =>
+    request.put<[Entity]>(`/api/[module]/${id}`, data),
+
+  /** 删除[实体] */
+  delete: (id: string) => request.delete(`/api/[module]/${id}`),
 };
 ```
 
 ### 3. 状态管理规范（强制）
 
 ```typescript
-// stores/user.ts
+// stores/[domain].ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
-interface UserState {
+interface [Domain]State {
   // State
-  userInfo: User | null;
-  token: string | null;
+  [data]: [DataType] | null;
+  [flag]: boolean | null;
 
   // Actions
-  setUserInfo: (user: User | null) => void;
-  setToken: (token: string | null) => void;
-  logout: () => void;
+  set[Data]: (data: [DataType] | null) => void;
+  set[Flag]: (flag: [FlagType] | null) => void;
+  reset: () => void;
 }
 
-export const useUserStore = create<UserState>()(
+export const use[Domain]Store = create<[Domain]State>()(
   persist(
     immer((set) => ({
-      userInfo: null,
-      token: null,
-      setUserInfo: (user) =>
+      [data]: null,
+      [flag]: null,
+      set[Data]: (data) =>
         set((state) => {
-          state.userInfo = user;
+          state.[data] = data;
         }),
-      setToken: (token) =>
+      set[Flag]: (flag) =>
         set((state) => {
-          state.token = token;
+          state.[flag] = flag;
         }),
-      logout: () =>
+      reset: () =>
         set((state) => {
-          state.userInfo = null;
-          state.token = null;
+          state.[data] = null;
+          state.[flag] = null;
         }),
     })),
-    { name: 'user-store' },
+    { name: '[domain]-store' },
   ),
 );
 ```
@@ -186,35 +183,68 @@ export const useUserStore = create<UserState>()(
 ### 4. 页面组件规范（强制）
 
 ```typescript
-// pages/user/index.tsx
+// pages/[module]/index.tsx
 import React from 'react';
-import { Card } from 'antd';
-import { useRequest } from 'ahooks';
-import { userApi } from '@api/user';
-import { ProTable } from '@ant-design/pro-components';
-import type { User, UserQuery } from '@api/user/types';
+import { [module]Api } from '@api/[module]';
+import { SColumnsType, SFormItems, SSearchTable } from '@dalydb/sdesign';
+import type { [Entity], [Entity]Query } from '@api/[module]/types';
 
-const UserPage: React.FC = () => {
-  const { data, loading, run } = useRequest(userApi.getList, { manual: true });
+const [Module]Page: React.FC = () => {
 
-  const columns = [
-    { title: '用户名', dataIndex: 'name' },
+  // 搜索表单配置
+  const formItems: SFormItems[] = [
+    {
+      label: '[字段标签]',
+      name: '[fieldName]',
+      type: '[input|select|...]',
+    },
+    // ...
+  ];
+
+  // 表格列配置
+  const columns: SColumnsType = [
+    {
+      title: '[列标题]',
+      dataIndex: '[fieldName]',
+      width: 120,
+    },
     // ...
   ];
 
   return (
-    <Card>
-      <ProTable<User, UserQuery>
-        columns={columns}
-        dataSource={data?.list}
-        loading={loading}
-        request={run}
-      />
-    </Card>
+    <SSearchTable
+      headTitle={{
+        children: '[页面标题]',
+        desc: '[页面描述]',
+      }}
+      tableTitle={{
+        children: '[表格标题]',
+      }}
+      requestFn={[module]Api.getList}
+      options={{
+        paginationFields: {
+          current: 'current',
+          pageSize: 'pageSize',
+          total: 'total',
+          list: 'list',
+        },
+      }}
+      formProps={{
+        items: formItems,
+        columns: 3,
+        showExpand: true,
+        defaultExpand: false,
+      }}
+      tableProps={{
+        columns,
+        rowKey: 'id',
+        scroll: { x: 1200 },
+      }}
+    />
   );
 };
 
-export default UserPage;
+export default [Module]Page;
 ```
 
 ## 禁止事项

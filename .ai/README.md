@@ -1,8 +1,30 @@
-# AI配置中心
+# AI 配置中心
 
->前端开发助手配置目录
+> 🎯 **所有 AI 助手必须首先读取本文件**
+> 
+> 本目录包含项目开发规范、模板和约定，AI 在处理任何任务前必须阅读相关配置。
 
-##📁目录结构
+## 🔴 强制读取顺序（所有编辑器通用）
+
+AI **必须** 按以下顺序读取配置文件：
+
+### 第一步：项目基础
+1. `package.json` - 确认技术栈版本和 AI 配置
+2. `.ai/README.md` - 本文件，配置总览
+
+### 第二步：核心规范（必须遵循）
+3. `.ai/core/tech-stack.md` - 技术栈定义和约束
+4. `.ai/core/architecture.md` - 架构规范
+5. `.ai/core/coding-standards.md` - 代码规范
+
+### 第三步：开发约定
+6. `.ai/conventions/api-conventions.md` - API 设计约定
+7. `.ai/conventions/incremental-development.md` - 增量开发规范
+
+### 第四步：模板参考（按需）
+8. `.ai/templates/*.md` - 根据任务选择对应模板
+
+## 📁 目录结构
 
 ```
 .ai/
@@ -51,98 +73,79 @@ pnpm update-context
 
 ### 1.配置即代码
 - AI配置是项目的一部分
--配置随项目演进而更新
--所有规范都有明确的文档
+- 配置随项目演进而更新
+- 所有规范都有明确的文档
 
-### 2.约优于配置
--固定模式，减少配置
+### 2.约定优于配置
+- 固定模式，减少配置
 - AI可预测代码结构
 - 降低沟通成本
 
 ### 3.沉淀
--开发都在完善AI理解
+- 开发都在完善AI理解
 - 上下文自动更新
--知持续积累
+- 知识持续积累
 
 ### 4. 自动化优先
 - 使用脚本自动更新上下文
--减手动维护工作
+- 减手动维护工作
 - 提高一致性
 
 ##📚学路径
 
 ### 新手入门
 1. [core/architecture.md](core/architecture.md) - 了解项目架构
-2.阅 [core/coding-standards.md](core/coding-standards.md) -掌代码规范
+2. 阅 [core/coding-standards.md](core/coding-standards.md) -掌代码规范
 3. [core/tech-stack.md](core/tech-stack.md) -技术栈
 4. 实践 [templates/crud-page.md](templates/crud-page.md) - 生成第一个CRUD页面
 
-###进应用
+### 进阶应用
 1. [conventions/api-conventions.md](conventions/api-conventions.md) -掌API设计
-2.学 [conventions/incremental-development.md](conventions/incremental-development.md) -理解增量开发
+2. [conventions/incremental-development.md](conventions/incremental-development.md) -理解增量开发
 3. 实践 [templates/form-designer.md](templates/form-designer.md) -构建复杂表单
-4. 实践 [templates/data-visualization.md](templates/data-visualization.md) - 创建数据可视化
 
 ### 专家级别
 1. [templates/](templates/) - 创建新的模板
 2. 优化 [conventions/](conventions/) -改进开发规范
 3.扩 [tools/](tools/) - 开发辅助工具
 
-##🔧常操作
+## 🔧 常用操作速查
 
-### 生成API模块
-```markdown
-使用模板: templates/api-module.md
-场景: 新增业务模块API
-输出: api/[module]/types.ts + api/[module]/index.ts
-```
+| 需求 | 模板/文档 | 输出 |
+|------|----------|------|
+| CRUD页面 | `templates/crud-page.md` | `pages/[module]/*.tsx` |
+| 表单页面 | `templates/form-designer.md` | `components/business/[Form]/` |
+| 详情页面 | `templates/detail-page.md` | `pages/[module]/[id].tsx` |
+| API模块 | `templates/api-module.md` | `api/[module]/*.ts` |
+| 自定义Hook | `templates/custom-hook.md` | `hooks/*.ts` |
+| 数据可视化 | `templates/data-visualization.md` | `pages/[page]/*.tsx` |
 
-### 生成CRUD页面
-```markdown
-使用模板: templates/crud-page-sdesign.md（推荐）
-场景: 新增业务模块CRUD页面
-输出: pages/[module]/index.tsx + pages/[module]/create.tsx + pages/[module]/edit.tsx + pages/[module]/detail.tsx
-```
+### 组件库文档
+- **@dalydb/sdesign**: `.ai/core/sdesign-docs.md`
 
-```markdown
-使用模板: templates/crud-page.md
-场景: 标准增删改查页面
-输出: pages/[module]/index.tsx + pages/[module]/create.tsx + pages/[module]/edit.tsx + pages/[module]/detail.tsx
-```
+## 🎯 快速定位
 
-### 组件使用规范
-```markdown
-参考文档: conventions/ui-component-conventions.md
-核心原则: @dalydb/sdesign (核心) + Ant Design 5 (辅助)
-```
-
-### 生成详情页面
-```markdown
-使用模板: templates/detail-page.md
-场景: 数据详情展示
-输出: pages/[module]/[id]/index.tsx
-```
-
-### 生成表单页面
-```markdown
-使用模板: templates/form-designer.md
-场景:复表单处理
-输出: components/business/[FormName]/
-```
+| 关键词 | 首选文件 | 说明 |
+|--------|----------|------|
+| 技术选型 | `core/tech-stack.md` | 技术栈定义 |
+| 代码规范 | `core/coding-standards.md` | TypeScript/React规范 |
+| 架构设计 | `core/architecture.md` | 项目结构/API/状态管理 |
+| API设计 | `conventions/api-conventions.md` | 接口定义规范 |
+| 增量开发 | `conventions/incremental-development.md` | 代码演进策略 |
 
 ## 📊 项目状态
 
 ### 当前技术栈
-- **核心**: @dalydb/sdesign (配置式组件库)
+- **核心**: @dalydb/sdesign (配置式组件库) - AI文档: `.ai/core/sdesign-docs.md`
 - **基础**: React 18 + TypeScript + Ant Design 5
-- **状态**:稳定版本
+- **状态**: 稳定版本
 
 ###规范成熟度
--✅ 架构规范 -已完善
+- ✅ 架构规范 -已完善
 - ✅ 代码规范 - 已完善  
 - ✅ API约定 -已完善
 - ✅模板库 - 8个核心模板
--⏳ 最佳实践 - 持续积累中
+- ⏳ 最佳实践 - 持续积累中
 
 ##🤝贡指南
 

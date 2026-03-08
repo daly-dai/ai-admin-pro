@@ -17,22 +17,22 @@
 ```markdown
 # 已有API清单
 
-## 用户模块 (api/user/)
+## [模块A] (api/[moduleA]/)
 
-- getList - 获取用户列表
-- getById - 获取用户详情
-- create - 创建用户
-- update - 更新用户
-- delete - 删除用户
+- getList - 获取[实体A]列表
+- getById - 获取[实体A]详情
+- create - 创建[实体A]
+- update - 更新[实体A]
+- delete - 删除[实体A]
 
-## 订单模块 (api/order/)
+## [模块B] (api/[moduleB]/)
 
-- getList - 获取订单列表
-- getById - 获取订单详情
-- create - 创建订单
-- update - 更新订单
-- delete - 删除订单
-- getStatistics - 获取订单统计
+- getList - 获取[实体B]列表
+- getById - 获取[实体B]详情
+- create - 创建[实体B]
+- update - 更新[实体B]
+- delete - 删除[实体B]
+- [customMethod] - [自定义操作]
 ```
 
 ### 2. 已有组件清单
@@ -44,9 +44,9 @@
 
 ## 业务组件 (components/business/)
 
-- UserCard - 用户卡片
-- OrderList - 订单列表
-- ProductSelector - 商品选择器
+- [EntityA]Card - [实体A]卡片
+- [EntityB]List - [实体B]列表
+- [Feature]Selector - [功能]选择器
 
 ## 通用组件 (components/common/)
 
@@ -64,10 +64,10 @@
 # 已有页面清单
 
 - /dashboard - 首页
-- /users - 用户管理
-- /users/:id - 用户详情
-- /orders - 订单管理
-- /products - 商品管理
+- /[moduleA] - [模块A]管理
+- /[moduleA]/:id - [模块A]详情
+- /[moduleB] - [模块B]管理
+- /[moduleC] - [模块C]管理
 ```
 
 ## 代码组织模式
@@ -133,41 +133,38 @@ export interface PageData<T> {}
 
 ### 场景1: 新增CRUD页面
 
-**用户输入**:
+**用户输入模板**:
 
 ```
-我需要新增一个商品管理页面，接口定义如下：
+我需要新增一个[模块名称]管理页面，接口定义如下：
 
-模块: product
-基础路径: /api/products
+模块: [module]
+基础路径: /api/[module]
 
 接口:
-1. GET /api/products - 获取列表
-   参数: page, pageSize, keyword, categoryId
-   响应: { list: Product[], total: number }
+1. GET /api/[module] - 获取列表
+   参数: [param1], [param2], ...
+   响应: { list: [Entity][], total: number }
 
-2. GET /api/products/:id - 获取详情
-   响应: Product
+2. GET /api/[module]/:id - 获取详情
+   响应: [Entity]
 
-3. POST /api/products - 创建
-   参数: name, price, stock, categoryId, description
-   响应: Product
+3. POST /api/[module] - 创建
+   参数: [field1], [field2], ...
+   响应: [Entity]
 
-4. PUT /api/products/:id - 更新
-   参数: name, price, stock, categoryId, description
-   响应: Product
+4. PUT /api/[module]/:id - 更新
+   参数: [field1], [field2], ...
+   响应: [Entity]
 
-5. DELETE /api/products/:id - 删除
+5. DELETE /api/[module]/:id - 删除
 
 类型:
-Product {
+[Entity] {
   id: string
-  name: string
-  price: number
-  stock: number
-  categoryId: string
-  description: string
-  status: 'on_sale' | 'off_sale'
+  [field1]: [type1]
+  [field2]: [type2]
+  status: '[status1]' | '[status2]'
   createTime: string
 }
 
@@ -180,44 +177,44 @@ Product {
 
 **AI应该**:
 
-1. 读取 `.ai/architecture.md` 了解技术栈
-2. 读取 `.ai/coding-standards.md` 了解代码规范
-3. 读取 `.ai/api-conventions.md` 了解API约定
+1. 读取 `.ai/core/architecture.md` 了解技术栈
+2. 读取 `.ai/core/coding-standards.md` 了解代码规范
+3. 读取 `.ai/conventions/api-conventions.md` 了解API约定
 4. 检查 `.ai/context/existing-apis.md` 避免命名冲突
 5. 生成符合规范的代码
 
 ### 场景2: 在现有页面添加功能
 
-**用户输入**:
+**用户输入模板**:
 
 ```
-在订单管理页面添加导出功能，接口是：
-POST /api/orders/export
-参数: { ids: string[] }
-响应: Blob
+在[模块]管理页面添加[功能]功能，接口是：
+[METHOD] /api/[module]/[action]
+参数: { [param]: [type] }
+响应: [ReturnType]
 ```
 
 **AI应该**:
 
-1. 读取现有订单页面代码
-2. 在工具栏添加导出按钮
-3. 实现导出逻辑
+1. 读取现有[模块]页面代码
+2. 在工具栏添加[功能]按钮
+3. 实现[功能]逻辑
 4. 保持原有代码风格
 
 ### 场景3: 复用现有组件
 
-**用户输入**:
+**用户输入模板**:
 
 ```
-新增一个用户选择弹窗组件，使用项目中已有的 UserCard 组件
+新增一个[功能]组件，使用项目中已有的 [ExistingComponent] 组件
 ```
 
 **AI应该**:
 
 1. 读取 `.ai/context/existing-components.md`
-2. 找到 UserCard 组件位置
-3. 导入并复用 UserCard
-4. 创建 UserSelectModal 组件
+2. 找到 [ExistingComponent] 组件位置
+3. 导入并复用 [ExistingComponent]
+4. 创建 [NewComponent] 组件
 
 ## 代码演进策略
 
@@ -225,16 +222,16 @@ POST /api/orders/export
 
 ```typescript
 // 阶段1: 简单实现
-const UserPage: React.FC = () => {
-  const [list, setList] = useState<User[]>([]);
-  useEffect(() => { fetchUsers().then(setList); }, []);
+const [Module]Page: React.FC = () => {
+  const [list, setList] = useState<[Entity][]>([]);
+  useEffect(() => { fetch[Entity]s().then(setList); }, []);
   return <Table dataSource={list} />;
 };
 
 // 阶段2: 添加搜索
-const UserPage: React.FC = () => {
+const [Module]Page: React.FC = () => {
   const [keyword, setKeyword] = useState('');
-  const { data } = useRequest(() => fetchUsers({ keyword }));
+  const { data } = useRequest(() => fetch[Entity]s({ keyword }));
   return (
     <>
       <Input.Search onSearch={setKeyword} />
@@ -243,9 +240,9 @@ const UserPage: React.FC = () => {
   );
 };
 
-// 阶段3: 使用STable + useSearchTable
-const UserPage: React.FC = () => {
-  const { tableProps, formConfig, form } = useSearchTable(fetchUsers, {
+// 阶段3: 使用 SSearchTable 或 STable + useSearchTable
+const [Module]Page: React.FC = () => {
+  const { tableProps, formConfig, form } = useSearchTable(fetch[Entity]s, {
     paginationFields: {
       current: 'page',
       pageSize: 'pageSize',
@@ -255,7 +252,7 @@ const UserPage: React.FC = () => {
   });
 
   const searchItems = [
-    { type: 'input', label: '关键词', name: 'keyword' },
+    { type: 'input', label: '[搜索标签]', name: '[searchField]' },
   ];
 
   return (
@@ -279,7 +276,7 @@ const fetchData = async () => {
   setLoading(false);
 };
 
-// 提取后: 使用useRequest
+// 提取后: 使用 useRequest
 const { data, loading } = useRequest(api.getList);
 ```
 
@@ -287,14 +284,14 @@ const { data, loading } = useRequest(api.getList);
 
 ```typescript
 // 抽象前: 每个页面自定义
-// pages/user/index.tsx
-<Table columns={userColumns} />
+// pages/[moduleA]/index.tsx
+<Table columns={[moduleA]Columns} />
 
-// pages/order/index.tsx
-<Table columns={orderColumns} />
+// pages/[moduleB]/index.tsx
+<Table columns={[moduleB]Columns} />
 
-// 抽象后: 统一STable + useSearchTable组件
-// components/business/DataTable/index.tsx
+// 抽象后: 使用 @dalydb/sdesign 组件库
+// 列表页统一使用 SSearchTable 或 STable + useSearchTable
 const { tableProps, formConfig, form } = useSearchTable(api.getList, {
   paginationFields: {
     current: 'page',
@@ -305,7 +302,7 @@ const { tableProps, formConfig, form } = useSearchTable(api.getList, {
 });
 
 const searchItems = [
-  { type: 'input', label: '关键词', name: 'keyword' },
+  { type: 'input', label: '[搜索标签]', name: '[searchField]' },
 ];
 
 <>

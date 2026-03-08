@@ -1,7 +1,13 @@
-#已有页面清单
+# 已有页面清单
 
-> 自动扫描生成于 2026/2/26 19:47:50
+> 此文件由 `tools/update-context.js` 自动生成
 
-- /src\pages\user - src\pages\user (src\pages\user\index.tsx)
-- /src\pages\login - src\pages\login (src\pages\login\index.tsx)
-- /src\pages\dashboard - src\pages\dashboard (src\pages\dashboard\index.tsx)
+## 格式示例
+
+```markdown
+- /[route] - [页面描述] (文件路径)
+```
+
+## 当前项目页面
+
+（暂无 - 请运行 `pnpm update-context` 自动生成）

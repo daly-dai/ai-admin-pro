@@ -1,15 +1,20 @@
-#已有组件清单
+# 已有组件清单
 
-> 自动扫描生成于 2026/2/26 19:47:50
+> 此文件由 `tools/update-context.js` 自动生成
+> 手动维护时，请按类别分组列出组件
 
+## 格式示例
+
+```markdown
 ## 业务组件 (components/business/)
 
-无
+- [ComponentName] - [组件描述]
 
 ## 通用组件 (components/common/)
 
-无
+- [ComponentName] - [组件描述]
+```
 
-##布局组件 (components/layout/)
+## 当前项目组件
 
-无
+（暂无 - 请运行 `pnpm update-context` 自动生成）

@@ -82,5 +82,58 @@
       "sort": 3,
       "status": "active"
     }
+  ],
+  "projects": [
+    {
+      "id": "1",
+      "name": "AI 智能平台开发",
+      "code": "PROJ-001",
+      "description": "开发企业级AI智能管理平台",
+      "status": "active",
+      "priority": "high",
+      "managerId": "1",
+      "managerName": "管理员",
+      "startDate": "2024-01-01",
+      "endDate": "2024-06-30",
+      "budget": 500000,
+      "progress": 65,
+      "tags": ["AI", "平台", "开发"],
+      "createTime": "2024-01-01T00:00:00.000Z",
+      "updateTime": "2024-03-01T00:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "name": "移动端App重构",
+      "code": "PROJ-002",
+      "description": "重构现有移动端应用，提升用户体验",
+      "status": "planning",
+      "priority": "medium",
+      "managerId": "2",
+      "managerName": "张三",
+      "startDate": "2024-03-15",
+      "endDate": "2024-09-15",
+      "budget": 300000,
+      "progress": 0,
+      "tags": ["移动", "重构", "App"],
+      "createTime": "2024-02-15T00:00:00.000Z",
+      "updateTime": "2024-02-15T00:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "name": "数据分析系统",
+      "code": "PROJ-003",
+      "description": "构建企业数据分析和可视化系统",
+      "status": "completed",
+      "priority": "urgent",
+      "managerId": "3",
+      "managerName": "李四",
+      "startDate": "2023-10-01",
+      "endDate": "2024-02-28",
+      "budget": 200000,
+      "progress": 100,
+      "tags": ["数据", "分析", "可视化"],
+      "createTime": "2023-10-01T00:00:00.000Z",
+      "updateTime": "2024-02-28T00:00:00.000Z"
+    }
   ]
 }

@@ -8,35 +8,40 @@
 
 ```typescript
 // ✅ 正确：显式定义返回类型
-const getUser = async (id: string): Promise<User> => {
-  return request.get(`/api/users/${id}`);
+const get[Entity] = async (id: string): Promise<[Entity]> => {
+  return request.get(`/api/[module]/${id}`);
 };
 
 // ❌ 错误：隐式类型
-const getUser = async (id: string) => {
-  return request.get(`/api/users/${id}`);
+const get[Entity] = async (id: string) => {
+  return request.get(`/api/[module]/${id}`);
 };
 ```
 
-### 2. 接口命名
+### 2. 接口命名规范
 
 ```typescript
-// 实体类型
-interface User {}
-interface UserQuery {} // 查询参数
-interface UserFormData {} // 表单数据
-interface UserListItem {} // 列表项（可能与User不同）
+// 实体类型命名模式
+interface [Entity] {}              // 实体
+interface [Entity]Query {}         // 查询参数
+interface [Entity]FormData {}      // 表单数据
+interface [Entity]ListItem {}      // 列表项
+
+// 示例
+interface Product {}
+interface ProductQuery {}
+interface ProductFormData {}
 ```
 
 ### 3. 类型导出
 
 ```typescript
-// api/user/types.ts
-export interface User {}
-export type UserStatus = 'active' | 'inactive';
+// api/[module]/types.ts
+export interface [Entity] {}
+export type [Entity]Status = '[status1]' | '[status2]';
 
-// api/user/index.ts
-export type { User, UserStatus } from './types';
+// api/[module]/index.ts
+export type { [Entity], [Entity]Status } from './types';
 ```
 
 ## React组件规范
@@ -47,73 +52,71 @@ export type { User, UserStatus } from './types';
 import React, { useState, useCallback } from 'react';
 import { Card, Button } from 'antd';
 import { useRequest } from 'ahooks';
-import { userApi } from '@api/user';
-import type { User } from '@api/user/types';
+import { [module]Api } from '@api/[module]';
+import type { [Entity] } from '@api/[module]/types';
 import './index.css';
 
 // 1. Props接口
-interface UserCardProps {
-  user: User;
-  onEdit?: (user: User) => void;
+interface [ComponentName]Props {
+  [entity]: [Entity];
+  on[Action]?: ([entity]: [Entity]) => void;
 }
 
 // 2. 组件实现
-const UserCard: React.FC<UserCardProps> = ({ user, onEdit }) => {
+const [ComponentName]: React.FC<[ComponentName]Props> = ({ [entity], on[Action] }) => {
   // 3. State定义
   const [expanded, setExpanded] = useState(false);
 
   // 4. Hooks使用
-  const { loading, run: handleDelete } = useRequest(userApi.delete, {
+  const { loading, run: handle[Action] } = useRequest([module]Api.[method], {
     manual: true,
   });
 
   // 5. 事件处理
-  const handleEdit = useCallback(() => {
-    onEdit?.(user);
-  }, [onEdit, user]);
+  const handle[Action] = useCallback(() => {
+    on[Action]?.([entity]);
+  }, [on[Action], [entity]]);
 
   // 6. 渲染
   return (
-    <Card className="user-card">
+    <Card className="[component-name]">
       {/* ... */}
     </Card>
   );
 };
 
-export default UserCard;
+export default [ComponentName];
 ```
 
-### 2. 组件命名
+### 2. 组件命名规范
 
-- 页面组件: `PascalCase` + `Page` 后缀，如 `UserPage`
-- 业务组件: `PascalCase`，如 `UserCard`
-- 通用组件: `PascalCase`，如 `DataTable`
-- Hooks: `camelCase` + `use` 前缀，如 `useUserList`
+| 类型 | 命名模式 | 示例 |
+|------|----------|------|
+| 页面组件 | `PascalCase` + `Page` | `ProductPage`, `OrderPage` |
+| 业务组件 | `PascalCase` | `ProductCard`, `OrderList` |
+| 通用组件 | `PascalCase` | `DataTable`, `SearchForm` |
+| Hooks | `use` + `PascalCase` | `useProductList`, `useOrderForm` |
 
 ### 3. 样式规范
 
 ```css
 /* 组件样式文件：与组件同名 */
-/* UserCard/index.css */
+/* [ComponentName]/index.css */
 
 /* 1. 使用BEM命名 */
-.user-card {
+.[component-name] {
 }
-.user-card__header {
+.[component-name]__[element] {
 }
-.user-card__body {
-}
-.user-card--active {
+.[component-name]--[modifier] {
 }
 
 /* 2. 避免全局样式污染 */
 /* ❌ 不要这样 */
-.card {
-}
+.card { }
 
 /* ✅ 这样 */
-.user-card {
-}
+.product-card { }
 ```
 
 ## API层规范
@@ -123,10 +126,10 @@ export default UserCard;
 ```typescript
 // 按业务模块组织
 api/
-├── user/           # 用户模块
+├── [moduleA]/      # 模块A（如: product, order）
 │   ├── index.ts    # API实现
 │   └── types.ts    # 类型定义
-├── order/          # 订单模块
+├── [moduleB]/      # 模块B
 │   ├── index.ts
 │   └── types.ts
 └── index.ts        # 统一导出
@@ -136,17 +139,17 @@ api/
 
 ```typescript
 // ✅ 使用对象模式组织API
-export const userApi = {
-  getList: () => {...},
+export const [module]Api = {
+  getList: (params?: [Entity]Query) => {...},
   getById: (id: string) => {...},
-  create: (data: UserFormData) => {...},
-  update: (id: string, data: Partial<User>) => {...},
+  create: (data: [Entity]FormData) => {...},
+  update: (id: string, data: Partial<[Entity]>) => {...},
   delete: (id: string) => {...},
 };
 
 // 使用
-import { userApi } from '@api/user';
-const { data } = useRequest(userApi.getList);
+import { [module]Api } from '@api/[module]';
+const { data } = useRequest([module]Api.getList);
 ```
 
 ### 3. 类型定义位置
@@ -155,28 +158,25 @@ const { data } = useRequest(userApi.getList);
 // 类型定义在 api/[module]/types.ts
 // 不要在API文件中定义类型
 
-// api/user/types.ts
-export interface User {
+// api/[module]/types.ts
+export interface [Entity] {
   id: string;
-  name: string;
-  email: string;
-  status: UserStatus;
+  [fieldName]: [fieldType];
+  status: [Entity]Status;
   createTime: string;
 }
 
-export type UserStatus = 'active' | 'inactive';
+export type [Entity]Status = '[status1]' | '[status2]';
 
-export interface UserQuery {
+export interface [Entity]Query {
   page?: number;
   pageSize?: number;
-  keyword?: string;
-  status?: UserStatus;
+  [filterField]?: [filterType];
 }
 
-export interface UserFormData {
-  name: string;
-  email: string;
-  status: UserStatus;
+export interface [Entity]FormData {
+  [fieldName]: [fieldType];
+  status: [Entity]Status;
 }
 ```
 
@@ -185,29 +185,29 @@ export interface UserFormData {
 ### 1. Store组织
 
 ```typescript
-// stores/user.ts - 用户相关状态
+// stores/[domain].ts - 领域状态（如: product, order）
 // stores/app.ts - 应用级状态
 // stores/index.ts - 统一导出
 
 // stores/index.ts
-export { useUserStore } from './user';
+export { use[Domain]Store } from './[domain]';
 export { useAppStore } from './app';
 ```
 
 ### 2. Store结构
 
 ```typescript
-interface StoreState {
+interface [Domain]State {
   // 1. State定义
-  data: DataType;
+  [data]: [DataType];
   loading: boolean;
 
   // 2. Computed（通过selector实现）
   // 不存储在store中，使用时计算
 
   // 3. Actions
-  setData: (data: DataType) => void;
-  fetchData: () => Promise<void>;
+  set[Data]: (data: [DataType]) => void;
+  fetch[Data]: () => Promise<void>;
   reset: () => void;
 }
 ```
@@ -222,12 +222,12 @@ import React, { useEffect, useState } from 'react';
 // 2. 第三方库
 import { Button, Card } from 'antd';
 import { useRequest } from 'ahooks';
-// 3.绝路径（src/）
-import { userApi } from 'src/api/user';
-import type { User } from 'src/api/user/types';
-import { useUserStore } from 'src/stores';
-// 4.相对路径（./）
-import UserForm from './components/UserForm';
+// 3. 绝对路径（src/）
+import { [module]Api } from 'src/api/[module]';
+import type { [Entity] } from 'src/api/[module]/types';
+import { use[Domain]Store } from 'src/stores';
+// 4. 相对路径（./）
+import [ComponentName] from './components/[ComponentName]';
 
 import './index.css';
 ```
@@ -236,14 +236,14 @@ import './index.css';
 
 ```typescript
 // 默认导出（组件）
-export default ComponentName;
+export default [ComponentName];
 
 // 命名导出（API、Hooks、工具函数）
-export const userApi = {...};
-export const useUserList = () => {...};
+export const [module]Api = {...};
+export const use[Entity]List = () => {...};
 
 // 统一导出
-export * from './user';
+export * from './[module]';
 export * from './app';
 ```
 
@@ -255,15 +255,15 @@ export * from './app';
 // 统一在 request.ts 中处理
 // 组件中只处理业务错误
 
-const { run: submit } = useRequest(userApi.create, {
+const { run: submit } = useRequest([module]Api.create, {
   manual: true,
   onSuccess: () => {
     message.success('创建成功');
   },
   onError: (error) => {
     // 只处理需要特殊处理的错误
-    if (error.code === 'DUPLICATE_NAME') {
-      message.error('用户名已存在');
+    if (error.code === '[ERROR_CODE]') {
+      message.error('[错误提示]');
     }
   },
 });
@@ -282,10 +282,10 @@ const { run: submit } = useRequest(userApi.create, {
   }}
 >
   <Form.Item
-    name="email"
+    name="[fieldName]"
     rules={[
-      { required: true, message: '请输入邮箱' },
-      { type: 'email', message: '邮箱格式不正确' },
+      { required: true, message: '请输入[fieldLabel]' },
+      { type: '[validationType]', message: '[验证失败提示]' },
     ]}
   >
     <Input />
@@ -299,25 +299,25 @@ const { run: submit } = useRequest(userApi.create, {
 
 ```typescript
 /**
- * 获取用户列表
+ * 获取[实体]列表
  * @param params 查询参数
- * @returns 用户列表数据
+ * @returns [实体]列表数据
  * @example
- * const { list, total } = await userApi.getList({ page: 1 });
+ * const { list, total } = await [module]Api.getList({ page: 1 });
  */
-const getList = (params?: UserQuery): Promise<PageData<User>> => {...};
+const getList = (params?: [Entity]Query): Promise<PageData<[Entity]>> => {...};
 ```
 
 ### 2. 代码注释
 
 ```typescript
 // ✅ 解释"为什么"，而非"做什么"
-// 用户可能同时有多个角色，取最高权限
-const highestRole = getHighestRole(user.roles);
+// [业务原因说明]
+const [result] = [operation]([data]);
 
 // ❌ 不要注释显而易见的代码
-// 设置用户名为空
-setUserName('');
+// [显而易见的操作说明]
+[operation]();
 ```
 
 ## 性能优化规范
@@ -327,13 +327,13 @@ setUserName('');
 ```typescript
 // ✅ 使用useMemo缓存计算结果
 const filteredList = useMemo(() => {
-  return list.filter((item) => item.status === 'active');
+  return list.filter((item) => item.[statusField] === '[activeValue]');
 }, [list]);
 
 // ✅ 使用useCallback缓存回调函数
-const handleClick = useCallback(() => {
-  onSelect(id);
-}, [onSelect, id]);
+const handle[Action] = useCallback(() => {
+  on[Action](id);
+}, [on[Action], id]);
 ```
 
 ### 2. 列表渲染优化
@@ -341,7 +341,7 @@ const handleClick = useCallback(() => {
 ```typescript
 // ✅ 使用key属性
 {list.map(item => (
-  <UserCard key={item.id} user={item} />
+  <[ComponentName] key={item.id} [entity]={item} />
 ))}
 
 // ✅ 大数据量使用虚拟列表

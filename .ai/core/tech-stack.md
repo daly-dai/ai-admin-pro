@@ -17,18 +17,25 @@ Hooks: ahooks ^3.8.0
 工具库: dayjs ^1.11.0, lodash-es ^4.17.0
 ```
 
-##核心组件库
+## 核心组件库
 
 ### @dalydb/sdesign (主要组件库)
-- **SSearchTable**:搜索表格一体化组件
-- **SForm**:配置式表单组件  
+> 📚 **AI 文档参考**: `.ai/core/sdesign-docs.md`
+
+核心组件：
+- **SSearchTable**: 搜索表格一体化组件
+- **SForm**: 配置式表单组件 (支持 22 种控件类型)
 - **SDetail**: 分组详情展示组件
-- **SButton**:按钮组件
+- **SButton**: 增强按钮组件 (支持 actionType 预设)
+- **STable**: 增强表格组件
+- **STitle**: 标题组件
+
+AI 可通过 `llms.txt` 获取完整 Props 定义、类型说明和使用示例。
 
 ### Ant Design (辅助组件库)
--基础UI组件补充
+- 基础 UI 组件补充
 - 图标库支持
--样式系统
+- 样式系统
 
 ## 项目依赖关系
 
