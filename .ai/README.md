@@ -87,54 +87,36 @@ pnpm update-context
 2. 优化 [conventions/](conventions/) -改进开发规范
 3.扩 [tools/](tools/) - 开发辅助工具
 
-##🔧常操作
+## 🔧 常用操作速查
 
-### 生成API模块
-```markdown
-使用模板: templates/api-module.md
-场景: 新增业务模块API
-输出: api/[module]/types.ts + api/[module]/index.ts
-```
+| 需求 | 模板/文档 | 输出 |
+|------|----------|------|
+| CRUD页面 | `templates/crud-page.md` | `pages/[module]/*.tsx` |
+| 表单页面 | `templates/form-designer.md` | `components/business/[Form]/` |
+| 详情页面 | `templates/detail-page.md` | `pages/[module]/[id].tsx` |
+| API模块 | `templates/api-module.md` | `api/[module]/*.ts` |
+| 自定义Hook | `templates/custom-hook.md` | `hooks/*.ts` |
+| 数据可视化 | `templates/data-visualization.md` | `pages/[page]/*.tsx` |
 
-### 生成CRUD页面
-```markdown
-使用模板: templates/crud-page-sdesign.md（推荐）
-场景: 新增业务模块CRUD页面
-输出: pages/[module]/index.tsx + pages/[module]/create.tsx + pages/[module]/edit.tsx + pages/[module]/detail.tsx
-```
+### 组件库文档
+- **@dalydb/sdesign**: `node_modules/@dalydb/sdesign/ai/llms.txt`
 
-```markdown
-使用模板: templates/crud-page.md
-场景: 标准增删改查页面
-输出: pages/[module]/index.tsx + pages/[module]/create.tsx + pages/[module]/edit.tsx + pages/[module]/detail.tsx
-```
+## 🎯 快速定位
 
-### 组件使用规范
-```markdown
-参考文档: conventions/ui-component-conventions.md
-核心原则: @dalydb/sdesign (核心) + Ant Design 5 (辅助)
-```
-
-### 生成详情页面
-```markdown
-使用模板: templates/detail-page.md
-场景: 数据详情展示
-输出: pages/[module]/[id]/index.tsx
-```
-
-### 生成表单页面
-```markdown
-使用模板: templates/form-designer.md
-场景:复表单处理
-输出: components/business/[FormName]/
-```
+| 关键词 | 首选文件 | 说明 |
+|--------|----------|------|
+| 技术选型 | `core/tech-stack.md` | 技术栈定义 |
+| 代码规范 | `core/coding-standards.md` | TypeScript/React规范 |
+| 架构设计 | `core/architecture.md` | 项目结构/API/状态管理 |
+| API设计 | `conventions/api-conventions.md` | 接口定义规范 |
+| 增量开发 | `conventions/incremental-development.md` | 代码演进策略 |
 
 ## 📊 项目状态
 
 ### 当前技术栈
-- **核心**: @dalydb/sdesign (配置式组件库)
+- **核心**: @dalydb/sdesign (配置式组件库) - AI文档: `node_modules/@dalydb/sdesign/ai/llms.txt`
 - **基础**: React 18 + TypeScript + Ant Design 5
-- **状态**:稳定版本
+- **状态**: 稳定版本
 
 ###规范成熟度
 - ✅ 架构规范 -已完善

@@ -4,7 +4,6 @@ import { RequireAuth } from '../guards';
 import authRoutes from './auth';
 import dashboardRoutes from './dashboard';
 import errorRoutes from './error';
-import dictRoutes from './dict';
 import { MainLayout } from '@/layouts';
 
 export const routes = [
@@ -22,7 +21,6 @@ export const routes = [
         element: <Navigate to="/dashboard" replace />,
       },
       ...dashboardRoutes,
-      ...dictRoutes,
       // 可以在这里添加更多子路由模块
     ],
   },

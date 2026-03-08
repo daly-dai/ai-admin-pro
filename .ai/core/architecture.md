@@ -100,85 +100,82 @@ export default ComponentName;
 ### 2. API层规范（强制）
 
 ```typescript
-// 2. API实现
-// api/user/index.ts
-import type { PageData } from '@types';
-import { request } from '@utils/request';
-
-import type { User, UserQuery } from './types';
-
-// 1. 类型定义（必须）
-// api/user/types.ts
-export interface User {
+// api/[module]/types.ts - 类型定义（必须）
+export interface [Entity] {
   id: string;
-  name: string;
+  [fieldName]: [fieldType];
 }
 
-export interface UserQuery {
+export interface [Entity]Query {
   page?: number;
   pageSize?: number;
-  keyword?: string;
+  [filterField]?: [filterType];
 }
 
-export const userApi = {
-  /** 获取用户列表 */
-  getList: (params?: UserQuery) =>
-    request.get<PageData<User>>('/api/users', { params }),
+// api/[module]/index.ts - API实现
+import type { PageData } from '@types';
+import { request } from '@utils/request';
+import type { [Entity], [Entity]Query } from './types';
 
-  /** 获取用户详情 */
-  getById: (id: string) => request.get<User>(`/api/users/${id}`),
+export const [module]Api = {
+  /** 获取[实体]列表 */
+  getList: (params?: [Entity]Query) =>
+    request.get<PageData<[Entity]>>('/api/[module]', { params }),
 
-  /** 创建用户 */
-  create: (data: Omit<User, 'id'>) => request.post<User>('/api/users', data),
+  /** 获取[实体]详情 */
+  getById: (id: string) => request.get<[Entity]>(`/api/[module]/${id}`),
 
-  /** 更新用户 */
-  update: (id: string, data: Partial<User>) =>
-    request.put<User>(`/api/users/${id}`, data),
+  /** 创建[实体] */
+  create: (data: Omit<[Entity], 'id'>) => request.post<[Entity]>('/api/[module]', data),
 
-  /** 删除用户 */
-  delete: (id: string) => request.delete(`/api/users/${id}`),
+  /** 更新[实体] */
+  update: (id: string, data: Partial<[Entity]>) =>
+    request.put<[Entity]>(`/api/[module]/${id}`, data),
+
+  /** 删除[实体] */
+  delete: (id: string) => request.delete(`/api/[module]/${id}`),
 };
 ```
 
 ### 3. 状态管理规范（强制）
 
 ```typescript
-// stores/user.ts
+// stores/[domain].ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
-interface UserState {
+interface [Domain]State {
   // State
-  userInfo: User | null;
-  token: string | null;
+  [data]: [DataType] | null;
+  [flag]: boolean | null;
 
   // Actions
-  setUserInfo: (user: User | null) => void;
-  setToken: (token: string | null) => void;
-  logout: () => void;
+  set[Data]: (data: [DataType] | null) => void;
+  set[Flag]: (flag: [FlagType] | null) => void;
+  reset: () => void;
 }
 
-export const useUserStore = create<UserState>()(
+export const use[Domain]Store = create<[Domain]State>()(
   persist(
     immer((set) => ({
-      userInfo: null,
-      token: null,
-      setUserInfo: (user) =>
+      [data]: null,
+      [flag]: null,
+      set[Data]: (data) =>
         set((state) => {
-          state.userInfo = user;
+          state.[data] = data;
         }),
-      setToken: (token) =>
+      set[Flag]: (flag) =>
         set((state) => {
-          state.token = token;
+          state.[flag] = flag;
         }),
-      logout: () =>
+      reset: () =>
         set((state) => {
-          state.userInfo = null;
-          state.token = null;
+          state.[data] = null;
+          state.[flag] = null;
         }),
     })),
-    { name: 'user-store' },
+    { name: '[domain]-store' },
   ),
 );
 ```
@@ -186,29 +183,29 @@ export const useUserStore = create<UserState>()(
 ### 4. 页面组件规范（强制）
 
 ```typescript
-// pages/user/index.tsx
+// pages/[module]/index.tsx
 import React from 'react';
-import { userApi } from '@api/user';
+import { [module]Api } from '@api/[module]';
 import { SColumnsType, SFormItems, SSearchTable } from '@dalydb/sdesign';
-import type { User, UserQuery } from '@api/user/types';
+import type { [Entity], [Entity]Query } from '@api/[module]/types';
 
-const UserPage: React.FC = () => {
+const [Module]Page: React.FC = () => {
 
   // 搜索表单配置
   const formItems: SFormItems[] = [
     {
-      label: '姓名',
-      name: 'name',
-      type: 'input',
+      label: '[字段标签]',
+      name: '[fieldName]',
+      type: '[input|select|...]',
     },
-  //  ...
+    // ...
   ];
 
   // 表格列配置
   const columns: SColumnsType = [
     {
-      title: '姓名',
-      dataIndex: 'name',
+      title: '[列标题]',
+      dataIndex: '[fieldName]',
       width: 120,
     },
     // ...
@@ -217,13 +214,13 @@ const UserPage: React.FC = () => {
   return (
     <SSearchTable
       headTitle={{
-        children: '用户管理',
-        desc: '管理系统用户信息，包括添加、编辑、删除等操作',
+        children: '[页面标题]',
+        desc: '[页面描述]',
       }}
       tableTitle={{
-        children: '用户列表',
+        children: '[表格标题]',
       }}
-      requestFn={userApi}
+      requestFn={[module]Api.getList}
       options={{
         paginationFields: {
           current: 'current',
@@ -247,7 +244,7 @@ const UserPage: React.FC = () => {
   );
 };
 
-export default UserPage;
+export default [Module]Page;
 ```
 
 ## 禁止事项
