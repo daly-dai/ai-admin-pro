@@ -1,6 +1,6 @@
 # Prompt: 生成基于 @dalydb/sdesign 的 CRUD 页面
 
-> 组件库文档参考: `node_modules/@dalydb/sdesign/ai/llms.txt`
+> 组件库文档参考: `.ai/core/sdesign-docs.md`
 
 ## 使用方式
 

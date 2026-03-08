@@ -20,7 +20,7 @@ Hooks: ahooks ^3.8.0
 ## 核心组件库
 
 ### @dalydb/sdesign (主要组件库)
-> 📚 **AI 文档参考**: `node_modules/@dalydb/sdesign/ai/llms.txt`
+> 📚 **AI 文档参考**: `.ai/core/sdesign-docs.md`
 
 核心组件：
 - **SSearchTable**: 搜索表格一体化组件

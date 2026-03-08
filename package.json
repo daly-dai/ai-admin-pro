@@ -13,7 +13,9 @@
     "prettier-import-sort": "npm run prettier -- --plugin=@ianvs/prettier-plugin-sort-imports",
     "preview": "rsbuild preview",
     "type-check": "tsc --noEmit",
-    "update-context": "node .ai/tools/update-context.js"
+    "update-context": "node .ai/tools/update-context.js",
+    "sync-ai-docs": "node .ai/tools/sync-sdesign-docs.js",
+    "postinstall": "pnpm sync-ai-docs"
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
@@ -59,5 +61,20 @@
     "onlyBuiltDependencies": [
       "core-js"
     ]
+  },
+  "ai": {
+    "description": "AI Frontend 开发体系 - 配置驱动开发",
+    "configRoot": ".ai",
+    "priority": [
+      ".ai/README.md",
+      ".ai/core/tech-stack.md",
+      ".ai/core/architecture.md",
+      ".ai/core/coding-standards.md"
+    ],
+    "templates": ".ai/templates",
+    "componentLibrary": {
+      "name": "@dalydb/sdesign",
+      "aiDocs": "node_modules/@dalydb/sdesign/ai/llms.txt"
+    }
   }
 }

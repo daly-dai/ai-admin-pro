@@ -1,8 +1,30 @@
-# AI配置中心
+# AI 配置中心
 
->前端开发助手配置目录
+> 🎯 **所有 AI 助手必须首先读取本文件**
+> 
+> 本目录包含项目开发规范、模板和约定，AI 在处理任何任务前必须阅读相关配置。
 
-##📁目录结构
+## 🔴 强制读取顺序（所有编辑器通用）
+
+AI **必须** 按以下顺序读取配置文件：
+
+### 第一步：项目基础
+1. `package.json` - 确认技术栈版本和 AI 配置
+2. `.ai/README.md` - 本文件，配置总览
+
+### 第二步：核心规范（必须遵循）
+3. `.ai/core/tech-stack.md` - 技术栈定义和约束
+4. `.ai/core/architecture.md` - 架构规范
+5. `.ai/core/coding-standards.md` - 代码规范
+
+### 第三步：开发约定
+6. `.ai/conventions/api-conventions.md` - API 设计约定
+7. `.ai/conventions/incremental-development.md` - 增量开发规范
+
+### 第四步：模板参考（按需）
+8. `.ai/templates/*.md` - 根据任务选择对应模板
+
+## 📁 目录结构
 
 ```
 .ai/
@@ -99,7 +121,7 @@ pnpm update-context
 | 数据可视化 | `templates/data-visualization.md` | `pages/[page]/*.tsx` |
 
 ### 组件库文档
-- **@dalydb/sdesign**: `node_modules/@dalydb/sdesign/ai/llms.txt`
+- **@dalydb/sdesign**: `.ai/core/sdesign-docs.md`
 
 ## 🎯 快速定位
 
