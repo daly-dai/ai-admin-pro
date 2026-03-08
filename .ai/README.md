@@ -51,37 +51,36 @@ pnpm update-context
 
 ### 1.配置即代码
 - AI配置是项目的一部分
--配置随项目演进而更新
--所有规范都有明确的文档
+- 配置随项目演进而更新
+- 所有规范都有明确的文档
 
 ### 2.约优于配置
--固定模式，减少配置
+- 固定模式，减少配置
 - AI可预测代码结构
 - 降低沟通成本
 
 ### 3.沉淀
--开发都在完善AI理解
+- 开发都在完善AI理解
 - 上下文自动更新
--知持续积累
+- 知识持续积累
 
 ### 4. 自动化优先
 - 使用脚本自动更新上下文
--减手动维护工作
+- 减手动维护工作
 - 提高一致性
 
 ##📚学路径
 
 ### 新手入门
 1. [core/architecture.md](core/architecture.md) - 了解项目架构
-2.阅 [core/coding-standards.md](core/coding-standards.md) -掌代码规范
+2. 阅 [core/coding-standards.md](core/coding-standards.md) -掌代码规范
 3. [core/tech-stack.md](core/tech-stack.md) -技术栈
 4. 实践 [templates/crud-page.md](templates/crud-page.md) - 生成第一个CRUD页面
 
-###进应用
+### 进阶应用
 1. [conventions/api-conventions.md](conventions/api-conventions.md) -掌API设计
-2.学 [conventions/incremental-development.md](conventions/incremental-development.md) -理解增量开发
+2. [conventions/incremental-development.md](conventions/incremental-development.md) -理解增量开发
 3. 实践 [templates/form-designer.md](templates/form-designer.md) -构建复杂表单
-4. 实践 [templates/data-visualization.md](templates/data-visualization.md) - 创建数据可视化
 
 ### 专家级别
 1. [templates/](templates/) - 创建新的模板
@@ -138,11 +137,11 @@ pnpm update-context
 - **状态**:稳定版本
 
 ###规范成熟度
--✅ 架构规范 -已完善
+- ✅ 架构规范 -已完善
 - ✅ 代码规范 - 已完善  
 - ✅ API约定 -已完善
 - ✅模板库 - 8个核心模板
--⏳ 最佳实践 - 持续积累中
+- ⏳ 最佳实践 - 持续积累中
 
 ##🤝贡指南
 

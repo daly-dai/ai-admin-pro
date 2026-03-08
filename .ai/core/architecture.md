@@ -7,7 +7,7 @@
 ```yaml
 构建工具: RSBuild ^1.7.0
 框架: React ^18.3.0 + TypeScript ^5.5.0
-UI库: Ant Design ^5.20.0 + @ant-design/pro-components ^2.8.0
+UI库: Ant Design ^5.29.3+ @dalydb/sdesign^1.2.2
 状态管理: Zustand ^5.0.11 + immer ^10.1.0
 路由: React Router ^6.26.0
 HTTP: Axios ^1.7.0
@@ -188,29 +188,62 @@ export const useUserStore = create<UserState>()(
 ```typescript
 // pages/user/index.tsx
 import React from 'react';
-import { Card } from 'antd';
-import { useRequest } from 'ahooks';
 import { userApi } from '@api/user';
-import { ProTable } from '@ant-design/pro-components';
+import { SColumnsType, SFormItems, SSearchTable } from '@dalydb/sdesign';
 import type { User, UserQuery } from '@api/user/types';
 
 const UserPage: React.FC = () => {
-  const { data, loading, run } = useRequest(userApi.getList, { manual: true });
 
-  const columns = [
-    { title: '用户名', dataIndex: 'name' },
+  // 搜索表单配置
+  const formItems: SFormItems[] = [
+    {
+      label: '姓名',
+      name: 'name',
+      type: 'input',
+    },
+  //  ...
+  ];
+
+  // 表格列配置
+  const columns: SColumnsType = [
+    {
+      title: '姓名',
+      dataIndex: 'name',
+      width: 120,
+    },
     // ...
   ];
 
   return (
-    <Card>
-      <ProTable<User, UserQuery>
-        columns={columns}
-        dataSource={data?.list}
-        loading={loading}
-        request={run}
-      />
-    </Card>
+    <SSearchTable
+      headTitle={{
+        children: '用户管理',
+        desc: '管理系统用户信息，包括添加、编辑、删除等操作',
+      }}
+      tableTitle={{
+        children: '用户列表',
+      }}
+      requestFn={userApi}
+      options={{
+        paginationFields: {
+          current: 'current',
+          pageSize: 'pageSize',
+          total: 'total',
+          list: 'list',
+        },
+      }}
+      formProps={{
+        items: formItems,
+        columns: 3,
+        showExpand: true,
+        defaultExpand: false,
+      }}
+      tableProps={{
+        columns,
+        rowKey: 'id',
+        scroll: { x: 1200 },
+      }}
+    />
   );
 };
 
