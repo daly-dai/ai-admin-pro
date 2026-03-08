@@ -80,4 +80,4 @@ input | inputNumber | password | textarea | select | slider | radio | radioGroup
 />
 ```
 
-> 完整 Props 定义和示例请参考: `node_modules/@dalydb/sdesign/ai/llms.txt`
+> 完整 Props 定义和示例请参考: `.ai/core/sdesign-docs.md`

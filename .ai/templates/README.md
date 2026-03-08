@@ -28,5 +28,5 @@
 ## 💡 最佳实践
 
 - 优先使用 **@dalydb/sdesign** 组件库（配置式开发）
-- 组件库文档：`node_modules/@dalydb/sdesign/ai/llms.txt`
+- 组件库文档：`.ai/core/sdesign-docs.md`
 - 接口定义要完整，类型要明确

@@ -76,7 +76,7 @@ pnpm update-context
 - 配置随项目演进而更新
 - 所有规范都有明确的文档
 
-### 2.约优于配置
+### 2.约定优于配置
 - 固定模式，减少配置
 - AI可预测代码结构
 - 降低沟通成本
@@ -136,7 +136,7 @@ pnpm update-context
 ## 📊 项目状态
 
 ### 当前技术栈
-- **核心**: @dalydb/sdesign (配置式组件库) - AI文档: `node_modules/@dalydb/sdesign/ai/llms.txt`
+- **核心**: @dalydb/sdesign (配置式组件库) - AI文档: `.ai/core/sdesign-docs.md`
 - **基础**: React 18 + TypeScript + Ant Design 5
 - **状态**: 稳定版本
 

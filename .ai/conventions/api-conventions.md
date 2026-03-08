@@ -102,7 +102,7 @@ export const [module]Api = {
 <SDetail title="[详情标题]" dataSource={data} items={detailItems} column={2} />
 ```
 
-> 完整组件 Props 定义请参考: `node_modules/@dalydb/sdesign/ai/llms.txt`
+> 完整组件 Props 定义请参考: `.ai/core/sdesign-docs.md`
 
 ## 字段类型映射
 

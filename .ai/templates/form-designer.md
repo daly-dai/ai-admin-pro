@@ -1,6 +1,6 @@
 # Prompt: 生成表单设计器/动态表单 (基于 @dalydb/sdesign)
 
-> 组件库文档参考: `node_modules/@dalydb/sdesign/ai/llms.txt`
+> 组件库文档参考: `.ai/core/sdesign-docs.md`
 
 ## 使用方式
 
@@ -95,5 +95,5 @@ const items: SFormItems[] = [
 }
 ```
 
-> 完整 Props 定义和示例请参考: `node_modules/@dalydb/sdesign/ai/llms.txt`
+> 完整 Props 定义和示例请参考: `.ai/core/sdesign-docs.md`
 
