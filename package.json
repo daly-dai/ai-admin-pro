@@ -74,7 +74,7 @@
     "templates": ".ai/templates",
     "componentLibrary": {
       "name": "@dalydb/sdesign",
-      "aiDocs": "node_modules/@dalydb/sdesign/ai/llms.txt"
+      "aiDocs": ".ai/core/sdesign-docs.md"
     }
   }
 }
