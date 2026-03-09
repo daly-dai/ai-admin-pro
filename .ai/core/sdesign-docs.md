@@ -3,12 +3,12 @@
 > ⚠️ 本文件由脚本自动生成，请勿手动修改
 > 
 > 源文件: node_modules/@dalydb/sdesign/ai/llms.txt
-> 同步时间: 2026/3/9 22:18:19
-> 版本: 1.3.1
+> 同步时间: 2026/3/9 23:31:58
+> 版本: 1.3.2
 
 ---
 
-# @dalydb/sdesign v1.3.1
+# @dalydb/sdesign v1.3.2
 
 基于 Ant Design 5.x 的企业级 React 组件库。所有组件以 S 前缀命名。
 
@@ -82,11 +82,7 @@ import { useSearchTable } from '@dalydb/sdesign/hooks';
 ### SCascader
 > 增强级联选择器
 
-**SCascaderProps**: `Omit<
-  CascaderProps<any>,
-  'onChange' | 'value' | 'defaultValue' | 'multiple'
-> & {
-  onChange?: (value: string, selectOptions?: any[]) => void`
+**SCascaderProps**: `Omit< CascaderProps<any>, 'onChange' | 'value' | 'defaultValue' | 'multiple' > & { onChange?: (value: string, selectOptions?: any[]) => void`
 
 **SingleValueType**: `(string | number)[]`
 
@@ -145,12 +141,7 @@ import { useSearchTable } from '@dalydb/sdesign/hooks';
 ### SDatePicker
 > 增强日期选择器，onChange 直接返回字符串
 
-**SDatePickerType** — SDatePicker 增强日期选择器 Props 与 antd DatePicker 不同，onChange 直接返回格式化后的字符串， value 支持字符串/Date/Dayjs 等多种格式，简化表单集成。 ```tsx <SDatePicker onChange={(dateStr) => console.log(dateStr)} /> ```: `Omit<DatePickerProps, 'onChange' | 'value'> & {
-  /** onChange 第一个参数直接为格式化后的字符串 */
-  onChange?: (
-    dateString?: string | string[] | null,
-    date?: Dayjs | string | null,
-  ) => void`
+**SDatePickerType** — SDatePicker 增强日期选择器 Props 与 antd DatePicker 不同，onChange 直接返回格式化后的字符串， value 支持字符串/Date/Dayjs 等多种格式，简化表单集成。 ```tsx <SDatePicker onChange={(dateStr) => console.log(dateStr)} /> ```: `Omit<DatePickerProps, 'onChange' | 'value'> & { onChange?: ( dateString?: string | string[] | null, date?: Dayjs | string | null, ) => void`
 
 **PanelMode**: `| 'time'`
 
@@ -159,19 +150,7 @@ import { useSearchTable } from '@dalydb/sdesign/hooks';
 ### SDatePickerRange
 > 日期范围选择器，支持 rangeKeys 拆分字段
 
-**SDatePickerRangeProps** — SDatePickerRange 增强日期范围选择器 Props 相比 antd RangePicker，支持 rangeKeys 将日期范围拆分为两个独立字段， 方便表单提交。onChange 直接返回格式化字符串。 ```tsx // 拆分为 startDate 和 endDate 两个字段 <SDatePickerRange rangeKeys={['startDate', 'endDate']} /> ```: `Omit<
-  RangePickerProps,
-  'value' | 'onChange'
-> & {
-  /** 支持多种输入格式 */
-  value?: RangeValueValuesType;
-  /** 将范围值拆分为两个字段的 key，如 ['startDate', 'endDate'] */
-  formatKeys?: RangeValueTuple;
-  /** onChange 第一个参数为格式化后的值 */
-  onChange?: (
-    formatString: RangeFormatString,
-    values: RangeValueValuesType,
-  ) => void`
+**SDatePickerRangeProps** — SDatePickerRange 增强日期范围选择器 Props 相比 antd RangePicker，支持 rangeKeys 将日期范围拆分为两个独立字段， 方便表单提交。onChange 直接返回格式化字符串。 ```tsx // 拆分为 startDate 和 endDate 两个字段 <SDatePickerRange rangeKeys={['startDate', 'endDate']} /> ```: `Omit< RangePickerProps, 'value' | 'onChange' > & { value?: RangeValueValuesType; formatKeys?: RangeValueTuple; onChange?: ( formatString: RangeFormatString, values: RangeValueValuesType, ) => void`
 
 **RangeValueType**: `string | string[] | number | Date | Dayjs | null`
 
@@ -188,12 +167,7 @@ import { useSearchTable } from '@dalydb/sdesign/hooks';
 ### SDependency
 > 字段依赖联动组件
 
-**RenderChildren**: `(
-  values: Record<string, any>,
-  form: ProFormInstance<Values>,
-) => React.ReactNode;
-
-export type SDependencyProps<T = Record<string, any>> = Omit<`
+**RenderChildren**: `( values: Record<string, any>, form: ProFormInstance<Values>, ) => React.ReactNode; export type SDependencyProps<T = Record<string, any>> = Omit<`
 
 ### SDetail
 > 详情展示，支持 8 种渲染类型（text/dict/file/img 等）
@@ -230,13 +204,7 @@ export type SDependencyProps<T = Record<string, any>> = Omit<`
 
 **ItemType** — 详情项渲染类型 - `'text'` — 纯文本 - `'dict'` — 字典映射，自动从 globalDict 转换 - `'file'` — 文件列表展示 - `'img'` — 图片展示 - `'rangeTime'` — 时间范围 - `'checkbox'` — 多选值展示 - `'empty'` — 空占位 - `'placeholder'` — 占位符: `(typeof ItemTypes)[number]`
 
-**SDetailItemType** — SDetail 单个详情项配置 ```tsx const items: SDetailItem[] = [ { label: '姓名', name: 'name' }, { label: '状态', name: 'status', type: 'dict', dictKey: 'userStatus' }, { label: '附件', name: 'files', type: 'file' }, { label: '自定义', render: (val, data) => <Tag>{val}</Tag> }, ]; ```: `DetailItemType & {
-  /** 详情项标签 */
-  label?: ReactNode;
-  /** 数据源中的字段名，支持嵌套 ['a', 'b'] */
-  name?: string | string[];
-  /** 自定义渲染 */
-  render?: (value?: any, dataSource?: any) => ReactNode`
+**SDetailItemType** — SDetail 单个详情项配置 ```tsx const items: SDetailItem[] = [ { label: '姓名', name: 'name' }, { label: '状态', name: 'status', type: 'dict', dictKey: 'userStatus' }, { label: '附件', name: 'files', type: 'file' }, { label: '自定义', render: (val, data) => <Tag>{val}</Tag> }, ]; ```: `DetailItemType & { label?: ReactNode; name?: string | string[]; render?: (value?: any, dataSource?: any) => ReactNode`
 
 **DetailItemType**
   - type?: ItemType — 渲染类型
@@ -268,12 +236,7 @@ export type SDependencyProps<T = Record<string, any>> = Omit<`
 ### SFile
 > 文件上传/列表
 
-**FileListProps**: `Omit<FileItemType, 'fileData'> & {
-  label?: string;
-  fileList: any[];
-  style?: React.CSSProperties;
-  direction?: directionType;
-  itemRender?: (data: FileDataType[]) => ReactNode | null`
+**FileListProps**: `Omit<FileItemType, 'fileData'> & { label?: string; fileList: any[]; style?: React.CSSProperties; direction?: directionType; itemRender?: (data: FileDataType[]) => ReactNode | null`
 
 **ReflectFile**
   - fileName: string
