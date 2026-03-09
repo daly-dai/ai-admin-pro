@@ -24,48 +24,86 @@ AI **必须** 按以下顺序读取配置文件：
 ### 第四步：模板参考（按需）
 8. `.ai/templates/*.md` - 根据任务选择对应模板
 
+### 第五步：验证检查（代码生成后）
+9. `.ai/validation/checklist.md` - 验证清单
+10. `.ai/validation/prompt-template.md` - 验证提示词模板
+
 ## 📁 目录结构
 
 ```
 .ai/
 ├── README.md              # 本文件 - 总览和导航
-├── core/                  #心规范（AI必须遵循）
-│   ├── architecture.md     #架规范规范
+├── core/                  # 核心规范（AI必须遵循）
+│   ├── architecture.md    # 架构规范
 │   ├── coding-standards.md # 代码规范
-│  └── tech-stack.md      #技术栈定义
-├── conventions/            #📋约规范（开发指导）
-│   ├── api-conventions.md  # API约定
-│  └── incremental-development.md #开发规范
-├── templates/             #模板（代码生成）
-│   ├── api-module.md       # API模块模板
-│   ├── crud-page.md        # CRUD页面模板
-│   ├── detail-page.md      # 详情页面模板
-│   ├── form-designer.md    #表单设计器模板
-│   ├── custom-hook.md      # 自定义Hook模板
+│   └── tech-stack.md      # 技术栈定义
+├── conventions/           # 约定规范（开发指导）
+│   ├── api-conventions.md # API约定
+│   └── incremental-development.md # 增量开发规范
+├── templates/             # 模板（代码生成）
+│   ├── api-module.md      # API模块模板
+│   ├── crud-page.md       # CRUD页面模板
+│   ├── detail-page.md     # 详情页面模板
+│   ├── form-designer.md   # 表单设计器模板
+│   ├── custom-hook.md     # 自定义Hook模板
 │   ├── data-visualization.md # 数据可视化模板
-│  └── workflow-page.md    #工作流页面模板
+│   └── workflow-page.md   # 工作流页面模板
+├── validation/            # 验证体系（NEW）
+│   ├── checklist.md       # 验证清单
+│   ├── rules.json         # 验证规则
+│   ├── prompt-template.md # 验证提示词模板
+│   └── validator.ts       # 验证器脚本
 └── tools/                 # 工具脚本
-    └── update-context.js   # 上下文更新工具
+    ├── update-context.js  # 上下文更新工具
+    └── sync-sdesign-docs.js # 组件库文档同步
 ```
 
-##🚀快速开始
+## 🚀 快速开始
 
 ### 1. 新项目初始化
 ```bash
-#将 .ai目录复制到新项目根目录
-# AI会自动读取所有配置文件
+# 将 .ai 目录复制到新项目根目录
+# AI 会自动读取所有配置文件
 ```
 
-### 2. 日常开发流程
-1. **需求分析**:明确要实现的功能
-2. **模板选择**: 根据需求选择合适的模板
-3. **参数配置**:接口定义和业务需求
-4. **AI生成**:让生成I生成代码
-5. **代码审查**: 人工审查和调整
+### 2. 日常开发流程（AI 驱动）
 
-### 3.开发
+```mermaid
+graph LR
+    A[需求分析] --> B[选择模板]
+    B --> C[AI 生成代码]
+    C --> D[AI 自检验证]
+    D -->|通过| E[人工审查]
+    D -->|不通过| C
+    E --> F[提交代码]
+```
+
+1. **需求分析**: 明确要实现的功能
+2. **模板选择**: 根据需求选择合适的模板
+3. **参数配置**: 接口定义和业务需求
+4. **AI 生成**: 让 AI 生成代码
+5. **AI 验证**: ⚠️ **关键步骤** - 使用验证清单进行自检
+6. **代码审查**: 人工审查和调整
+
+### 3. AI 验证命令
+
 ```bash
-#每次新增功能后更新项目上下文
+# 方式 1: 使用验证脚本
+npx tsx .ai/validation/validator.ts <type> <file-path> [module-name]
+
+# 示例: 验证 API 模块
+npx tsx .ai/validation/validator.ts api-module src/api/user/index.ts user
+
+# 示例: 验证列表页面
+npx tsx .ai/validation/validator.ts list-page src/pages/user/index.tsx user
+
+# 方式 2: 使用 AI 提示词验证
+# 在 AI 生成代码后，发送验证提示词进行自检
+```
+
+### 4. 更新上下文
+```bash
+# 每次新增功能后更新项目上下文
 pnpm update-context
 ```
 

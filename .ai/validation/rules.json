@@ -1,0 +1,246 @@
+{
+  "$schema": "./schema.json",
+  "version": "1.0.0",
+  "validations": {
+    "api-module": {
+      "goals": [
+        {
+          "id": "api-goal-1",
+          "name": "接口完整性",
+          "description": "所有定义的接口都必须在 API 模块中实现",
+          "check": "interface_completeness",
+          "severity": "error"
+        },
+        {
+          "id": "api-goal-2",
+          "name": "类型完整性",
+          "description": "所有类型定义必须完整，不允许使用 any",
+          "check": "type_completeness",
+          "severity": "error"
+        }
+      ],
+      "standards": [
+        {
+          "id": "api-std-1",
+          "name": "文件结构",
+          "description": "API 模块必须包含 types.ts 和 index.ts",
+          "check": "file_structure",
+          "pattern": "src/api/{module}/{types.ts,index.ts}",
+          "severity": "error"
+        },
+        {
+          "id": "api-std-2",
+          "name": "命名规范",
+          "description": "API 对象必须命名为 {module}Api",
+          "check": "naming_convention",
+          "pattern": "export const {module}Api",
+          "severity": "error"
+        },
+        {
+          "id": "api-std-3",
+          "name": "请求封装",
+          "description": "必须使用 request 实例发送请求",
+          "check": "import_usage",
+          "pattern": "request\\.(get|post|put|delete)",
+          "severity": "error"
+        },
+        {
+          "id": "api-std-4",
+          "name": "JSDoc 注释",
+          "description": "所有接口方法必须添加 JSDoc 注释",
+          "check": "jsdoc_presence",
+          "pattern": "/\\*\\*[\\s\\S]*?\\*/\\s*(getList|getById|create|update|delete)",
+          "severity": "warning"
+        }
+      ],
+      "dependencies": [
+        {
+          "id": "api-dep-1",
+          "name": "request 导入",
+          "description": "必须正确导入 request 实例",
+          "check": "import_check",
+          "module": "@/plugins/request",
+          "severity": "error"
+        }
+      ]
+    },
+    "list-page": {
+      "goals": [
+        {
+          "id": "list-goal-1",
+          "name": "数据展示",
+          "description": "页面必须能够正确展示数据列表",
+          "check": "data_display",
+          "severity": "error"
+        },
+        {
+          "id": "list-goal-2",
+          "name": "分页功能",
+          "description": "必须支持分页功能",
+          "check": "pagination_support",
+          "severity": "error"
+        },
+        {
+          "id": "list-goal-3",
+          "name": "搜索功能",
+          "description": "必须支持搜索过滤",
+          "check": "search_support",
+          "severity": "warning"
+        },
+        {
+          "id": "list-goal-4",
+          "name": "操作入口",
+          "description": "必须有新增/编辑/删除操作入口",
+          "check": "action_buttons",
+          "severity": "warning"
+        }
+      ],
+      "standards": [
+        {
+          "id": "list-std-1",
+          "name": "组件使用",
+          "description": "必须使用 SSearchTable 或 STable + SForm.Search",
+          "check": "component_usage",
+          "allowed": ["SSearchTable", "STable", "SForm.Search"],
+          "severity": "error"
+        },
+        {
+          "id": "list-std-2",
+          "name": "Hook 使用",
+          "description": "必须使用 useSearchTable 管理状态",
+          "check": "hook_usage",
+          "pattern": "useSearchTable",
+          "severity": "warning"
+        },
+        {
+          "id": "list-std-3",
+          "name": "按钮组件",
+          "description": "操作按钮必须使用 SButton",
+          "check": "component_usage",
+          "pattern": "SButton",
+          "severity": "warning"
+        }
+      ],
+      "dataflow": [
+        {
+          "id": "list-flow-1",
+          "name": "API 调用",
+          "description": "必须使用 {module}Api.getList 获取数据",
+          "check": "api_call",
+          "pattern": "{module}Api\\.getList",
+          "severity": "error"
+        },
+        {
+          "id": "list-flow-2",
+          "name": "错误处理",
+          "description": "必须有错误处理逻辑",
+          "check": "error_handling",
+          "pattern": "catch|onError|error",
+          "severity": "warning"
+        }
+      ]
+    },
+    "form-page": {
+      "goals": [
+        {
+          "id": "form-goal-1",
+          "name": "表单提交",
+          "description": "表单必须能够正确提交数据",
+          "check": "form_submit",
+          "severity": "error"
+        },
+        {
+          "id": "form-goal-2",
+          "name": "表单验证",
+          "description": "必须支持表单验证",
+          "check": "form_validation",
+          "severity": "error"
+        },
+        {
+          "id": "form-goal-3",
+          "name": "初始值回填",
+          "description": "编辑场景必须支持初始值回填",
+          "check": "initial_values",
+          "severity": "warning"
+        }
+      ],
+      "standards": [
+        {
+          "id": "form-std-1",
+          "name": "组件使用",
+          "description": "必须使用 SForm 组件",
+          "check": "component_usage",
+          "allowed": ["SForm"],
+          "severity": "error"
+        },
+        {
+          "id": "form-std-2",
+          "name": "items 配置",
+          "description": "必须配置 items 属性",
+          "check": "prop_check",
+          "prop": "items",
+          "severity": "error"
+        },
+        {
+          "id": "form-std-3",
+          "name": "布局配置",
+          "description": "必须使用 columns 控制布局",
+          "check": "prop_check",
+          "prop": "columns",
+          "severity": "warning"
+        }
+      ],
+      "dataflow": [
+        {
+          "id": "form-flow-1",
+          "name": "创建 API",
+          "description": "创建必须调用 {module}Api.create",
+          "check": "api_call",
+          "pattern": "{module}Api\\.create",
+          "scenario": "create",
+          "severity": "error"
+        },
+        {
+          "id": "form-flow-2",
+          "name": "更新 API",
+          "description": "编辑必须调用 {module}Api.update",
+          "check": "api_call",
+          "pattern": "{module}Api\\.update",
+          "scenario": "edit",
+          "severity": "error"
+        }
+      ]
+    },
+    "detail-page": {
+      "goals": [
+        {
+          "id": "detail-goal-1",
+          "name": "数据展示",
+          "description": "必须正确展示详情数据",
+          "check": "data_display",
+          "severity": "error"
+        }
+      ],
+      "standards": [
+        {
+          "id": "detail-std-1",
+          "name": "组件使用",
+          "description": "必须使用 SDetail 组件",
+          "check": "component_usage",
+          "allowed": ["SDetail"],
+          "severity": "error"
+        }
+      ],
+      "dataflow": [
+        {
+          "id": "detail-flow-1",
+          "name": "API 调用",
+          "description": "必须调用 {module}Api.getById 获取数据",
+          "check": "api_call",
+          "pattern": "{module}Api\\.getById",
+          "severity": "error"
+        }
+      ]
+    }
+  }
+}
