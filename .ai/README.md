@@ -24,9 +24,12 @@ AI **必须** 按以下顺序读取配置文件：
 ### 第四步：模板参考（按需）
 8. `.ai/templates/*.md` - 根据任务选择对应模板
 
-### 第五步：验证检查（代码生成后）
-9. `.ai/validation/checklist.md` - 验证清单
-10. `.ai/validation/prompt-template.md` - 验证提示词模板
+### 第五步：自我修正（代码生成后）
+9. `.ai/self-correction/*.md` - 自我修正规则
+
+### 第六步：验证检查（可选）
+10. `.ai/validation/checklist.md` - 验证清单
+11. `.ai/validation/prompt-template.md` - 验证提示词模板
 
 ## 📁 目录结构
 
@@ -48,7 +51,12 @@ AI **必须** 按以下顺序读取配置文件：
 │   ├── custom-hook.md     # 自定义Hook模板
 │   ├── data-visualization.md # 数据可视化模板
 │   └── workflow-page.md   # 工作流页面模板
-├── validation/            # 验证体系（NEW）
+├── self-correction/       # 自我修正规则（NEW）
+│   ├── api-module.md      # API模块修正
+│   ├── list-page.md       # 列表页修正
+│   ├── form-page.md       # 表单页修正
+│   └── detail-page.md     # 详情页修正
+├── validation/            # 验证体系
 │   ├── checklist.md       # 验证清单
 │   ├── rules.json         # 验证规则
 │   ├── prompt-template.md # 验证提示词模板
@@ -72,9 +80,8 @@ AI **必须** 按以下顺序读取配置文件：
 graph LR
     A[需求分析] --> B[选择模板]
     B --> C[AI 生成代码]
-    C --> D[AI 自检验证]
-    D -->|通过| E[人工审查]
-    D -->|不通过| C
+    C --> D[AI 自我修正]
+    D --> E[人工审查]
     E --> F[提交代码]
 ```
 
@@ -82,10 +89,37 @@ graph LR
 2. **模板选择**: 根据需求选择合适的模板
 3. **参数配置**: 接口定义和业务需求
 4. **AI 生成**: 让 AI 生成代码
-5. **AI 验证**: ⚠️ **关键步骤** - 使用验证清单进行自检
+5. **AI 自我修正**: ⚠️ **关键步骤** - 按照 `.ai/self-correction/` 规则自动修正
 6. **代码审查**: 人工审查和调整
 
-### 3. AI 验证命令
+### 3. AI 自我修正机制
+
+**核心原则**: 生成代码后立即自我修正，直接输出正确代码
+
+```bash
+# AI 生成代码时自动执行以下修正：
+# 1. 检查并修正导入路径
+# 2. 检查并修正组件使用
+# 3. 检查并修正 API 调用
+# 4. 检查并修正命名规范
+# 5. 直接输出修正后的完整代码
+```
+
+**修正规则文件**:
+- `.ai/self-correction/api-module.md` - API 模块修正
+- `.ai/self-correction/list-page.md` - 列表页修正
+- `.ai/self-correction/form-page.md` - 表单页修正
+- `.ai/self-correction/detail-page.md` - 详情页修正
+
+### 4. 更新上下文
+```bash
+# 每次新增功能后更新项目上下文
+pnpm update-context
+```
+
+### 5. 手动验证（可选）
+
+如需手动验证，可使用以下命令：
 
 ```bash
 # 方式 1: 使用验证脚本
@@ -99,12 +133,6 @@ npx tsx .ai/validation/validator.ts list-page src/pages/user/index.tsx user
 
 # 方式 2: 使用 AI 提示词验证
 # 在 AI 生成代码后，发送验证提示词进行自检
-```
-
-### 4. 更新上下文
-```bash
-# 每次新增功能后更新项目上下文
-pnpm update-context
 ```
 
 ## 🎯核心原则

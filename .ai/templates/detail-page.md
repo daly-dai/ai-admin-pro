@@ -72,4 +72,20 @@ const items: SDetailItem[] = [
 />
 ```
 
+## 自我修正规则
+
+生成代码后，AI 必须按照以下规则自动修正，直接输出正确代码：
+
+参考 `.ai/self-correction/detail-page.md`：
+1. 修正组件：使用 `SDetail` + `items` 配置，不使用 `Descriptions`
+2. 修正导入：从 `@dalydb/sdesign` 导入组件
+3. 修正数据：调用 `{module}Api.getById` 获取详情
+4. 修正按钮：使用 `SButton.Group` + `actionType` 预设
+5. 修正布局：使用 `column` 控制列数（通常为 2）
+
+### 输出要求
+- **直接输出修正后的完整代码**
+- **不要输出修正过程说明**
+- **不要输出检查清单**
+
 > 完整 Props 定义和示例请参考: `.ai/core/sdesign-docs.md`

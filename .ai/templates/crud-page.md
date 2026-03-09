@@ -80,4 +80,40 @@ input | inputNumber | password | textarea | select | slider | radio | radioGroup
 />
 ```
 
+## 自我修正规则
+
+生成代码后，AI 必须按照以下规则自动修正，直接输出正确代码：
+
+### API 模块修正
+参考 `.ai/self-correction/api-module.md`：
+1. 修正导入：使用 `@/plugins/request`
+2. 修正命名：API 对象命名为 `{module}Api`
+3. 补全方法：确保包含 getList/getById/create/update/delete
+4. 添加 JSDoc 注释
+
+### 列表页修正
+参考 `.ai/self-correction/list-page.md`：
+1. 修正组件：使用 `SSearchTable` 或 `STable + SForm.Search`
+2. 修正状态：使用 `useSearchTable` hook
+3. 修正 API：调用 `{module}Api.getList`
+4. 修正按钮：使用 `SButton` + `actionType`
+
+### 表单页修正
+参考 `.ai/self-correction/form-page.md`：
+1. 修正组件：使用 `SForm` + `items` 配置
+2. 修正提交：创建调用 `create`，编辑调用 `update`
+3. 修正回填：编辑页调用 `getById` 并 `setFieldsValue`
+4. 修正按钮：使用 `SButton` + `actionType`
+
+### 详情页修正
+参考 `.ai/self-correction/detail-page.md`：
+1. 修正组件：使用 `SDetail` + `items` 配置
+2. 修正数据：调用 `{module}Api.getById`
+3. 修正布局：使用 `column` 控制列数
+
+### 输出要求
+- **直接输出修正后的完整代码**
+- **不要输出修正过程说明**
+- **不要输出检查清单**
+
 > 完整 Props 定义和示例请参考: `.ai/core/sdesign-docs.md`

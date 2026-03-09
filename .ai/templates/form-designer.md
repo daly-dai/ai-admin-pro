@@ -95,5 +95,21 @@ const items: SFormItems[] = [
 }
 ```
 
+## 自我修正规则
+
+生成代码后，AI 必须按照以下规则自动修正，直接输出正确代码：
+
+参考 `.ai/self-correction/form-page.md`：
+1. 修正组件：使用 `SForm` + `items` 配置，不使用 `Form`
+2. 修正导入：从 `@dalydb/sdesign` 导入组件
+3. 修正按钮：使用 `SButton` + `actionType` 预设
+4. 修正布局：使用 `columns` 控制表单项布局
+5. 修正验证：必填项配置 `required`，特殊字段使用 `regKey`
+
+### 输出要求
+- **直接输出修正后的完整代码**
+- **不要输出修正过程说明**
+- **不要输出检查清单**
+
 > 完整 Props 定义和示例请参考: `.ai/core/sdesign-docs.md`
 
