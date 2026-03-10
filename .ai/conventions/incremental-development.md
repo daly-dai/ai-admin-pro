@@ -57,37 +57,82 @@ Read: src/pages/product/index.tsx → 页面结构模式
 
 ## 增量迭代工作流
 
+> ⚠️ 每个场景的 **"前置阅读"步骤不可跳过**。跳过前置阅读直接生成代码是导致组件约束违规的首要原因。
+
 ### 场景 1: 新增 CRUD 模块
 
 ```
-1. 读 AGENTS.md（约定 + 硬约束）
+前置阅读（强制）:
+  - .ai/guides/api-module.md
+  - .ai/guides/crud-page.md
+  - .ai/core/sdesign-docs.md（SSearchTable + SForm + SDetail + SButton 节）
+
+执行步骤:
+1. 读 AGENTS.md（约定 + 硬约束 + 豁免范围）
 2. Glob src/api/*/index.ts → 确认模块名不冲突
 3. Read 一个已有模块（如 src/api/product/）→ 参考真实代码模式
-4. 按需查阅 .ai/guides/crud-page.md
+4. 确认目标文件是否在豁免目录 → 决定使用 antd 还是 sdesign
 5. 生成代码 → pnpm verify → 修复 → 提交
 ```
 
-### 场景 2: 修改已有页面
+### 场景 2: 新增表单页（新增/编辑）
 
 ```
+前置阅读（强制）:
+  - .ai/guides/form-page.md
+  - .ai/core/sdesign-docs.md（SForm 节）
+
+执行步骤:
+1. 确认目标文件路径是否在豁免目录
+2. Read 关联 API（types.ts + index.ts）→ 了解数据结构
+3. 如有已有表单页 → Read 参考其结构
+4. 生成代码 → pnpm verify → 修复 → 提交
+```
+
+### 场景 3: 新增详情页
+
+```
+前置阅读（强制）:
+  - .ai/guides/detail-page.md
+  - .ai/core/sdesign-docs.md（SDetail 节）
+
+执行步骤:
+1. 确认目标文件路径是否在豁免目录
+2. Read 关联 API → 了解数据结构
+3. 生成代码 → pnpm verify → 修复 → 提交
+```
+
+### 场景 4: 修改已有页面
+
+```
+前置阅读（按需）:
+  - 如涉及组件替换 → 查阅对应 sdesign-docs.md 节
+  - 如不确定约束 → 重读 AGENTS.md 硬约束章节
+
+执行步骤:
 1. Read 目标页面代码（如 src/pages/product/index.tsx）
 2. Read 关联 API（如 src/api/product/index.ts + types.ts）
 3. 理解现有逻辑后修改
 4. pnpm verify → 修复 → 提交
 ```
 
-### 场景 3: 新增功能到已有模块
+### 场景 5: 新增功能到已有模块
 
 ```
+前置阅读（按需）:
+  - 如新增页面类型（列表/表单/详情）→ 查阅对应 guide
+
+执行步骤:
 1. Read 目标模块的 API 和页面代码
 2. Grep 确认相关组件/类型的引用关系
 3. 增量修改（添加 API 方法、页面组件、路由等）
 4. pnpm verify → 修复 → 提交
 ```
 
-### 场景 4: 复用已有组件
+### 场景 6: 复用已有组件
 
 ```
+执行步骤:
 1. Glob src/components/business/**/*.tsx → 发现可复用组件
 2. Read 目标组件源码 → 理解 Props 接口
 3. 在新页面中导入使用

@@ -1,5 +1,11 @@
 # 详情页面开发指南
 
+> ⚠️ **前置条件**：在使用本指南生成代码之前，你必须已经完成以下步骤：
+>
+> 1. 阅读 `AGENTS.md` — 确认硬约束和豁免范围
+> 2. 确认目标文件路径**不在**豁免目录中 → 必须使用 `SDetail` 而非 antd `Descriptions`
+> 3. 准备查阅 `.ai/core/sdesign-docs.md` 中 SDetail / SButton 节
+
 ## 核心组件
 
 - **SDetail**：配置式详情展示，通过 `items` 数组定义字段

@@ -1,5 +1,12 @@
 # CRUD 页面开发指南
 
+> ⚠️ **前置条件**：在使用本指南生成代码之前，你必须已经完成以下步骤：
+>
+> 1. 阅读 `AGENTS.md` — 确认硬约束和豁免范围
+> 2. 确认目标文件路径**不在**豁免目录中 → 必须使用 sdesign 组件
+> 3. 阅读 `.ai/guides/api-module.md` — 确保 API 模块已就绪
+> 4. 准备查阅 `.ai/core/sdesign-docs.md` 中 SSearchTable / SButton 节
+
 ## 决策点
 
 - **标准列表** -> `SSearchTable`（一体化方案，首选）

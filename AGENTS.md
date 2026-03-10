@@ -13,14 +13,18 @@
 | antd `Button`       | `SButton`                 | `@dalydb/sdesign` |
 | antd `Descriptions` | `SDetail`                 | `@dalydb/sdesign` |
 
-> 基础设施代码（login、error、layouts、router）不受此限制，可直接使用 antd 组件。
+> **豁免范围（仅限以下目录/文件）**：`src/pages/login/`、`src/pages/error/`、`src/layouts/`、`src/router/`。
+> 这些属于基础设施代码，可直接使用 antd 组件。
+>
+> **不在豁免范围内的**：`src/pages/register/`、`src/components/business/`、`src/pages/` 下所有其他业务页面。
+> 即使功能上与 login 相关（如注册、修改密码），只要文件不在上述豁免目录中，就**必须**使用 sdesign 组件。
 
 ### 导入规则
 
 - 禁止 `import axios` -- 使用 `import { request } from '@/plugins/request'`
 - 禁止 `any` 类型 -- 使用具体类型或泛型
 - 类型导入使用 `import type { ... }`
-- 路径使用 `@/` 别名，禁止 `../../` 相对路径
+- 路径使用 `@/` 或 `src/` 别名，禁止 `../../` 相对路径
 - 状态管理使用 Zustand + immer，禁止 Redux
 
 ### 验证命令
@@ -58,20 +62,45 @@ src/
 ## 开发工作流
 
 ```
-理解需求 → 按需查阅 guides/ → 生成代码 → pnpm verify → 修复 → 重新 verify → 提交
+理解需求 → 场景判定 → 强制预读 → 生成代码 → pnpm verify → 修复 → 重新 verify → 提交
 ```
 
-1. 理解需求意图，判断属于哪种场景（CRUD / 表单 / 详情 / 自定义）
-2. 按需查阅 `.ai/guides/` 下对应指南
-3. 生成代码
-4. 运行 `pnpm verify`
-5. 解析 tsc / eslint / prettier 错误并修复
-6. 重新 `pnpm verify`（最多 3 轮循环）
-7. 提交代码
+### 步骤 1：理解需求意图
 
-## 自我修正协议
+判断属于哪种场景（CRUD / 表单 / 详情 / 自定义），并确认目标文件是否在豁免范围内。
 
-生成代码后 **必须** 执行以下验证循环：
+### 步骤 2：强制预读（不可跳过）
+
+⚠️ **在生成任何代码之前，必须根据场景读取对应文档。跳过此步骤直接生成代码属于流程违规。**
+
+| 场景                | 必须预读的文件                                                            |
+| ------------------- | ------------------------------------------------------------------------- |
+| 新增 API 模块       | `.ai/guides/api-module.md`                                                |
+| CRUD 列表页         | `.ai/guides/crud-page.md` → `.ai/core/sdesign-docs.md`（SSearchTable 节） |
+| 表单页（新增/编辑） | `.ai/guides/form-page.md` → `.ai/core/sdesign-docs.md`（SForm 节）        |
+| 详情页              | `.ai/guides/detail-page.md` → `.ai/core/sdesign-docs.md`（SDetail 节）    |
+| 修改已有页面        | 先 Read 目标文件 + 关联 API，再判断是否需查阅 guide                       |
+| 不确定时            | Read `.ai/core/architecture.md` + `.ai/core/coding-standards.md`          |
+
+### 步骤 3：参考已有模式
+
+新增模块时，先 `Glob src/api/*/index.ts` 和 `Glob src/pages/*/index.tsx`，读取一个已有的同类模块作为参考。
+
+### 步骤 4：组件约束速查
+
+在编写 JSX 之前，逐条对照以下检查清单：
+
+- [ ] 目标文件是否在豁免目录（`login/`、`error/`、`layouts/`、`router/`）？
+- [ ] 如果不在豁免目录：是否使用了 SForm 而非 antd Form？
+- [ ] 如果不在豁免目录：是否使用了 SButton 而非 antd Button？
+- [ ] 如果不在豁免目录：是否使用了 STable/SSearchTable 而非 antd Table？
+- [ ] 导入路径是否使用 `@/` 或 `src/` 别名（禁止 `../../`）？
+
+### 步骤 5：生成代码
+
+### 步骤 6：自我修正协议
+
+生成代码后 **必须** 执行验证循环：
 
 1. 运行 `pnpm verify`
 2. 解析错误输出，按优先级修复：**tsc 错误 > eslint 错误 > prettier 格式**
@@ -100,17 +129,19 @@ src/
 - 服务端状态用 ahooks `useRequest`
 - 客户端状态用 Zustand + immer + persist
 
-## 深入参考（按需查阅，不要预读）
+## 深入参考（场景驱动，强制预读）
 
-| 场景             | 文件                                         |
-| ---------------- | -------------------------------------------- |
-| sdesign 组件 API | `.ai/core/sdesign-docs.md`                   |
-| 架构规范详情     | `.ai/core/architecture.md`                   |
-| 代码规范详情     | `.ai/core/coding-standards.md`               |
-| 技术栈约束       | `.ai/core/tech-stack.md`                     |
-| API 设计约定     | `.ai/conventions/api-conventions.md`         |
-| 增量开发规范     | `.ai/conventions/incremental-development.md` |
-| CRUD 页面指南    | `.ai/guides/crud-page.md`                    |
-| 表单页面指南     | `.ai/guides/form-page.md`                    |
-| 详情页面指南     | `.ai/guides/detail-page.md`                  |
-| API 模块指南     | `.ai/guides/api-module.md`                   |
+> ⚠️ **不是"按需查阅"，而是"场景匹配即必读"**。AI 在步骤 2 中必须根据场景读取对应文档，否则极易遗漏组件约束。
+
+| 场景             | 必读文件                                     | 何时触发                     |
+| ---------------- | -------------------------------------------- | ---------------------------- |
+| sdesign 组件 API | `.ai/core/sdesign-docs.md`                   | 使用任何 S\* 组件时          |
+| 架构规范详情     | `.ai/core/architecture.md`                   | 新增模块/目录时              |
+| 代码规范详情     | `.ai/core/coding-standards.md`               | 首次生成代码时建议通读       |
+| 技术栈约束       | `.ai/core/tech-stack.md`                     | 引入新依赖时                 |
+| API 设计约定     | `.ai/conventions/api-conventions.md`         | 新增 API 模块时              |
+| 增量开发规范     | `.ai/conventions/incremental-development.md` | 修改已有模块时               |
+| CRUD 页面指南    | `.ai/guides/crud-page.md`                    | 生成列表页时 **（强制）**    |
+| 表单页面指南     | `.ai/guides/form-page.md`                    | 生成表单页时 **（强制）**    |
+| 详情页面指南     | `.ai/guides/detail-page.md`                  | 生成详情页时 **（强制）**    |
+| API 模块指南     | `.ai/guides/api-module.md`                   | 新增 API 模块时 **（强制）** |
