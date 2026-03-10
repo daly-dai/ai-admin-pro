@@ -1,406 +1,156 @@
 # 增量开发规范
 
-> 如何让AI低成本理解现有代码，支持持续迭代开发
+> 约定驱动 + 工具原生发现 + 硬约束兜底，让 AI 低成本理解现有代码并安全迭代
 
 ## 核心原则
 
-1. **代码即文档** - 通过规范化的代码结构自解释
-2. **上下文沉淀** - 将项目信息沉淀在 `.ai/context/` 目录
-3. **约定优于配置** - 遵循固定模式，AI可预测代码结构
+1. **约定即可预测** — 固定的目录/命名模式让 AI 无需预读清单即可推断代码位置
+2. **搜索即上下文** — 用 Glob/Grep 动态发现真实代码，替代静态快照文件
+3. **验证即安全网** — `pnpm verify` 机械化拦截所有违规，AI 根据错误信息自修复
 
-## 上下文管理
+## 动态发现策略
 
-### 1. 已有API清单
+不维护静态清单，AI 通过工具搜索获取实时上下文：
 
-文件: `.ai/context/existing-apis.md`
+### 发现已有模块
 
-```markdown
-# 已有API清单
+```bash
+# 已有 API 模块
+Glob: src/api/*/index.ts
 
-## [模块A] (api/[moduleA]/)
+# 已有页面
+Glob: src/pages/*/index.tsx
 
-- getList - 获取[实体A]列表
-- getById - 获取[实体A]详情
-- create - 创建[实体A]
-- update - 更新[实体A]
-- delete - 删除[实体A]
+# 已有业务组件
+Glob: src/components/business/**/*.tsx
 
-## [模块B] (api/[moduleB]/)
-
-- getList - 获取[实体B]列表
-- getById - 获取[实体B]详情
-- create - 创建[实体B]
-- update - 更新[实体B]
-- delete - 删除[实体B]
-- [customMethod] - [自定义操作]
+# 已有 Store
+Glob: src/stores/*.ts
 ```
 
-### 2. 已有组件清单
+### 发现具体实现
 
-文件: `.ai/context/existing-components.md`
+```bash
+# 查找某个类型定义
+Grep: "export interface Product"
 
-```markdown
-# 已有组件清单
+# 查找某个 API 导出
+Grep: "export const productApi"
 
-## 业务组件 (components/business/)
+# 查找某个组件的用法
+Grep: "import.*ProductForm"
 
-- [EntityA]Card - [实体A]卡片
-- [EntityB]List - [实体B]列表
-- [Feature]Selector - [功能]选择器
-
-## 通用组件 (components/common/)
-
-- SSearchTable - 搜索表格一体化组件
-- SForm - 配置式表单组件
-- SDetail - 分组详情展示组件
-- SButton - 按钮组件
+# 查找路由配置
+Grep: "path:.*'/product'"  → src/router/
 ```
 
-### 3. 已有页面清单
+### 参考已有模式
 
-文件: `.ai/context/existing-pages.md`
+新增模块时，读取一个已有的同类模块作为参考：
 
-```markdown
-# 已有页面清单
-
-- /dashboard - 首页
-- /[moduleA] - [模块A]管理
-- /[moduleA]/:id - [模块A]详情
-- /[moduleB] - [模块B]管理
-- /[moduleC] - [模块C]管理
+```bash
+# 要新增 order 模块？先看 product 模块怎么写的
+Read: src/api/product/types.ts    → 类型定义模式
+Read: src/api/product/index.ts    → API 实现模式
+Read: src/pages/product/index.tsx → 页面结构模式
 ```
 
-## 代码组织模式
+## 增量迭代工作流
 
-### 模式1: 按功能模块组织
+### 场景 1: 新增 CRUD 模块
+
+```
+1. 读 AGENTS.md（约定 + 硬约束）
+2. Glob src/api/*/index.ts → 确认模块名不冲突
+3. Read 一个已有模块（如 src/api/product/）→ 参考真实代码模式
+4. 按需查阅 .ai/guides/crud-page.md
+5. 生成代码 → pnpm verify → 修复 → 提交
+```
+
+### 场景 2: 修改已有页面
+
+```
+1. Read 目标页面代码（如 src/pages/product/index.tsx）
+2. Read 关联 API（如 src/api/product/index.ts + types.ts）
+3. 理解现有逻辑后修改
+4. pnpm verify → 修复 → 提交
+```
+
+### 场景 3: 新增功能到已有模块
+
+```
+1. Read 目标模块的 API 和页面代码
+2. Grep 确认相关组件/类型的引用关系
+3. 增量修改（添加 API 方法、页面组件、路由等）
+4. pnpm verify → 修复 → 提交
+```
+
+### 场景 4: 复用已有组件
+
+```
+1. Glob src/components/business/**/*.tsx → 发现可复用组件
+2. Read 目标组件源码 → 理解 Props 接口
+3. 在新页面中导入使用
+4. pnpm verify → 修复 → 提交
+```
+
+## 代码组织约定
+
+### 模块目录结构
+
+同一业务模块的代码在同一目录树下，AI 可通过模块名直接定位：
 
 ```
 src/
-├── api/
-│   └── user/               # 用户模块API
-│       ├── index.ts        # API实现
-│       └── types.ts        # 类型定义
-├── pages/
-│   └── user/               # 用户模块页面
-│       ├── index.tsx       # 列表页
-│       ├── detail.tsx      # 详情页
-│       └── components/     # 模块私有组件
-│           ├── UserForm.tsx
-│           └── UserCard.tsx
-└── stores/
-    └── user.ts             # 用户模块状态
+├── api/order/          # API 层
+│   ├── types.ts        # 类型定义（Order, OrderQuery, OrderFormData）
+│   └── index.ts        # API 实现（orderApi.getList/getById/create/update/delete）
+├── pages/order/        # 页面层
+│   ├── index.tsx       # 列表页（入口）
+│   └── components/     # 页面私有组件
+│       ├── OrderForm.tsx
+│       └── OrderDetail.tsx
+└── stores/order.ts     # 状态层（仅需跨页面共享时创建）
 ```
 
-**AI理解**: 同一模块的代码在同一目录树下
+### 组件复用层级
 
-### 模式2: 组件复用层级
+组件位置决定复用范围：
 
 ```
 components/
-├── common/                 # 全局通用（跨项目可复用）
-│   ├── SSearchTable/
-│   ├── SForm/
-│   └── SDetail/
-├── business/               # 业务通用（本项目复用）
-│   ├── UserCard/
-│   └── OrderList/
-└── [page]/                 # 页面私有（仅当前页面）
-    └── components/
+├── common/             # 跨项目可复用（通用 UI）
+├── business/           # 本项目内复用（业务组件）
+└── pages/[page]/components/  # 仅当前页面使用
 ```
 
-**AI理解**: 组件位置决定复用范围
+### 类型定义策略
 
-### 模式3: 类型定义策略
+类型在哪里使用，就在哪里定义：
 
 ```typescript
-// 1. API类型 - 跟随API模块
-// api/user/types.ts
-export interface User {}
-export interface UserQuery {}
+// API 类型 → api/[module]/types.ts
+export interface Order { ... }
+export interface OrderQuery { ... }
 
-// 2. 组件Props类型 - 跟随组件
-// components/business/UserCard/index.tsx
-interface UserCardProps {}
+// 组件 Props → 组件文件内
+interface OrderFormProps { ... }
 
-// 3. 全局类型 - 放在types/
-// types/index.ts
-export interface PageData<T> {}
+// 全局类型 → types/index.ts
+export interface PageData<T> { ... }
 ```
 
-**AI理解**: 类型在哪里使用，就在哪里定义
-
-## AI对话最佳实践
-
-### 场景1: 新增CRUD页面
-
-**用户输入模板**:
-
-```
-我需要新增一个[模块名称]管理页面，接口定义如下：
-
-模块: [module]
-基础路径: /api/[module]
-
-接口:
-1. GET /api/[module] - 获取列表
-   参数: [param1], [param2], ...
-   响应: { list: [Entity][], total: number }
-
-2. GET /api/[module]/:id - 获取详情
-   响应: [Entity]
-
-3. POST /api/[module] - 创建
-   参数: [field1], [field2], ...
-   响应: [Entity]
-
-4. PUT /api/[module]/:id - 更新
-   参数: [field1], [field2], ...
-   响应: [Entity]
-
-5. DELETE /api/[module]/:id - 删除
-
-类型:
-[Entity] {
-  id: string
-  [field1]: [type1]
-  [field2]: [type2]
-  status: '[status1]' | '[status2]'
-  createTime: string
-}
-
-请生成完整的代码，包括：
-1. API类型定义
-2. API实现
-3. 列表页面
-4. 表单组件
-```
-
-**AI应该**:
-
-1. 读取 `.ai/core/architecture.md` 了解技术栈
-2. 读取 `.ai/core/coding-standards.md` 了解代码规范
-3. 读取 `.ai/conventions/api-conventions.md` 了解API约定
-4. 检查 `.ai/context/existing-apis.md` 避免命名冲突
-5. 生成符合规范的代码
-
-### 场景2: 在现有页面添加功能
-
-**用户输入模板**:
-
-```
-在[模块]管理页面添加[功能]功能，接口是：
-[METHOD] /api/[module]/[action]
-参数: { [param]: [type] }
-响应: [ReturnType]
-```
-
-**AI应该**:
-
-1. 读取现有[模块]页面代码
-2. 在工具栏添加[功能]按钮
-3. 实现[功能]逻辑
-4. 保持原有代码风格
-
-### 场景3: 复用现有组件
-
-**用户输入模板**:
-
-```
-新增一个[功能]组件，使用项目中已有的 [ExistingComponent] 组件
-```
-
-**AI应该**:
-
-1. 读取 `.ai/context/existing-components.md`
-2. 找到 [ExistingComponent] 组件位置
-3. 导入并复用 [ExistingComponent]
-4. 创建 [NewComponent] 组件
-
-## 代码演进策略
-
-### 1. 从简单到复杂
-
-```typescript
-// 阶段1: 简单实现
-const [Module]Page: React.FC = () => {
-  const [list, setList] = useState<[Entity][]>([]);
-  useEffect(() => { fetch[Entity]s().then(setList); }, []);
-  return <Table dataSource={list} />;
-};
-
-// 阶段2: 添加搜索
-const [Module]Page: React.FC = () => {
-  const [keyword, setKeyword] = useState('');
-  const { data } = useRequest(() => fetch[Entity]s({ keyword }));
-  return (
-    <>
-      <Input.Search onSearch={setKeyword} />
-      <Table dataSource={data?.list} />
-    </>
-  );
-};
-
-// 阶段3: 使用 SSearchTable 或 STable + useSearchTable
-const [Module]Page: React.FC = () => {
-  const { tableProps, formConfig, form } = useSearchTable(fetch[Entity]s, {
-    paginationFields: {
-      current: 'page',
-      pageSize: 'pageSize',
-      total: 'total',
-      list: 'list',
-    },
-  });
-
-  const searchItems = [
-    { type: 'input', label: '[搜索标签]', name: '[searchField]' },
-  ];
-
-  return (
-    <>
-      <SForm.Search form={form} items={searchItems} {...formConfig} />
-      <STable isSeq columns={columns} {...tableProps} />
-    </>
-  );
-};
-```
-
-### 2. 提取公共逻辑
-
-```typescript
-// 提取前: 每个页面都写
-const [loading, setLoading] = useState(false);
-const fetchData = async () => {
-  setLoading(true);
-  const data = await api.getList();
-  setList(data);
-  setLoading(false);
-};
-
-// 提取后: 使用 useRequest
-const { data, loading } = useRequest(api.getList);
-```
-
-### 3. 组件抽象
-
-```typescript
-// 抽象前: 每个页面自定义
-// pages/[moduleA]/index.tsx
-<Table columns={[moduleA]Columns} />
-
-// pages/[moduleB]/index.tsx
-<Table columns={[moduleB]Columns} />
-
-// 抽象后: 使用 @dalydb/sdesign 组件库
-// 列表页统一使用 SSearchTable 或 STable + useSearchTable
-const { tableProps, formConfig, form } = useSearchTable(api.getList, {
-  paginationFields: {
-    current: 'page',
-    pageSize: 'pageSize',
-    total: 'total',
-    list: 'list',
-  },
-});
-
-const searchItems = [
-  { type: 'input', label: '[搜索标签]', name: '[searchField]' },
-];
-
-<>
-  <SForm.Search form={form} items={searchItems} {...formConfig} />
-  <STable isSeq columns={columns} {...tableProps} />
-</>
-```
-
-## 代码审查清单
-
-### AI生成代码自检
-
-- [ ] 是否遵循了架构规范
-- [ ] 是否使用了正确的路径别名
-- [ ] 类型定义是否完整
-- [ ] 是否使用了ahooks的useRequest
-- [ ] 错误处理是否完善
-- [ ] 是否遵循了代码规范
-
-### 人工审查要点
-
-- [ ] 业务逻辑是否正确
-- [ ] 边界情况是否处理
-- [ ] 性能是否有问题
-- [ ] 是否可测试
-- [ ] 是否可维护
-
-## 持续优化
-
-### 1. 定期更新上下文
-
-```bash
-# 更新API清单
-node scripts/update-context.js
-
-# 或手动更新
-# .ai/context/existing-apis.md
-```
-
-### 2. 沉淀最佳实践
-
-```markdown
-# .ai/best-practices.md
-
-## 已验证的最佳实践
-
-### 1. 表单处理
-
-使用 SForm 配置式表单比手写 Form 效率更高
-
-### 2. 表格处理
-
-使用 SSearchTable 的 searchForm、table 和 requestFn 属性自动处理搜索、表格和分页
-
-### 3. 状态管理
-
-服务端状态用 useRequest，客户端状态用 Zustand
-
-### 4. 组件库选择
-
-优先使用 @dalydb/sdesign 组件库，Ant Design 作为辅助
-```
-
-### 3. 更新规则文件
-
-根据实际开发经验，不断完善:
-
-- `.ai/architecture.md`
-- `.ai/coding-standards.md`
-- `.ai/api-conventions.md`
-
-## 团队协作
-
-### 1. 代码评审
-
-```markdown
-## 评审意见模板
-
-### 问题
-
-[描述问题]
-
-### 建议
-
-[给出建议]
-
-### 参考
-
-[参考链接或代码示例]
-```
-
-### 2. 知识分享
-
-```markdown
-# .ai/lessons-learned.md
-
-## 2024-01-15
-
-问题: ProTable 的 request 返回格式不正确导致分页失效
-解决: 确保返回 { data: [], total: 0, success: true }
-```
+## 硬约束保障
+
+增量开发中，以下错误由工具链自动拦截，无需人工检查：
+
+| 错误类型                   | 拦截工具   | 时机                   |
+| -------------------------- | ---------- | ---------------------- |
+| 导入不存在的模块           | `tsc`      | commit / push / verify |
+| 使用 `any` 类型            | `eslint`   | commit / verify        |
+| 直接 `import axios`        | `eslint`   | commit / verify        |
+| 业务页面使用 antd 原生组件 | `eslint`   | commit / verify        |
+| 类型不匹配                 | `tsc`      | push / verify          |
+| 代码格式不一致             | `prettier` | commit / verify        |
+
+**自修复循环**：生成代码 → `pnpm verify` → 解析错误 → 修复 → 再次 verify（最多 3 轮）
