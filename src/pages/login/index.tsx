@@ -5,6 +5,8 @@ import { Button, Card, Checkbox, Form, Input, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from 'src/stores';
 
+import type { User } from '@/types';
+
 interface LoginForm {
   username: string;
   password: string;
@@ -13,7 +15,7 @@ interface LoginForm {
 
 // Mock登录API
 const loginApi = (data: { username: string; password: string }) => {
-  return new Promise<{ user: any; token: string }>((resolve) => {
+  return new Promise<{ user: User; token: string }>((resolve) => {
     setTimeout(() => {
       resolve({
         user: {
@@ -22,6 +24,8 @@ const loginApi = (data: { username: string; password: string }) => {
           nickname: '管理员',
           email: 'admin@example.com',
           avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
+          status: 'active',
+          createTime: new Date().toISOString(),
         },
         token: 'mock-token-12345',
       });

@@ -6,16 +6,27 @@
   "scripts": {
     "build": "rsbuild build",
     "dev": "rsbuild dev",
-    "lint": "eslint . --ext .ts,.tsx",
-    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "postinstall": "pnpm sync-ai-docs",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
     "mock": "json-server --watch mock/db.json --routes mock/routes.json --port 3001",
+    "prepare": "husky",
     "prettier": "prettier -c --write . --cache",
     "prettier-import-sort": "npm run prettier -- --plugin=@ianvs/prettier-plugin-sort-imports",
     "preview": "rsbuild preview",
-    "type-check": "tsc --noEmit",
-    "update-context": "node .ai/tools/update-context.js",
     "sync-ai-docs": "node .ai/tools/sync-sdesign-docs.js",
-    "postinstall": "pnpm sync-ai-docs"
+    "type-check": "tsc --noEmit",
+    "verify": "tsc --noEmit && eslint src/ && prettier --check src/",
+    "verify:fix": "eslint src/ --fix && prettier --write src/"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
@@ -35,6 +46,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "@rsbuild/core": "^1.7.0",
     "@rsbuild/plugin-react": "^1.3.0",
@@ -48,11 +60,14 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "glob": "^13.0.6",
+    "husky": "^9.1.7",
     "json-server": "^0.17.4",
+    "lint-staged": "^16.3.3",
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-packagejson": "^3.0.0",
-    "typescript": "^5.5.0"
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.57.0"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -63,18 +78,7 @@
     ]
   },
   "ai": {
-    "description": "AI Frontend 开发体系 - 配置驱动开发",
-    "configRoot": ".ai",
-    "priority": [
-      ".ai/README.md",
-      ".ai/core/tech-stack.md",
-      ".ai/core/architecture.md",
-      ".ai/core/coding-standards.md"
-    ],
-    "templates": ".ai/templates",
-    "componentLibrary": {
-      "name": "@dalydb/sdesign",
-      "aiDocs": ".ai/core/sdesign-docs.md"
-    }
+    "description": "AI Frontend - Harness Engineering 驱动开发",
+    "entry": "AGENTS.md"
   }
 }

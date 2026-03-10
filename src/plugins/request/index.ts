@@ -1,5 +1,6 @@
 import { message } from 'antd';
-import axios, {
+import axios from 'axios';
+import type {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
@@ -31,14 +32,14 @@ instance.interceptors.request.use(
   },
 );
 
-// 响应拦截器
+// 响应拦截器 - 解包 ApiResponse，直接返回业务数据
 instance.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => {
     const { data } = response;
 
-    // 业务成功
+    // 业务成功：返回内层 data，request 方法泛型签名负责最终类型转换
     if (data.success || data.code === 200) {
-      return Promise.resolve(data.data as any);
+      return data.data as unknown as AxiosResponse;
     }
 
     // 业务错误

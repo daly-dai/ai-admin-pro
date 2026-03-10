@@ -1,237 +1,33 @@
-# AI 配置中心
+# .ai/ 配置目录索引
 
-> 🎯 **所有 AI 助手必须首先读取本文件**
-> 
-> 本目录包含项目开发规范、模板和约定，AI 在处理任何任务前必须阅读相关配置。
+> 本目录包含 AI 辅助开发的规范和指南文档。项目入口为根目录的 `AGENTS.md`。
 
-## 🔴 强制读取顺序（所有编辑器通用）
-
-AI **必须** 按以下顺序读取配置文件：
-
-### 第一步：项目基础
-1. `package.json` - 确认技术栈版本和 AI 配置
-2. `.ai/README.md` - 本文件，配置总览
-
-### 第二步：核心规范（必须遵循）
-3. `.ai/core/tech-stack.md` - 技术栈定义和约束
-4. `.ai/core/architecture.md` - 架构规范
-5. `.ai/core/coding-standards.md` - 代码规范
-
-### 第三步：开发约定
-6. `.ai/conventions/api-conventions.md` - API 设计约定
-7. `.ai/conventions/incremental-development.md` - 增量开发规范
-
-### 第四步：模板参考（按需）
-8. `.ai/templates/*.md` - 根据任务选择对应模板
-
-### 第五步：自我修正（代码生成后）
-9. `.ai/self-correction/*.md` - 自我修正规则
-
-### 第六步：验证检查（可选）
-10. `.ai/validation/checklist.md` - 验证清单
-11. `.ai/validation/prompt-template.md` - 验证提示词模板
-
-## 📁 目录结构
+## 目录结构
 
 ```
 .ai/
-├── README.md              # 本文件 - 总览和导航
-├── core/                  # 核心规范（AI必须遵循）
-│   ├── architecture.md    # 架构规范
+├── core/                  # 核心规范（深入参考）
+│   ├── architecture.md    # 架构规范、项目结构
 │   ├── coding-standards.md # 代码规范
-│   └── tech-stack.md      # 技术栈定义
-├── conventions/           # 约定规范（开发指导）
-│   ├── api-conventions.md # API约定
+│   ├── tech-stack.md      # 技术栈定义和约束
+│   └── sdesign-docs.md    # @dalydb/sdesign 组件库 API 文档
+├── conventions/           # 开发约定
+│   ├── api-conventions.md # API 设计约定（YAML 接口定义格式）
 │   └── incremental-development.md # 增量开发规范
-├── templates/             # 模板（代码生成）
-│   ├── api-module.md      # API模块模板
-│   ├── crud-page.md       # CRUD页面模板
-│   ├── detail-page.md     # 详情页面模板
-│   ├── form-designer.md   # 表单设计器模板
-│   ├── custom-hook.md     # 自定义Hook模板
-│   ├── data-visualization.md # 数据可视化模板
-│   └── workflow-page.md   # 工作流页面模板
-├── self-correction/       # 自我修正规则（NEW）
-│   ├── api-module.md      # API模块修正
-│   ├── list-page.md       # 列表页修正
-│   ├── form-page.md       # 表单页修正
-│   └── detail-page.md     # 详情页修正
-├── validation/            # 验证体系
-│   ├── checklist.md       # 验证清单
-│   ├── rules.json         # 验证规则
-│   ├── prompt-template.md # 验证提示词模板
-│   └── validator.ts       # 验证器脚本
+├── guides/                # 开发指南（决策导向，按需查阅）
+│   ├── crud-page.md       # CRUD 页面开发指南
+│   ├── api-module.md      # API 模块开发指南
+│   ├── form-page.md       # 表单页面开发指南
+│   └── detail-page.md     # 详情页面开发指南
 └── tools/                 # 工具脚本
-    ├── update-context.js  # 上下文更新工具
     └── sync-sdesign-docs.js # 组件库文档同步
 ```
 
-## 🚀 快速开始
+## 硬约束验证
 
-### 1. 新项目初始化
-```bash
-# 将 .ai 目录复制到新项目根目录
-# AI 会自动读取所有配置文件
-```
-
-### 2. 日常开发流程（AI 驱动）
-
-```mermaid
-graph LR
-    A[需求分析] --> B[选择模板]
-    B --> C[AI 生成代码]
-    C --> D[AI 自我修正]
-    D --> E[人工审查]
-    E --> F[提交代码]
-```
-
-1. **需求分析**: 明确要实现的功能
-2. **模板选择**: 根据需求选择合适的模板
-3. **参数配置**: 接口定义和业务需求
-4. **AI 生成**: 让 AI 生成代码
-5. **AI 自我修正**: ⚠️ **关键步骤** - 按照 `.ai/self-correction/` 规则自动修正
-6. **代码审查**: 人工审查和调整
-
-### 3. AI 自我修正机制
-
-**核心原则**: 生成代码后立即自我修正，直接输出正确代码
+所有代码规范通过 ESLint + TypeScript + Prettier 机械化强制执行：
 
 ```bash
-# AI 生成代码时自动执行以下修正：
-# 1. 检查并修正导入路径
-# 2. 检查并修正组件使用
-# 3. 检查并修正 API 调用
-# 4. 检查并修正命名规范
-# 5. 直接输出修正后的完整代码
+pnpm verify        # 全量验证（tsc + eslint + prettier）
+pnpm verify:fix    # 自动修复
 ```
-
-**修正规则文件**:
-- `.ai/self-correction/api-module.md` - API 模块修正
-- `.ai/self-correction/list-page.md` - 列表页修正
-- `.ai/self-correction/form-page.md` - 表单页修正
-- `.ai/self-correction/detail-page.md` - 详情页修正
-
-### 4. 更新上下文
-```bash
-# 每次新增功能后更新项目上下文
-pnpm update-context
-```
-
-### 5. 手动验证（可选）
-
-如需手动验证，可使用以下命令：
-
-```bash
-# 方式 1: 使用验证脚本
-npx tsx .ai/validation/validator.ts <type> <file-path> [module-name]
-
-# 示例: 验证 API 模块
-npx tsx .ai/validation/validator.ts api-module src/api/user/index.ts user
-
-# 示例: 验证列表页面
-npx tsx .ai/validation/validator.ts list-page src/pages/user/index.tsx user
-
-# 方式 2: 使用 AI 提示词验证
-# 在 AI 生成代码后，发送验证提示词进行自检
-```
-
-## 🎯核心原则
-
-### 1.配置即代码
-- AI配置是项目的一部分
-- 配置随项目演进而更新
-- 所有规范都有明确的文档
-
-### 2.约定优于配置
-- 固定模式，减少配置
-- AI可预测代码结构
-- 降低沟通成本
-
-### 3.沉淀
-- 开发都在完善AI理解
-- 上下文自动更新
-- 知识持续积累
-
-### 4. 自动化优先
-- 使用脚本自动更新上下文
-- 减手动维护工作
-- 提高一致性
-
-##📚学路径
-
-### 新手入门
-1. [core/architecture.md](core/architecture.md) - 了解项目架构
-2. 阅 [core/coding-standards.md](core/coding-standards.md) -掌代码规范
-3. [core/tech-stack.md](core/tech-stack.md) -技术栈
-4. 实践 [templates/crud-page.md](templates/crud-page.md) - 生成第一个CRUD页面
-
-### 进阶应用
-1. [conventions/api-conventions.md](conventions/api-conventions.md) -掌API设计
-2. [conventions/incremental-development.md](conventions/incremental-development.md) -理解增量开发
-3. 实践 [templates/form-designer.md](templates/form-designer.md) -构建复杂表单
-
-### 专家级别
-1. [templates/](templates/) - 创建新的模板
-2. 优化 [conventions/](conventions/) -改进开发规范
-3.扩 [tools/](tools/) - 开发辅助工具
-
-## 🔧 常用操作速查
-
-| 需求 | 模板/文档 | 输出 |
-|------|----------|------|
-| CRUD页面 | `templates/crud-page.md` | `pages/[module]/*.tsx` |
-| 表单页面 | `templates/form-designer.md` | `components/business/[Form]/` |
-| 详情页面 | `templates/detail-page.md` | `pages/[module]/[id].tsx` |
-| API模块 | `templates/api-module.md` | `api/[module]/*.ts` |
-| 自定义Hook | `templates/custom-hook.md` | `hooks/*.ts` |
-| 数据可视化 | `templates/data-visualization.md` | `pages/[page]/*.tsx` |
-
-### 组件库文档
-- **@dalydb/sdesign**: `.ai/core/sdesign-docs.md`
-
-## 🎯 快速定位
-
-| 关键词 | 首选文件 | 说明 |
-|--------|----------|------|
-| 技术选型 | `core/tech-stack.md` | 技术栈定义 |
-| 代码规范 | `core/coding-standards.md` | TypeScript/React规范 |
-| 架构设计 | `core/architecture.md` | 项目结构/API/状态管理 |
-| API设计 | `conventions/api-conventions.md` | 接口定义规范 |
-| 增量开发 | `conventions/incremental-development.md` | 代码演进策略 |
-
-## 📊 项目状态
-
-### 当前技术栈
-- **核心**: @dalydb/sdesign (配置式组件库) - AI文档: `.ai/core/sdesign-docs.md`
-- **基础**: React 18 + TypeScript + Ant Design 5
-- **状态**: 稳定版本
-
-###规范成熟度
-- ✅ 架构规范 -已完善
-- ✅ 代码规范 - 已完善  
-- ✅ API约定 -已完善
-- ✅模板库 - 8个核心模板
-- ⏳ 最佳实践 - 持续积累中
-
-##🤝贡指南
-
-### 提交规范
-1. **新增模板**: 在 [templates/](templates/)目录创建
-2. **修改规范**: 更新对应的核心文件
-3. **优化工具**: 在 [tools/](tools/) 目录改进
-
-### 评审标准
-- [ ] 是否符合架构规范
-- [ ] 是否提高开发效率
-- [ ] 是否降低维护成本
-- [ ] 是否有充分的文档说明
-
-## 📞支持与反馈
-
-- **问题反馈**: 通过项目issue系统
-- **功能建议**: 提交feature request
-- **文档改进**:直提交PR
-- **最佳实践**: 分享到 [conventions/best-practices.md](conventions/best-practices.md)
-
----
-*让AI成为您最得力的开发助手！*
