@@ -5,7 +5,7 @@
 > 1. 阅读 `AGENTS.md` — 确认硬约束和豁免范围
 > 2. 确认目标文件路径**不在**豁免目录中 → 必须使用 sdesign 组件
 > 3. 阅读 `.ai/guides/api-module.md` — 确保 API 模块已就绪
-> 4. 准备查阅 `.ai/core/sdesign-docs.md` 中 SSearchTable / SButton 节
+> 4. 准备查阅 `.ai/sdesign/components/SSearchTable.md` 和 `.ai/sdesign/components/SButton.md`
 
 ## 决策点
 
@@ -42,4 +42,4 @@ src/pages/{module}/edit.tsx   — 编辑页
 
 ## 完整 API 参考
 
-使用 sdesign 组件时查阅：`.ai/core/sdesign-docs.md`
+使用 sdesign 组件时查阅：`.ai/sdesign/components/` 下对应组件文档

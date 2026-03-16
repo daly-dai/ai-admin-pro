@@ -9,12 +9,12 @@
     "postinstall": "pnpm sync-ai-docs",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
-    "mock": "json-server --watch mock/db.json --routes mock/routes.json --port 3001",
+    "mock": "node mock/server.cjs",
     "prepare": "husky",
     "prettier": "prettier -c --write . --cache",
     "prettier-import-sort": "npm run prettier -- --plugin=@ianvs/prettier-plugin-sort-imports",
     "preview": "rsbuild preview",
-    "sync-ai-docs": "node .ai/tools/sync-sdesign-docs.js",
+    "sync-ai-docs": "tsx .ai/tools/sync-sdesign-docs.ts",
     "type-check": "tsc --noEmit",
     "verify": "tsc --noEmit && eslint src/ && prettier --check src/",
     "verify:fix": "eslint src/ --fix && prettier --write src/"
@@ -66,6 +66,7 @@
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-packagejson": "^3.0.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.5.0",
     "typescript-eslint": "^8.57.0"
   },

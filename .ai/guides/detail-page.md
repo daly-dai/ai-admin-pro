@@ -4,7 +4,7 @@
 >
 > 1. 阅读 `AGENTS.md` — 确认硬约束和豁免范围
 > 2. 确认目标文件路径**不在**豁免目录中 → 必须使用 `SDetail` 而非 antd `Descriptions`
-> 3. 准备查阅 `.ai/core/sdesign-docs.md` 中 SDetail / SButton 节
+> 3. 准备查阅 `.ai/sdesign/components/SDetail.md` 和 `.ai/sdesign/components/SButton.md`
 
 ## 核心组件
 
@@ -48,4 +48,4 @@
 
 ## 完整 API 参考
 
-使用 SDetail 时查阅：`.ai/core/sdesign-docs.md`
+使用 SDetail 时查阅：`.ai/sdesign/components/SDetail.md`

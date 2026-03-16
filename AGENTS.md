@@ -73,14 +73,14 @@ src/
 
 ⚠️ **在生成任何代码之前，必须根据场景读取对应文档。跳过此步骤直接生成代码属于流程违规。**
 
-| 场景                | 必须预读的文件                                                            |
-| ------------------- | ------------------------------------------------------------------------- |
-| 新增 API 模块       | `.ai/guides/api-module.md`                                                |
-| CRUD 列表页         | `.ai/guides/crud-page.md` → `.ai/core/sdesign-docs.md`（SSearchTable 节） |
-| 表单页（新增/编辑） | `.ai/guides/form-page.md` → `.ai/core/sdesign-docs.md`（SForm 节）        |
-| 详情页              | `.ai/guides/detail-page.md` → `.ai/core/sdesign-docs.md`（SDetail 节）    |
-| 修改已有页面        | 先 Read 目标文件 + 关联 API，再判断是否需查阅 guide                       |
-| 不确定时            | Read `.ai/core/architecture.md` + `.ai/core/coding-standards.md`          |
+| 场景                | 必须预读的文件                                                       |
+| ------------------- | -------------------------------------------------------------------- |
+| 新增 API 模块       | `.ai/guides/api-module.md`                                           |
+| CRUD 列表页         | `.ai/guides/crud-page.md` → `.ai/sdesign/components/SSearchTable.md` |
+| 表单页（新增/编辑） | `.ai/guides/form-page.md` → `.ai/sdesign/components/SForm.md`        |
+| 详情页              | `.ai/guides/detail-page.md` → `.ai/sdesign/components/SDetail.md`    |
+| 修改已有页面        | 先 Read 目标文件 + 关联 API，再判断是否需查阅 guide                  |
+| 不确定时            | Read `.ai/core/architecture.md` + `.ai/core/coding-standards.md`     |
 
 ### 步骤 3：参考已有模式
 
@@ -135,7 +135,7 @@ src/
 
 | 场景             | 必读文件                                     | 何时触发                     |
 | ---------------- | -------------------------------------------- | ---------------------------- |
-| sdesign 组件 API | `.ai/core/sdesign-docs.md`                   | 使用任何 S\* 组件时          |
+| sdesign 组件 API | `.ai/sdesign/components/` 下对应组件文档     | 使用任何 S\* 组件时          |
 | 架构规范详情     | `.ai/core/architecture.md`                   | 新增模块/目录时              |
 | 代码规范详情     | `.ai/core/coding-standards.md`               | 首次生成代码时建议通读       |
 | 技术栈约束       | `.ai/core/tech-stack.md`                     | 引入新依赖时                 |

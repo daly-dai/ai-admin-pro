@@ -21,7 +21,10 @@
 │   ├── architecture.md    # 架构规范、项目结构
 │   ├── coding-standards.md # 代码规范
 │   ├── tech-stack.md      # 技术栈定义和约束
-│   └── sdesign-docs.md    # @dalydb/sdesign 组件库 API 文档
+│   └── tech-stack.md      # 技术栈定义和约束
+├── sdesign/               # @dalydb/sdesign 组件库文档（自动同步，已 gitignore）
+│   ├── llms.txt           # 组件库概览
+│   └── components/        # 各组件详细文档（SForm.md, STable.md 等）
 ├── conventions/           # 开发约定
 │   ├── api-conventions.md # API 设计约定（YAML 接口定义格式）
 │   └── incremental-development.md # 增量开发规范（含场景前置阅读清单）
@@ -31,7 +34,7 @@
 │   ├── form-page.md       # 表单页面开发指南
 │   └── detail-page.md     # 详情页面开发指南
 └── tools/                 # 工具脚本
-    └── sync-sdesign-docs.js # 组件库文档同步
+    └── sync-sdesign-docs.ts # 组件库文档同步
 ```
 
 ## 硬约束验证

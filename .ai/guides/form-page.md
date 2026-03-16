@@ -4,7 +4,7 @@
 >
 > 1. 阅读 `AGENTS.md` — 确认硬约束和豁免范围
 > 2. 确认目标文件路径**不在**豁免目录中 → 必须使用 `SForm` 而非 antd `Form`
-> 3. 准备查阅 `.ai/core/sdesign-docs.md` 中 SForm 节
+> 3. 准备查阅 `.ai/sdesign/components/SForm.md`
 
 ## 核心组件
 
@@ -49,4 +49,4 @@ cascader | SCascader | table | dependency
 
 ## 完整 API 参考
 
-使用 SForm 时查阅：`.ai/core/sdesign-docs.md`
+使用 SForm 时查阅：`.ai/sdesign/components/SForm.md`

@@ -65,7 +65,7 @@ Read: src/pages/product/index.tsx → 页面结构模式
 前置阅读（强制）:
   - .ai/guides/api-module.md
   - .ai/guides/crud-page.md
-  - .ai/core/sdesign-docs.md（SSearchTable + SForm + SDetail + SButton 节）
+  - .ai/sdesign/components/（SSearchTable.md + SForm.md + SDetail.md + SButton.md）
 
 执行步骤:
 1. 读 AGENTS.md（约定 + 硬约束 + 豁免范围）
@@ -80,7 +80,7 @@ Read: src/pages/product/index.tsx → 页面结构模式
 ```
 前置阅读（强制）:
   - .ai/guides/form-page.md
-  - .ai/core/sdesign-docs.md（SForm 节）
+  - .ai/sdesign/components/SForm.md
 
 执行步骤:
 1. 确认目标文件路径是否在豁免目录
@@ -94,7 +94,7 @@ Read: src/pages/product/index.tsx → 页面结构模式
 ```
 前置阅读（强制）:
   - .ai/guides/detail-page.md
-  - .ai/core/sdesign-docs.md（SDetail 节）
+  - .ai/sdesign/components/SDetail.md
 
 执行步骤:
 1. 确认目标文件路径是否在豁免目录
@@ -106,7 +106,7 @@ Read: src/pages/product/index.tsx → 页面结构模式
 
 ```
 前置阅读（按需）:
-  - 如涉及组件替换 → 查阅对应 sdesign-docs.md 节
+  - 如涉及组件替换 → 查阅 .ai/sdesign/components/ 下对应组件文档
   - 如不确定约束 → 重读 AGENTS.md 硬约束章节
 
 执行步骤:
