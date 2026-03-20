@@ -68,13 +68,10 @@ export default tseslint.config(
   // 业务页面和组件：限制 antd 高阶组件，引导使用 sdesign
   {
     files: ['src/pages/**/*.tsx', 'src/components/**/*.tsx'],
-    ignores: [
-      'src/pages/login/**',
-      'src/pages/error/**',
-    ],
+    ignores: ['src/pages/login/**', 'src/pages/error/**'],
     rules: {
       'no-restricted-imports': [
-        'warn',
+        'error',
         {
           paths: [
             {
@@ -84,9 +81,9 @@ export default tseslint.config(
             },
             {
               name: 'antd',
-              importNames: ['Table', 'Form', 'Button'],
+              importNames: ['Table', 'Form', 'Button', 'Descriptions'],
               message:
-                '业务页面请使用 @dalydb/sdesign 的 STable/SForm/SButton 替代。',
+                '业务页面请使用 @dalydb/sdesign 的 STable/SForm/SButton/SDetail 替代。',
             },
           ],
         },

@@ -8,7 +8,17 @@ import {
   SettingOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { Avatar, Badge, Dropdown, Layout, Menu, theme } from 'antd';
+import { SErrorBoundary } from '@dalydb/sdesign';
+import {
+  Avatar,
+  Badge,
+  Button,
+  Dropdown,
+  Layout,
+  Menu,
+  Result,
+  theme,
+} from 'antd';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { useAppStore, useUserStore } from '@/stores';
@@ -163,7 +173,22 @@ const MainLayout: React.FC = () => {
             overflow: 'auto',
           }}
         >
-          <Outlet />
+          <SErrorBoundary
+            fallbackRender={({ error, resetErrorBoundary }) => (
+              <Result
+                status="error"
+                title="页面渲染出错"
+                subTitle={error?.message || '未知错误'}
+                extra={
+                  <Button type="primary" onClick={resetErrorBoundary}>
+                    重试
+                  </Button>
+                }
+              />
+            )}
+          >
+            <Outlet />
+          </SErrorBoundary>
         </Content>
       </Layout>
     </Layout>

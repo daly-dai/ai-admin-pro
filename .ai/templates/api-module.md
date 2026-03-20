@@ -9,9 +9,9 @@
 ## 接口定义模板
 
 ```yaml
-module: [module_name]           # 模块名（英文）
-name: [模块中文名]              # 模块名（中文）
-basePath: /api/[module]         # 基础路径
+module: [module_name] # 模块名（英文）
+name: [模块中文名] # 模块名（中文）
+basePath: /api/[module] # 基础路径
 
 interfaces:
   - name: getList
@@ -47,10 +47,12 @@ types:
 ## 生成规范
 
 ### 文件结构
+
 - `src/api/[module]/types.ts` - 类型定义（含JSDoc）
 - `src/api/[module]/index.ts` - API实现（对象模式）
 
 ### 代码规范
+
 - 所有接口添加JSDoc注释
 - 类型定义完整，不使用any
 - 统一使用 `request.get/post/put/delete`

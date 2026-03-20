@@ -19,6 +19,27 @@
 > **不在豁免范围内的**：`src/pages/register/`、`src/components/business/`、`src/pages/` 下所有其他业务页面。
 > 即使功能上与 login 相关（如注册、修改密码），只要文件不在上述豁免目录中，就**必须**使用 sdesign 组件。
 
+#### sdesign 与 antd 的关系
+
+**@dalydb/sdesign 是 antd 的业务增强层，不是替代品。** sdesign 仅封装了 CRUD 场景中高频使用的 4 类组件（表格、表单、按钮、描述列表），其余 antd 组件仍然是项目的基础 UI 库，可以且应该直接使用。
+
+#### antd 可直接使用的组件（不受限制）
+
+即使在非豁免的业务页面中，以下 antd 组件**不在 sdesign 封装范围内**，应直接从 `antd` 导入使用：
+
+| 分类     | 可直接使用的 antd 组件                                                                                               |
+| -------- | -------------------------------------------------------------------------------------------------------------------- |
+| 布局     | `Row` `Col` `Space` `Divider` `Layout` `Flex`                                                                        |
+| 导航     | `Menu` `Breadcrumb` `Tabs` `Pagination` `Steps` `Dropdown`                                                           |
+| 反馈     | `Modal` `Drawer` `message` `notification` `Spin` `Tooltip` `Popover` `Alert`                                         |
+| 数据展示 | `Tag` `Badge` `Avatar` `Image` `Tree` `Timeline` `Empty` `Card` `Statistic` `List` `Progress` `Segmented` `Calendar` |
+| 输入     | `Input` `Select` `DatePicker` `Switch` `Radio` `Checkbox`（在 SForm 外独立使用时）                                   |
+| 其他     | `Result` `Skeleton` `ConfigProvider` `Upload`（在 SForm 外独立使用时）                                               |
+
+> **核心原则**：sdesign 管 CRUD 四件套（STable/SForm/SButton/SDetail），antd 管其余一切。两者相辅相成，不是互斥关系。
+>
+> **AI 防幻觉提示**：不要臆造 sdesign 中不存在的组件（如 ~~SModal~~、~~SDrawer~~、~~STag~~、~~SMenu~~ 均不存在）。如果不确定 sdesign 是否提供某组件，查阅 `.ai/sdesign/components/` 目录。
+
 ### 导入规则
 
 - 禁止 `import axios` -- 使用 `import { request } from '@/plugins/request'`

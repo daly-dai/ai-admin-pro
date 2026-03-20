@@ -7,13 +7,13 @@
 ```yaml
 构建工具: RSBuild ^1.7.0
 框架: React ^18.3.0 + TypeScript ^5.5.0
-UI库: @dalydb/sdesign + Ant Design ^5.20.0
-状态管理: Zustand ^5.0.11 + immer ^10.1.0
+UI库: @dalydb/sdesign + Ant Design ^5.29.3
+状态管理: Zustand ^5.0.11 + immer ^11.1.4
 路由: React Router ^6.26.0
 HTTP: Axios ^1.7.0
 Hooks: ahooks ^3.8.0
-图表: Chart.js ^4.4.0 + react-chartjs-2 ^5.2.0
-图标: lucide-react ^0.400.0 + @ant-design/icons ^5.4.0
+图表: Chart.js ^4.5.1 + react-chartjs-2 ^5.3.1
+图标: lucide-react ^0.577.0 + @ant-design/icons ^5.4.0
 工具库: dayjs ^1.11.0, lodash-es ^4.17.0
 ```
 
