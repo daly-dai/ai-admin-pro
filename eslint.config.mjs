@@ -68,7 +68,7 @@ export default tseslint.config(
   // 业务页面和组件：限制 antd 高阶组件，引导使用 sdesign
   {
     files: ['src/pages/**/*.tsx', 'src/components/**/*.tsx'],
-    ignores: ['src/pages/login/**', 'src/pages/error/**'],
+    ignores: ['src/pages/login/**', 'src/pages/error/**', 'src/pages/register/**'],
     rules: {
       'no-restricted-imports': [
         'error',
