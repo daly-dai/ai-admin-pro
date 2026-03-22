@@ -50,3 +50,7 @@ cascader | SCascader | table | dependency
 ## 完整 API 参考
 
 使用 SForm 时查阅：`.ai/sdesign/components/SForm.md`
+
+## 交互模式
+
+表单不一定是独立页面。当表单字段较少（≤ 8 个）且无复杂联动时，优先使用 Modal 模式承载。详见 `crud-page.md` 中「页面交互模式选择」章节。

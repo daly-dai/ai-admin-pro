@@ -14,21 +14,21 @@
          ↓ 没有
 步骤 1: 拆解需求 → specs/[feature]/spec.md
          ↓
-步骤 2: 场景判定 → 确定需要预读的文档
-         ↓
-步骤 3: 强制预读 → 根据场景读取对应 guide + sdesign 组件文档
-         ↓
-步骤 4: 参考已有模块 → Glob + Read 同类实现
-         ↓
-步骤 5: 生成代码 → 严格遵循规范
-         ↓
-步骤 6: 组件约束速查 → 逐条对照
-         ↓
-步骤 7: 验证循环 → pnpm verify → 自修复 → 自检清单
-         ↓
-步骤 8: 更新进度 → specs/[feature]/progress.md`
+  ┌─────────────────── 以下步骤按 Task 逐个循环 ───────────────────┐
+  │ 步骤 2: 场景预读 → 根据当前 Task 类型读取对应文档（仅当前 Task） │
+  │          ↓                                                      │
+  │ 步骤 3: 参考已有模块 → Glob + Read 同类实现                     │
+  │          ↓                                                      │
+  │ 步骤 4: 生成代码 → 严格遵循规范                                 │
+  │          ↓                                                      │
+  │ 步骤 5: 组件约束速查 → 逐条对照                                 │
+  │          ↓                                                      │
+  │ 步骤 6: 验证循环 → pnpm verify → 自修复 → 自检清单              │
+  │          ↓                                                      │
+  │ 步骤 7: 更新进度 → specs/[feature]/progress.md                  │
+  └─────────────────── 下一个 Task → 回到步骤 2 ───────────────────┘`
 
-> ⚠️ **禁止跳步**。跳过步骤 1 直接写代码，或跳过步骤 3 直接生成代码，均属于流程违规。
+> ⚠️ **禁止跳步**。跳过步骤 1 直接写代码，或跳过步骤 2 直接生成代码，均属于流程违规。
 
 ---
 
@@ -113,9 +113,13 @@ pnpm type-check    # 仅 tsc
 - 先数据后展示：API → 列表页 → 表单页 → 详情页
 - 依赖关系必须声明
 
-### 步骤 2：场景判定
+### 步骤 2：场景预读（按 Task 逐个执行，不可跳过）
 
-根据当前 Task 的类型，确定需要预读的文档：
+> ⚠️ **预读粒度：每个 Task 单独执行本步骤，仅读取当前 Task 类型对应的文档。禁止一次性预读所有 Task 的文档。**
+>
+> ⚠️ **在生成任何代码之前，必须读取当前 Task 类型对应的文档。跳过此步骤直接生成代码属于流程违规，是组件约束违规的首要原因。**
+
+根据当前 Task 的类型，确定并读取必读文档：
 
 | Task 类型   | 场景            | 必读文档                                                                      |
 | ----------- | --------------- | ----------------------------------------------------------------------------- |
@@ -125,22 +129,16 @@ pnpm type-check    # 仅 tsc
 | page-detail | 详情展示页      | .ai/guides/detail-page.md + .ai/sdesign/components/SDetail.md                 |
 | component   | 业务组件        | .ai/core/coding-standards.md（组件规范部分）                                  |
 | store       | 状态管理        | .ai/core/architecture.md（状态管理规范部分）                                  |
-
-|
-efactor | 重构已有代码 | Read 目标文件 + 关联 API |
-| 不确定 | — | .ai/core/architecture.md + .ai/core/coding-standards.md |
-
-### 步骤 3：强制预读（不可跳过）
-
-> ⚠️ **在生成任何代码之前，必须读取步骤 2 中列出的文档。跳过此步骤直接生成代码属于流程违规，是组件约束违规的首要原因。**
+| refactor    | 重构已有代码    | Read 目标文件 + 关联 API                                                      |
+| 不确定      | —               | .ai/core/architecture.md + .ai/core/coding-standards.md                       |
 
 预读顺序：
 
 1. .ai/guides/ 下对应场景指南
 2. .ai/sdesign/components/ 下对应组件文档（获取完整 Props 和用法）
-3. .ai/core/ 下规范文档（如需确认架构或编码规范）
+3. .ai/core/ 下规范文档（仅在首次生成代码或新增模块/目录时读取，不需要每个 Task 重复读取）
 
-### 步骤 4：参考已有模块
+### 步骤 3：参考已有模块
 
 新增模块时，通过 Glob 发现并参考已有同类实现：
 
@@ -153,7 +151,7 @@ Glob: src/stores/*.ts          # 已有 Store
 
 选择一个最接近的已有模块，Read 其完整代码作为参考。
 
-### 步骤 5：生成代码
+### 步骤 4：生成代码
 
 严格遵循以下约定生成代码：
 
@@ -163,6 +161,8 @@ Glob: src/stores/*.ts          # 已有 Store
 - 导出对象命名：{module}Api
 - 标准方法：getList / getById / create / update / delete
 
+> ⚠️ **API 签名冲突处理**：当需求文档（spec.md）中的接口设计与 api-conventions.md 模板签名不一致时，**以需求文档为准**，但必须在 spec.md 的对应 Task 下标注偏离点（如：`<!-- deviation: getList 参数使用 POST body 而非 GET query -->`）。
+
 **页面组件**：
 
 - 列表页首选 SSearchTable
@@ -170,18 +170,18 @@ Glob: src/stores/*.ts          # 已有 Store
 - 详情页使用 SDetail（items 配置式）
 - 按钮使用 SButton（actionType 预设）
 
+> ⚠️ **页面交互模式**：生成列表页时，必须根据 crud-page.md 中「页面交互模式选择」决定新增/编辑/详情的承载方式（Modal / 独立页面 / Drawer），不可自行假设。
+
 **状态管理**：
 
 - 服务端状态用 ahooks useRequest
 - 客户端状态用 Zustand + immer + persist
 
-### 步骤 6：组件约束速查
+### 步骤 5：组件约束速查
 
 在输出 JSX 之前，逐条对照：
 
-- [ ] 目标文件是否在豁免目录（login/、error/、
-      egister/、layouts/、
-      outer/）？
+- [ ] 目标文件是否在豁免目录（login/、error/、register/、layouts/、router/）？
 - [ ] 不在豁免目录：是否使用了 SForm 而非 antd Form？
 - [ ] 不在豁免目录：是否使用了 SButton 而非 antd Button？
 - [ ] 不在豁免目录：是否使用了 STable/SSearchTable 而非 antd Table？
@@ -189,7 +189,7 @@ Glob: src/stores/*.ts          # 已有 Store
 - [ ] 导入路径是否使用 @/ 或 src/ 别名？
 - [ ] 是否有 any 类型？
 
-### 步骤 7：验证循环
+### 步骤 6：验证循环
 
 > 📖 **参考**：.ai/conventions/verification.md
 
@@ -204,12 +204,12 @@ pnpm verify
 **Level 2 - 功能级自检（AI 自检）**：
 逐条检查组件约束清单、代码质量清单、文件完整性清单（详见 verification.md）
 
-### 步骤 8：更新进度
+### 步骤 7：更新进度
 
 完成 Task 后，更新 specs/[feature]/progress.md 中对应 Task 的状态：
 
-- Level 1 通过 → 🟡
-- Level 2 通过 → 🟢
+- Level 1 + Level 2 均通过 → 🟢
+- 任一 Level 未通过 → 🔴（附失败原因）
 
 ---
 

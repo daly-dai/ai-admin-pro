@@ -118,6 +118,22 @@ export const [module]Api = {
 | array         | T[]            | checkbox      | 数组     |
 | object        | Record         | -             | 对象     |
 
+## API 签名冲突处理
+
+当需求文档（spec.md）中定义的接口签名与本文件模板不一致时，遵循以下优先级：
+
+1. **以 spec.md 需求文档为准** — spec.md 中的接口定义反映了后端实际设计
+2. **在 spec.md 对应 Task 下标注偏离点** — 便于后续审查和维护
+3. **常见偏离场景**：
+   - getList 使用 POST body 而非 GET query（复杂筛选条件）
+   - 非标准方法名（如 `batchEnable` 代替 `update`）
+   - 分页参数命名不同（如 `current/size` 代替 `page/pageSize`）
+
+```markdown
+<!-- 标注格式示例 -->
+<!-- deviation: getList 使用 POST /api/users/search，参数通过 body 传递而非 query -->
+```
+
 ## 特殊字段处理
 
 ### 1. 状态字段

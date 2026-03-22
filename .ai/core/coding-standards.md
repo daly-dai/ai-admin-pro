@@ -33,6 +33,14 @@ interface ProductQuery {}
 interface ProductFormData {}
 ```
 
+#### 命名冲突处理
+
+当 API 模块的实体类型名与全局已有类型冲突时（如 `User` 与 `src/types/` 下的全局 `User` 类型），按以下规则处理：
+
+1. **优先使用模块前缀** — 在 `api/[module]/types.ts` 中为实体类型添加模块前缀（如 `MgmtUser`、`SystemRole`）
+2. **禁止重名覆盖** — 不可在 API 模块中定义与 `src/types/` 下同名的类型
+3. **检查方法** — 生成类型前先 `Grep: export interface [EntityName]` 或 `Grep: export type [EntityName]` 确认全局无同名类型
+
 ### 3. 类型导出
 
 ```typescript
