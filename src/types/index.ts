@@ -1,5 +1,17 @@
 // 全局类型定义
 
+/** Vite/RSBuild 环境变量类型声明 */
+declare global {
+  interface ImportMetaEnv {
+    readonly VITE_UPLOAD_URL?: string;
+    readonly VITE_API_BASE_URL?: string;
+  }
+
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
+}
+
 /** 分页数据 */
 export interface PageData<T> {
   list: T[];

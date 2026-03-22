@@ -33,6 +33,14 @@ interface ProductQuery {}
 interface ProductFormData {}
 ```
 
+#### 命名冲突处理
+
+当 API 模块的实体类型名与全局已有类型冲突时（如 `User` 与 `src/types/` 下的全局 `User` 类型），按以下规则处理：
+
+1. **优先使用模块前缀** — 在 `api/[module]/types.ts` 中为实体类型添加模块前缀（如 `MgmtUser`、`SystemRole`）
+2. **禁止重名覆盖** — 不可在 API 模块中定义与 `src/types/` 下同名的类型
+3. **检查方法** — 生成类型前先 `Grep: export interface [EntityName]` 或 `Grep: export type [EntityName]` 确认全局无同名类型
+
 ### 3. 类型导出
 
 ```typescript
@@ -90,12 +98,12 @@ export default [ComponentName];
 
 ### 2. 组件命名规范
 
-| 类型 | 命名模式 | 示例 |
-|------|----------|------|
-| 页面组件 | `PascalCase` + `Page` | `ProductPage`, `OrderPage` |
-| 业务组件 | `PascalCase` | `ProductCard`, `OrderList` |
-| 通用组件 | `PascalCase` | `DataTable`, `SearchForm` |
-| Hooks | `use` + `PascalCase` | `useProductList`, `useOrderForm` |
+| 类型     | 命名模式              | 示例                             |
+| -------- | --------------------- | -------------------------------- |
+| 页面组件 | `PascalCase` + `Page` | `ProductPage`, `OrderPage`       |
+| 业务组件 | `PascalCase`          | `ProductCard`, `OrderList`       |
+| 通用组件 | `PascalCase`          | `DataTable`, `SearchForm`        |
+| Hooks    | `use` + `PascalCase`  | `useProductList`, `useOrderForm` |
 
 ### 3. 样式规范
 
@@ -113,10 +121,12 @@ export default [ComponentName];
 
 /* 2. 避免全局样式污染 */
 /* ❌ 不要这样 */
-.card { }
+.card {
+}
 
 /* ✅ 这样 */
-.product-card { }
+.product-card {
+}
 ```
 
 ## API层规范
