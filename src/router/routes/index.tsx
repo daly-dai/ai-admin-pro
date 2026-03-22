@@ -1,10 +1,9 @@
 import { Navigate } from 'react-router-dom';
 
+import { MainLayout } from '@/layouts';
 import { RequireAuth } from '../guards';
 import authRoutes from './auth';
-import dashboardRoutes from './dashboard';
 import errorRoutes from './error';
-import { MainLayout } from '@/layouts';
 
 export const routes = [
   ...authRoutes,
@@ -18,10 +17,8 @@ export const routes = [
     children: [
       {
         index: true,
-        element: <Navigate to="/dashboard" replace />,
+        element: <Navigate to="/home" replace />,
       },
-      ...dashboardRoutes,
-      // 可以在这里添加更多子路由模块
     ],
   },
   ...errorRoutes,

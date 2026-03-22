@@ -3,7 +3,8 @@
   "importOrder": ["^(react|react-dom)$", "^([a-z]|@[a-z])", "", ".*"],
   "plugins": [
     "@ianvs/prettier-plugin-sort-imports",
-    "prettier-plugin-packagejson"
+    "prettier-plugin-packagejson",
+    "prettier-plugin-organize-imports"
   ],
   "printWidth": 80,
   "proseWrap": "never",
