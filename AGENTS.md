@@ -10,23 +10,10 @@
 
 本项目采用 **SDD（Spec-Driven Development）** 模式，所有开发从需求拆解开始：
 
-`步骤 0: 检查 specs/ 是否已有对应的需求规格
-         ↓ 没有
-步骤 1: 拆解需求 → specs/[feature]/spec.md
-         ↓
-  ┌─────────────────── 以下步骤按 Task 逐个循环 ───────────────────┐
-  │ 步骤 2: 场景预读 → 根据当前 Task 类型读取对应文档（仅当前 Task） │
-  │          ↓                                                      │
-  │ 步骤 3: 参考已有模块 → Glob + Read 同类实现                     │
-  │          ↓                                                      │
-  │ 步骤 4: 生成代码 → 严格遵循规范                                 │
-  │          ↓                                                      │
-  │ 步骤 5: 组件约束速查 → 逐条对照                                 │
-  │          ↓                                                      │
-  │ 步骤 6: 验证循环 → pnpm verify → 自修复 → 自检清单              │
-  │          ↓                                                      │
-  │ 步骤 7: 更新进度 → specs/[feature]/progress.md                  │
-  └─────────────────── 下一个 Task → 回到步骤 2 ───────────────────┘`
+`步骤 0: 检查 specs/ → 1: 拆解需求 → [循环执行以下步骤]
+  → 2: 场景预读 → 3: 参考已有模块 → 4: 生成代码
+  → 5: 组件约束速查 → 6: 验证循环(pnpm verify)
+  → 7: 更新进度 → 回到步骤 2 处理下一个 Task`
 
 > ⚠️ **禁止跳步**。跳过步骤 1 直接写代码，或跳过步骤 2 直接生成代码，均属于流程违规。
 
@@ -53,15 +40,7 @@
 
 #### antd 可直接使用的组件（不受限制）
 
-| 分类                                   | 可直接使用的 antd 组件                                                                     |
-| -------------------------------------- | ------------------------------------------------------------------------------------------ |
-| 布局                                   | Row Col Space Divider Layout Flex                                                          |
-| 导航                                   | Menu Breadcrumb Tabs Pagination Steps Dropdown                                             |
-| 反馈                                   | Modal Drawer message                                                                       |
-| otification Spin Tooltip Popover Alert |
-| 数据展示                               | Tag Badge Avatar Image Tree Timeline Empty Card Statistic List Progress Segmented Calendar |
-| 输入                                   | Input Select DatePicker Switch Radio Checkbox（在 SForm 外独立使用时）                     |
-| 其他                                   | Result Skeleton ConfigProvider Upload（在 SForm 外独立使用时）                             |
+**布局** Row/Col/Space/Divider/Layout/Flex | **导航** Menu/Breadcrumb/Tabs/Pagination/Steps/Dropdown | **反馈** Modal/Drawer/message/notification/Spin/Tooltip/Popover/Alert | **数据展示** Tag/Badge/Avatar/Image/Tree/Timeline/Empty/Card/Statistic/List/Progress/Segmented/Calendar | **输入** Input/Select/DatePicker/Switch/Radio/Checkbox（SForm 外） | **其他** Result/Skeleton/ConfigProvider/Upload（SForm 外）
 
 > **核心原则**：sdesign 管 CRUD 四件套，antd 管其余一切。
 >
@@ -131,6 +110,11 @@ pnpm type-check    # 仅 tsc
 | store       | 状态管理        | .ai/core/architecture.md（状态管理规范部分）                                  |
 | refactor    | 重构已有代码    | Read 目标文件 + 关联 API                                                      |
 | 不确定      | —               | .ai/core/architecture.md + .ai/core/coding-standards.md                       |
+| setup       | 拆解需求        | .ai/specs/template.md                                                         |
+| verify      | 代码生成后验证  | .ai/conventions/verification.md                                               |
+| incremental | 修改已有模块    | .ai/conventions/incremental-development.md                                    |
+| tech-dep    | 引入新依赖      | .ai/core/tech-stack.md                                                        |
+| correction  | 用户纠正写法    | .ai/conventions/correction-workflow.md                                        |
 
 预读顺序：
 
@@ -179,15 +163,8 @@ Glob: src/stores/*.ts          # 已有 Store
 
 ### 步骤 5：组件约束速查
 
-在输出 JSX 之前，逐条对照：
+在输出 JSX 之前，先对照第二节硬约束（组件替换 + 导入规则），再检查以下 JSX 特有项：
 
-- [ ] 目标文件是否在豁免目录（login/、error/、register/、layouts/、router/）？
-- [ ] 不在豁免目录：是否使用了 SForm 而非 antd Form？
-- [ ] 不在豁免目录：是否使用了 SButton 而非 antd Button？
-- [ ] 不在豁免目录：是否使用了 STable/SSearchTable 而非 antd Table？
-- [ ] 如果不在豁免目录：是否使用了 SDetail 而非 antd Descriptions？
-- [ ] 导入路径是否使用 @/ 或 src/ 别名？
-- [ ] 是否有 any 类型？
 - [ ] SForm 字段联动是否用 `type: 'dependency'` + `depNames` 而非外部 useWatch 控制渲染？
 - [ ] SDatePickerRange 是否用 `rangeKeys` 拆分字段而非手动 getFieldValue 拆分？
 - [ ] Modal 是否使用条件渲染 `{open && <Modal/>}` 而非 destroyOnClose？
@@ -196,16 +173,9 @@ Glob: src/stores/*.ts          # 已有 Store
 
 > 📖 **参考**：.ai/conventions/verification.md
 
-**Level 1 - 代码级验证（AI 自执行）**：
-`bash
-pnpm verify
-`
+**Level 1**：执行 `pnpm verify`（见第二节验证命令），有错误按优先级修复（tsc > eslint > prettier），最多 3 轮，仍有错误则报告用户。
 
-- 有错误 → 按优先级修复（tsc > eslint > prettier）→ 再次 verify
-- 最多 3 轮，仍有错误 → 报告给用户
-
-**Level 2 - 功能级自检（AI 自检）**：
-逐条检查组件约束清单、代码质量清单、文件完整性清单（详见 verification.md）
+**Level 2**：逐条检查组件约束清单、代码质量清单、文件完整性清单（详见 verification.md）
 
 ### 步骤 7：更新进度
 
@@ -218,77 +188,16 @@ pnpm verify
 
 ## 四、项目结构
 
-`src/
-├── api/[module]/         # API 层（types.ts + index.ts）
-├── components/
-│   ├── business/         # 业务组件（本项目复用）
-│   └── common/           # 通用组件（跨项目复用）
-├── constants/            # 常量（enum.ts + config.ts）
-├── hooks/                # 自定义 Hooks
-├── layouts/              # 布局组件（MainLayout.tsx）
-├── pages/[page-name]/    # 页面（index.tsx + components/）
-├── plugins/request/      # HTTP 封装（唯一允许使用 axios 的位置）
-├── router/               # 路由配置 + 守卫
-├── stores/               # Zustand 状态管理
-├── styles/               # 全局样式
-├── types/                # 全局类型定义
-└── utils/                # 工具函数`
-
----
-
-## 五、文档索引（场景驱动，强制预读）
-
-> ⚠️ **不是 按需查阅，而是场景匹配即必读。**
-
-| 场景             | 必读文件                                   | 何时触发                        |
-| ---------------- | ------------------------------------------ | ------------------------------- |
-| **拆解需求**     | .ai/specs/template.md                      | 开发新功能前 **（强制）**       |
-| **验证流程**     | .ai/conventions/verification.md            | 代码生成后 **（强制）**         |
-| **增量开发**     | .ai/conventions/incremental-development.md | 修改已有模块时                  |
-| **API 设计**     | .ai/conventions/api-conventions.md         | 新增 API 模块时                 |
-| **API 模块**     | .ai/guides/api-module.md                   | 新增 API 模块 **（强制）**      |
-| **CRUD 列表页**  | .ai/guides/crud-page.md                    | 生成列表页 **（强制）**         |
-| **表单页**       | .ai/guides/form-page.md                    | 生成表单页 **（强制）**         |
-| **详情页**       | .ai/guides/detail-page.md                  | 生成详情页 **（强制）**         |
-| **sdesign 组件** | .ai/sdesign/components/ 下对应组件         | 使用任何 S\* 组件时             |
-| **架构规范**     | .ai/core/architecture.md                   | 新增模块/目录时                 |
-| **代码规范**     | .ai/core/coding-standards.md               | 首次生成代码时                  |
-| **技术栈约束**   | .ai/core/tech-stack.md                     | 引入新依赖时                    |
-| **纠错沉淀**     | .ai/conventions/correction-workflow.md     | 用户纠正错误写法时 **（强制）** |
+> 详见 `.ai/core/architecture.md`「项目结构（强制）」章节。
 
 ---
 
 ## 六、动态发现策略
 
-不维护静态文件清单，通过工具搜索获取实时上下文：
-
-`bash
-
-# 发现已有模块
-
-Glob: src/api/_/index.ts
-Glob: src/pages/_/index.tsx
-Glob: src/components/business/\*_/_.tsx
-Glob: src/stores/\*.ts
-
-# 发现具体实现
-
-Grep: export interface [Entity] # 查找类型定义
-Grep: export const [module]Api # 查找 API 导出
-Grep: import._[Component] # 查找组件引用
-Grep: path:._[route] in src/router/ # 查找路由配置
-`
+> 详见 `.ai/conventions/incremental-development.md`「动态发现策略」章节。步骤 3 已包含核心 Glob 命令。
 
 ---
 
 ## 七、纠错沉淀（用户纠正时触发）
 
-当用户指出某个写法错误、过时或需要替换时，**必须**执行以下流程：
-
-1. `Read .ai/conventions/correction-workflow.md`
-2. 按决策流程（Step 1-4）判断纠正应沉淀到哪些 Layer
-3. 修改对应文件（eslint.config.mjs / AGENTS.md / verification.md / pitfalls/）
-4. 如修改了 eslint.config.mjs → 运行 `pnpm lint` 验证规则生效
-5. 向用户报告沉淀结果（写入了哪个 Layer、改了哪个文件）
-
-> ⚠️ **禁止只口头应答而不落实到文件。** 每次纠正必须产生至少一个文件变更。
+当用户指出写法错误/过时时，**必须** Read `.ai/conventions/correction-workflow.md` 并按其四层防御体系执行沉淀。禁止只口头应答而不落实到文件。

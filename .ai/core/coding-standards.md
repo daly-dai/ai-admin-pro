@@ -147,48 +147,20 @@ api/
 
 ### 2. API对象模式
 
-```typescript
-// ✅ 使用对象模式组织API
-export const [module]Api = {
-  getList: (params?: [Entity]Query) => {...},
-  getById: (id: string) => {...},
-  create: (data: [Entity]FormData) => {...},
-  update: (id: string, data: Partial<[Entity]>) => {...},
-  delete: (id: string) => {...},
-};
+使用对象字面量组织同一模块的 API 方法，通过命名导出（`export const {module}Api`）供页面使用。
 
-// 使用
-import { [module]Api } from '@api/[module]';
-const { data } = useRequest([module]Api.getList);
-```
+> 完整模板见 `.ai/conventions/api-conventions.md`。
+
+使用示例：`const { data } = useRequest([module]Api.getList);`
 
 ### 3. 类型定义位置
 
 ```typescript
 // 类型定义在 api/[module]/types.ts
 // 不要在API文件中定义类型
-
-// api/[module]/types.ts
-export interface [Entity] {
-  id: string;
-  [fieldName]: [fieldType];
-  status: [Entity]Status;
-  createTime: string;
-}
-
-export type [Entity]Status = '[status1]' | '[status2]';
-
-export interface [Entity]Query {
-  page?: number;
-  pageSize?: number;
-  [filterField]?: [filterType];
-}
-
-export interface [Entity]FormData {
-  [fieldName]: [fieldType];
-  status: [Entity]Status;
-}
 ```
+
+> 完整类型定义模板（Entity、EntityQuery、EntityFormData、EntityStatus）见 `.ai/conventions/api-conventions.md`。
 
 ## 状态管理规范
 
@@ -206,21 +178,9 @@ export { useAppStore } from './app';
 
 ### 2. Store结构
 
-```typescript
-interface [Domain]State {
-  // 1. State定义
-  [data]: [DataType];
-  loading: boolean;
+Store 包含 State 定义、Selector（使用时计算）和 Actions 三部分。
 
-  // 2. Computed（通过selector实现）
-  // 不存储在store中，使用时计算
-
-  // 3. Actions
-  set[Data]: (data: [DataType]) => void;
-  fetch[Data]: () => Promise<void>;
-  reset: () => void;
-}
-```
+> 完整 Store 代码模板（含 Zustand + immer + persist）见 `.ai/core/architecture.md`「状态管理规范」章节。
 
 ## 导入导出规范
 
