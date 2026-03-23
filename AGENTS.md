@@ -188,6 +188,9 @@ Glob: src/stores/*.ts          # 已有 Store
 - [ ] 如果不在豁免目录：是否使用了 SDetail 而非 antd Descriptions？
 - [ ] 导入路径是否使用 @/ 或 src/ 别名？
 - [ ] 是否有 any 类型？
+- [ ] SForm 字段联动是否用 `type: 'dependency'` + `depNames` 而非外部 useWatch 控制渲染？
+- [ ] SDatePickerRange 是否用 `rangeKeys` 拆分字段而非手动 getFieldValue 拆分？
+- [ ] Modal 是否使用条件渲染 `{open && <Modal/>}` 而非 destroyOnClose？
 
 ### 步骤 6：验证循环
 
@@ -237,20 +240,21 @@ pnpm verify
 
 > ⚠️ **不是 按需查阅，而是场景匹配即必读。**
 
-| 场景             | 必读文件                                   | 何时触发                   |
-| ---------------- | ------------------------------------------ | -------------------------- |
-| **拆解需求**     | .ai/specs/template.md                      | 开发新功能前 **（强制）**  |
-| **验证流程**     | .ai/conventions/verification.md            | 代码生成后 **（强制）**    |
-| **增量开发**     | .ai/conventions/incremental-development.md | 修改已有模块时             |
-| **API 设计**     | .ai/conventions/api-conventions.md         | 新增 API 模块时            |
-| **API 模块**     | .ai/guides/api-module.md                   | 新增 API 模块 **（强制）** |
-| **CRUD 列表页**  | .ai/guides/crud-page.md                    | 生成列表页 **（强制）**    |
-| **表单页**       | .ai/guides/form-page.md                    | 生成表单页 **（强制）**    |
-| **详情页**       | .ai/guides/detail-page.md                  | 生成详情页 **（强制）**    |
-| **sdesign 组件** | .ai/sdesign/components/ 下对应组件         | 使用任何 S\* 组件时        |
-| **架构规范**     | .ai/core/architecture.md                   | 新增模块/目录时            |
-| **代码规范**     | .ai/core/coding-standards.md               | 首次生成代码时             |
-| **技术栈约束**   | .ai/core/tech-stack.md                     | 引入新依赖时               |
+| 场景             | 必读文件                                   | 何时触发                        |
+| ---------------- | ------------------------------------------ | ------------------------------- |
+| **拆解需求**     | .ai/specs/template.md                      | 开发新功能前 **（强制）**       |
+| **验证流程**     | .ai/conventions/verification.md            | 代码生成后 **（强制）**         |
+| **增量开发**     | .ai/conventions/incremental-development.md | 修改已有模块时                  |
+| **API 设计**     | .ai/conventions/api-conventions.md         | 新增 API 模块时                 |
+| **API 模块**     | .ai/guides/api-module.md                   | 新增 API 模块 **（强制）**      |
+| **CRUD 列表页**  | .ai/guides/crud-page.md                    | 生成列表页 **（强制）**         |
+| **表单页**       | .ai/guides/form-page.md                    | 生成表单页 **（强制）**         |
+| **详情页**       | .ai/guides/detail-page.md                  | 生成详情页 **（强制）**         |
+| **sdesign 组件** | .ai/sdesign/components/ 下对应组件         | 使用任何 S\* 组件时             |
+| **架构规范**     | .ai/core/architecture.md                   | 新增模块/目录时                 |
+| **代码规范**     | .ai/core/coding-standards.md               | 首次生成代码时                  |
+| **技术栈约束**   | .ai/core/tech-stack.md                     | 引入新依赖时                    |
+| **纠错沉淀**     | .ai/conventions/correction-workflow.md     | 用户纠正错误写法时 **（强制）** |
 
 ---
 
@@ -274,3 +278,17 @@ Grep: export const [module]Api # 查找 API 导出
 Grep: import._[Component] # 查找组件引用
 Grep: path:._[route] in src/router/ # 查找路由配置
 `
+
+---
+
+## 七、纠错沉淀（用户纠正时触发）
+
+当用户指出某个写法错误、过时或需要替换时，**必须**执行以下流程：
+
+1. `Read .ai/conventions/correction-workflow.md`
+2. 按决策流程（Step 1-4）判断纠正应沉淀到哪些 Layer
+3. 修改对应文件（eslint.config.mjs / AGENTS.md / verification.md / pitfalls/）
+4. 如修改了 eslint.config.mjs → 运行 `pnpm lint` 验证规则生效
+5. 向用户报告沉淀结果（写入了哪个 Layer、改了哪个文件）
+
+> ⚠️ **禁止只口头应答而不落实到文件。** 每次纠正必须产生至少一个文件变更。
