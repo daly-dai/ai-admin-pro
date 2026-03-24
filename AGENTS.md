@@ -10,10 +10,10 @@
 
 本项目采用 **SDD（Spec-Driven Development）** 模式，所有开发从需求拆解开始：
 
-`步骤 0: 检查 specs/ → 1: 拆解需求 → [循环执行以下步骤]
+`步骤 0: 检查 specs/ + 会话恢复 → 1: 拆解需求 → [循环执行以下步骤]
   → 2: 场景预读 → 3: 参考已有模块 → 4: 生成代码
   → 5: 组件约束速查 → 6: 验证循环(pnpm verify)
-  → 7: 更新进度 → 回到步骤 2 处理下一个 Task`
+  → 7: 更新进度 + 生成会话文档 → 回到步骤 2 处理下一个 Task`
 
 > ⚠️ **禁止跳步**。跳过步骤 1 直接写代码，或跳过步骤 2 直接生成代码，均属于流程违规。
 
@@ -76,6 +76,13 @@ pnpm type-check    # 仅 tsc
 
 - 如果已存在对应功能的 spec.md → 直接跳到步骤 2，按 Task 逐个开发
 - 如果不存在 → 进入步骤 1，先拆解需求
+
+**会话恢复协议**（spec.md 存在时执行）：
+
+检查 `specs/[feature]/sessions/` 目录下是否有 `session-*.md` 文件：
+
+- 如果有 → 读取最新的 session 文件，恢复上下文（完成状态、决策记录、遗留问题）
+- 标准加载顺序：`AGENTS.md → spec.md → progress.md → sessions/（最新 session）`
 
 ### 步骤 1：拆解需求
 
@@ -185,6 +192,13 @@ Glob: src/stores/*.ts          # 已有 Store
 
 - Level 1 + Level 2 均通过 → 🟢
 - 任一 Level 未通过 → 🔴（附失败原因）
+
+**生成会话交接文档**：
+
+按 `.ai/specs/session-template.md` 生成 `specs/[feature]/sessions/session-{task-id}.md`，记录：
+
+- 完成状态、关键决策、文件变更、验证状态
+- 下一 Task 的入口上下文（约束、依赖、预读文档）
 
 ---
 
