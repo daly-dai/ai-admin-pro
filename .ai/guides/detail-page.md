@@ -49,3 +49,13 @@
 ## 完整 API 参考
 
 使用 SDetail 时查阅：`.ai/sdesign/components/SDetail.md`
+
+## 交互模式
+
+详情展示不一定是独立页面。当需要在列表页快速预览详情时，优先使用 Drawer 模式承载。
+
+### Drawer 嵌套详情
+
+当详情以 Drawer 形式呈现时，应创建 `{Entity}DetailDrawer` 容器组件，将 Drawer 的 open/close 状态封装在容器组件内部管理，不由列表页控制。列表页通过 ref 调用 `open(id)` 方法触发抽屉。
+
+> 详见 `crud-page.md`「弹层封装原则」章节。

@@ -168,6 +168,8 @@ Glob: src/stores/*.ts          # 已有 Store
 - [ ] SForm 字段联动是否用 `type: 'dependency'` + `depNames` 而非外部 useWatch 控制渲染？
 - [ ] SDatePickerRange 是否用 `rangeKeys` 拆分字段而非手动 getFieldValue 拆分？
 - [ ] Modal 是否使用条件渲染 `{open && <Modal/>}` 而非 destroyOnClose？
+- [ ] Modal/Drawer 是否封装在子组件内部，而非由列表页管理 open 状态？
+- [ ] 列表页是否仅通过 ref 或 props 触发弹层，不直接持有弹层状态？
 
 ### 步骤 6：验证循环
 

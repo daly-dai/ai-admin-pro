@@ -98,12 +98,24 @@ export default [ComponentName];
 
 ### 2. 组件命名规范
 
-| 类型     | 命名模式              | 示例                             |
-| -------- | --------------------- | -------------------------------- |
-| 页面组件 | `PascalCase` + `Page` | `ProductPage`, `OrderPage`       |
-| 业务组件 | `PascalCase`          | `ProductCard`, `OrderList`       |
-| 通用组件 | `PascalCase`          | `DataTable`, `SearchForm`        |
-| Hooks    | `use` + `PascalCase`  | `useProductList`, `useOrderForm` |
+| 类型     | 命名模式              | 示例                                        |
+| -------- | --------------------- | ------------------------------------------- |
+| 页面组件 | `PascalCase` + `Page` | `ProductPage`, `OrderPage`                  |
+| 业务组件 | `PascalCase`          | `ProductCard`, `OrderList`                  |
+| 通用组件 | `PascalCase`          | `DataTable`, `SearchForm`                   |
+| 容器组件 | `{Entity}{Layer}`     | `{Entity}FormModal`, `{Entity}DetailDrawer` |
+| Hooks    | `use` + `PascalCase`  | `useProductList`, `useOrderForm`            |
+
+#### 容器组件说明
+
+容器组件用于封装 Modal/Drawer + 内容组件，将弹层的 open/close 状态内部管理，通过 ref 暴露 `open()` 方法供外部调用。
+
+| 场景        | 命名模式               | 职责                                |
+| ----------- | ---------------------- | ----------------------------------- |
+| Modal 表单  | `{Entity}FormModal`    | 封装 Modal + SForm，管理弹层状态    |
+| Drawer 详情 | `{Entity}DetailDrawer` | 封装 Drawer + SDetail，管理抽屉状态 |
+
+> 详见 `.ai/guides/crud-page.md`「弹层封装原则」章节。
 
 ### 3. 样式规范
 

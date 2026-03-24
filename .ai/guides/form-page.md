@@ -54,3 +54,9 @@ cascader | SCascader | table | dependency
 ## 交互模式
 
 表单不一定是独立页面。当表单字段较少（≤ 8 个）且无复杂联动时，优先使用 Modal 模式承载。详见 `crud-page.md` 中「页面交互模式选择」章节。
+
+### Modal 嵌套表单
+
+当表单以 Modal 形式呈现时，应创建 `{Entity}FormModal` 容器组件，将 Modal 的 open/close 状态封装在容器组件内部管理，不由列表页控制。列表页通过 ref 调用 `open()` 方法触发弹层。
+
+> 详见 `crud-page.md`「弹层封装原则」章节。
