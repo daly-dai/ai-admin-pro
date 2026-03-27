@@ -1,6 +1,6 @@
 ﻿# AI Frontend App
 
-> React 18 + TypeScript 5 + @dalydb/sdesign + antd + Zustand + Rsbuild
+> React 18 + TypeScript 5 + @dalydb/sdesign + antd 5 + Zustand + Rsbuild
 >
 > **这是 AI 进入本项目的唯一入口。所有开发必须遵循本文件定义的流程和约束。**
 
