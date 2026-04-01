@@ -72,6 +72,7 @@ export default tseslint.config(
       'src/pages/login/**',
       'src/pages/error/**',
       'src/pages/register/**',
+      'src/components/editable-tables/**', // 可编辑表格组件库豁免
     ],
     rules: {
       'no-restricted-imports': [

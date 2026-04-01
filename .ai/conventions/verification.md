@@ -99,6 +99,17 @@ AI 在提交代码前，**必须**逐条自检以下项目：
 - [ ] 路由配置已更新（如需要）
       `
 
+#### JSX 特有检查
+
+`markdown
+
+- [ ] SForm 字段联动是否用 `type: 'dependency'` + `depNames` 而非外部 useWatch 控制渲染？
+- [ ] SDatePickerRange 是否用 `rangeKeys` 拆分字段而非手动 getFieldValue 拆分？
+- [ ] Modal 是否使用条件渲染 `{open && <Modal/>}` 而非 destroyOnClose？
+- [ ] Modal/Drawer 是否封装在子组件内部，而非由列表页管理 open 状态？
+- [ ] 列表页是否仅通过 ref 或 props 触发弹层，不直接持有弹层状态？
+      `
+
 ### 人工确认点
 
 AI 自检通过后，标记为「AI 自检通过」，以下项目由人工最终确认：

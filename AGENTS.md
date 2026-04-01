@@ -36,15 +36,7 @@
 
 #### sdesign 与 antd 的关系
 
-**@dalydb/sdesign 是 antd 的业务增强层，不是替代品。** sdesign 仅封装了 CRUD 场景中高频使用的 4 类组件（表格、表单、按钮、描述列表），其余 antd 组件仍然是项目基础 UI 库。
-
-#### antd 可直接使用的组件（不受限制）
-
-**布局** Row/Col/Space/Divider/Layout/Flex | **导航** Menu/Breadcrumb/Tabs/Pagination/Steps/Dropdown | **反馈** Modal/Drawer/message/notification/Spin/Tooltip/Popover/Alert | **数据展示** Tag/Badge/Avatar/Image/Tree/Timeline/Empty/Card/Statistic/List/Progress/Segmented/Calendar | **输入** Input/Select/DatePicker/Switch/Radio/Checkbox（SForm 外） | **其他** Result/Skeleton/ConfigProvider/Upload（SForm 外）
-
-> **核心原则**：sdesign 管 CRUD 四件套，antd 管其余一切。
->
-> **AI 防幻觉提示**：不要臆想 sdesign 中不存在的组件（如 ~~SModal~~、~~SDrawer~~、~~STag~~、~~SMenu~~）。不确定时查阅 .ai/sdesign/components/ 目录。
+sdesign 管 CRUD 四件套（Table/Form/Button/Descriptions），antd 管其余一切。不要臆想 sdesign 不存在的组件（如 ~~SModal~~、~~SDrawer~~、~~STag~~），不确定时查阅 `.ai/sdesign/components/` 目录。
 
 ### 导入规则
 
@@ -116,12 +108,8 @@ pnpm type-check    # 仅 tsc
 | component   | 业务组件        | .ai/core/coding-standards.md（组件规范部分）                                  |
 | store       | 状态管理        | .ai/core/architecture.md（状态管理规范部分）                                  |
 | refactor    | 重构已有代码    | Read 目标文件 + 关联 API                                                      |
-| 不确定      | —               | .ai/core/architecture.md + .ai/core/coding-standards.md                       |
-| setup       | 拆解需求        | .ai/specs/template.md                                                         |
-| verify      | 代码生成后验证  | .ai/conventions/verification.md                                               |
-| incremental | 修改已有模块    | .ai/conventions/incremental-development.md                                    |
-| tech-dep    | 引入新依赖      | .ai/core/tech-stack.md                                                        |
-| correction  | 用户纠正写法    | .ai/conventions/correction-workflow.md                                        |
+
+> Task 类型无法判断时，Read `.ai/core/architecture.md` + `.ai/core/coding-standards.md` 作为兜底。
 
 预读顺序：
 
@@ -142,41 +130,21 @@ Glob: src/stores/*.ts          # 已有 Store
 
 选择一个最接近的已有模块，Read 其完整代码作为参考。
 
+> 如目标模块已存在（修改而非新增），先 Read `.ai/conventions/incremental-development.md`。
+
 ### 步骤 4：生成代码
 
-严格遵循以下约定生成代码：
-
-**API 模块**：
-
-- 文件：src/api/{module}/types.ts + src/api/{module}/index.ts
-- 导出对象命名：{module}Api
-- 标准方法：getList / getById / create / update / delete
-
-> ⚠️ **API 签名冲突处理**：当需求文档（spec.md）中的接口设计与 api-conventions.md 模板签名不一致时，**以需求文档为准**，但必须在 spec.md 的对应 Task 下标注偏离点（如：`<!-- deviation: getList 参数使用 POST body 而非 GET query -->`）。
-
-**页面组件**：
-
-- 列表页首选 SSearchTable
-- 表单页使用 SForm（items 配置式）
-- 详情页使用 SDetail（items 配置式）
-- 按钮使用 SButton（actionType 预设）
+按步骤 2 预读的指南和步骤 3 参考的模式生成代码，严格遵循第二节硬约束。
 
 > ⚠️ **页面交互模式**：生成列表页时，必须根据 crud-page.md 中「页面交互模式选择」决定新增/编辑/详情的承载方式（Modal / 独立页面 / Drawer），不可自行假设。
-
-**状态管理**：
-
-- 服务端状态用 ahooks useRequest
-- 客户端状态用 Zustand + immer + persist
+>
+> ⚠️ **API 签名冲突处理**：当 spec.md 接口设计与 api-conventions.md 不一致时，**以 spec.md 为准**，但须在对应 Task 下标注偏离点（如：`<!-- deviation: getList 参数使用 POST body 而非 GET query -->`）。
+>
+> 引入新依赖前，先 Read `.ai/core/tech-stack.md` 确认不在禁用列表中。
 
 ### 步骤 5：组件约束速查
 
-在输出 JSX 之前，先对照第二节硬约束（组件替换 + 导入规则），再检查以下 JSX 特有项：
-
-- [ ] SForm 字段联动是否用 `type: 'dependency'` + `depNames` 而非外部 useWatch 控制渲染？
-- [ ] SDatePickerRange 是否用 `rangeKeys` 拆分字段而非手动 getFieldValue 拆分？
-- [ ] Modal 是否使用条件渲染 `{open && <Modal/>}` 而非 destroyOnClose？
-- [ ] Modal/Drawer 是否封装在子组件内部，而非由列表页管理 open 状态？
-- [ ] 列表页是否仅通过 ref 或 props 触发弹层，不直接持有弹层状态？
+对照第二节硬约束（组件替换 + 导入规则）+ 📖 `.ai/conventions/verification.md`「JSX 特有检查」章节自检。
 
 ### 步骤 6：验证循环
 
