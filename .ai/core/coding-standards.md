@@ -98,12 +98,24 @@ export default [ComponentName];
 
 ### 2. 组件命名规范
 
-| 类型     | 命名模式              | 示例                             |
-| -------- | --------------------- | -------------------------------- |
-| 页面组件 | `PascalCase` + `Page` | `ProductPage`, `OrderPage`       |
-| 业务组件 | `PascalCase`          | `ProductCard`, `OrderList`       |
-| 通用组件 | `PascalCase`          | `DataTable`, `SearchForm`        |
-| Hooks    | `use` + `PascalCase`  | `useProductList`, `useOrderForm` |
+| 类型     | 命名模式              | 示例                                        |
+| -------- | --------------------- | ------------------------------------------- |
+| 页面组件 | `PascalCase` + `Page` | `ProductPage`, `OrderPage`                  |
+| 业务组件 | `PascalCase`          | `ProductCard`, `OrderList`                  |
+| 通用组件 | `PascalCase`          | `DataTable`, `SearchForm`                   |
+| 容器组件 | `{Entity}{Layer}`     | `{Entity}FormModal`, `{Entity}DetailDrawer` |
+| Hooks    | `use` + `PascalCase`  | `useProductList`, `useOrderForm`            |
+
+#### 容器组件说明
+
+容器组件用于封装 Modal/Drawer + 内容组件，将弹层的 open/close 状态内部管理，通过 ref 暴露 `open()` 方法供外部调用。
+
+| 场景        | 命名模式               | 职责                                |
+| ----------- | ---------------------- | ----------------------------------- |
+| Modal 表单  | `{Entity}FormModal`    | 封装 Modal + SForm，管理弹层状态    |
+| Drawer 详情 | `{Entity}DetailDrawer` | 封装 Drawer + SDetail，管理抽屉状态 |
+
+> 详见 `.ai/guides/crud-page.md`「弹层封装原则」章节。
 
 ### 3. 样式规范
 
@@ -147,48 +159,20 @@ api/
 
 ### 2. API对象模式
 
-```typescript
-// ✅ 使用对象模式组织API
-export const [module]Api = {
-  getList: (params?: [Entity]Query) => {...},
-  getById: (id: string) => {...},
-  create: (data: [Entity]FormData) => {...},
-  update: (id: string, data: Partial<[Entity]>) => {...},
-  delete: (id: string) => {...},
-};
+使用对象字面量组织同一模块的 API 方法，通过命名导出（`export const {module}Api`）供页面使用。
 
-// 使用
-import { [module]Api } from '@api/[module]';
-const { data } = useRequest([module]Api.getList);
-```
+> 完整模板见 `.ai/conventions/api-conventions.md`。
+
+使用示例：`const { data } = useRequest([module]Api.getList);`
 
 ### 3. 类型定义位置
 
 ```typescript
 // 类型定义在 api/[module]/types.ts
 // 不要在API文件中定义类型
-
-// api/[module]/types.ts
-export interface [Entity] {
-  id: string;
-  [fieldName]: [fieldType];
-  status: [Entity]Status;
-  createTime: string;
-}
-
-export type [Entity]Status = '[status1]' | '[status2]';
-
-export interface [Entity]Query {
-  page?: number;
-  pageSize?: number;
-  [filterField]?: [filterType];
-}
-
-export interface [Entity]FormData {
-  [fieldName]: [fieldType];
-  status: [Entity]Status;
-}
 ```
+
+> 完整类型定义模板（Entity、EntityQuery、EntityFormData、EntityStatus）见 `.ai/conventions/api-conventions.md`。
 
 ## 状态管理规范
 
@@ -206,21 +190,9 @@ export { useAppStore } from './app';
 
 ### 2. Store结构
 
-```typescript
-interface [Domain]State {
-  // 1. State定义
-  [data]: [DataType];
-  loading: boolean;
+Store 包含 State 定义、Selector（使用时计算）和 Actions 三部分。
 
-  // 2. Computed（通过selector实现）
-  // 不存储在store中，使用时计算
-
-  // 3. Actions
-  set[Data]: (data: [DataType]) => void;
-  fetch[Data]: () => Promise<void>;
-  reset: () => void;
-}
-```
+> 完整 Store 代码模板（含 Zustand + immer + persist）见 `.ai/core/architecture.md`「状态管理规范」章节。
 
 ## 导入导出规范
 

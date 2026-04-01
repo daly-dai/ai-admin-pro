@@ -68,7 +68,12 @@ export default tseslint.config(
   // 业务页面和组件：限制 antd 高阶组件，引导使用 sdesign
   {
     files: ['src/pages/**/*.tsx', 'src/components/**/*.tsx'],
-    ignores: ['src/pages/login/**', 'src/pages/error/**', 'src/pages/register/**'],
+    ignores: [
+      'src/pages/login/**',
+      'src/pages/error/**',
+      'src/pages/register/**',
+      'src/components/editable-tables/**', // 可编辑表格组件库豁免
+    ],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -86,6 +91,16 @@ export default tseslint.config(
                 '业务页面请使用 @dalydb/sdesign 的 STable/SForm/SButton/SDetail 替代。',
             },
           ],
+        },
+      ],
+      // 示例：禁止在非豁免目录使用 Modal.confirm
+      // .eslintrc 中配置 no-restricted-syntax 或自定义规则
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'Modal',
+          property: 'confirm',
+          message: '使用 SConfirm 组件替代',
         },
       ],
     },

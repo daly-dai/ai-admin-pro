@@ -4,18 +4,7 @@
 
 ## 技术栈（固定）
 
-```yaml
-构建工具: RSBuild ^1.7.0
-框架: React ^18.3.0 + TypeScript ^5.5.0
-UI库: Ant Design ^5.29.3+ @dalydb/sdesign^1.3.3
-状态管理: Zustand ^5.0.11 + immer ^11.1.4
-路由: React Router ^6.26.0
-HTTP: Axios ^1.7.0
-Hooks: ahooks ^3.8.0
-图表: Chart.js ^4.5.1 + react-chartjs-2 ^5.3.1 (轻量级)
-图标: lucide-react ^0.577.0 + @ant-design/icons ^5.4.0
-工具库: dayjs ^1.11.0, lodash-es ^4.17.0
-```
+> 详见 `.ai/core/tech-stack.md`
 
 ## 项目结构（强制）
 
@@ -99,43 +88,10 @@ export default ComponentName;
 
 ### 2. API层规范（强制）
 
-```typescript
-// api/[module]/types.ts - 类型定义（必须）
-export interface [Entity] {
-  id: string;
-  [fieldName]: [fieldType];
-}
+API 模块采用 `types.ts`（类型定义）+ `index.ts`（API 对象）双文件结构，导出 `{module}Api` 对象，包含 5 个标准方法（getList/getById/create/update/delete）。
 
-export interface [Entity]Query {
-  page?: number;
-  pageSize?: number;
-  [filterField]?: [filterType];
-}
-
-// api/[module]/index.ts - API实现
-import type { PageData } from '@types';
-import { request } from '@utils/request';
-import type { [Entity], [Entity]Query } from './types';
-
-export const [module]Api = {
-  /** 获取[实体]列表 */
-  getList: (params?: [Entity]Query) =>
-    request.get<PageData<[Entity]>>('/api/[module]', { params }),
-
-  /** 获取[实体]详情 */
-  getById: (id: string) => request.get<[Entity]>(`/api/[module]/${id}`),
-
-  /** 创建[实体] */
-  create: (data: Omit<[Entity], 'id'>) => request.post<[Entity]>('/api/[module]', data),
-
-  /** 更新[实体] */
-  update: (id: string, data: Partial<[Entity]>) =>
-    request.put<[Entity]>(`/api/[module]/${id}`, data),
-
-  /** 删除[实体] */
-  delete: (id: string) => request.delete(`/api/[module]/${id}`),
-};
-```
+> 完整类型模板和 API 对象模板见 `.ai/conventions/api-conventions.md`。
+> 开发指南见 `.ai/guides/api-module.md`。
 
 ### 3. 状态管理规范（强制）
 

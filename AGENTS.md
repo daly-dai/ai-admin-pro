@@ -1,6 +1,6 @@
 ﻿# AI Frontend App
 
-> React 18 + TypeScript 5 + @dalydb/sdesign + antd + Zustand + Rsbuild
+> React 18 + TypeScript 5 + @dalydb/sdesign + antd 5 + Zustand + Rsbuild
 >
 > **这是 AI 进入本项目的唯一入口。所有开发必须遵循本文件定义的流程和约束。**
 
@@ -10,23 +10,10 @@
 
 本项目采用 **SDD（Spec-Driven Development）** 模式，所有开发从需求拆解开始：
 
-`步骤 0: 检查 specs/ 是否已有对应的需求规格
-         ↓ 没有
-步骤 1: 拆解需求 → specs/[feature]/spec.md
-         ↓
-  ┌─────────────────── 以下步骤按 Task 逐个循环 ───────────────────┐
-  │ 步骤 2: 场景预读 → 根据当前 Task 类型读取对应文档（仅当前 Task） │
-  │          ↓                                                      │
-  │ 步骤 3: 参考已有模块 → Glob + Read 同类实现                     │
-  │          ↓                                                      │
-  │ 步骤 4: 生成代码 → 严格遵循规范                                 │
-  │          ↓                                                      │
-  │ 步骤 5: 组件约束速查 → 逐条对照                                 │
-  │          ↓                                                      │
-  │ 步骤 6: 验证循环 → pnpm verify → 自修复 → 自检清单              │
-  │          ↓                                                      │
-  │ 步骤 7: 更新进度 → specs/[feature]/progress.md                  │
-  └─────────────────── 下一个 Task → 回到步骤 2 ───────────────────┘`
+`步骤 0: 检查 specs/ + 会话恢复 → 1: 拆解需求 → [循环执行以下步骤]
+  → 2: 场景预读 → 3: 参考已有模块 → 4: 生成代码
+  → 5: 组件约束速查 → 6: 验证循环(pnpm verify)
+  → 7: 更新进度 + 生成会话文档 → 回到步骤 2 处理下一个 Task`
 
 > ⚠️ **禁止跳步**。跳过步骤 1 直接写代码，或跳过步骤 2 直接生成代码，均属于流程违规。
 
@@ -49,23 +36,7 @@
 
 #### sdesign 与 antd 的关系
 
-**@dalydb/sdesign 是 antd 的业务增强层，不是替代品。** sdesign 仅封装了 CRUD 场景中高频使用的 4 类组件（表格、表单、按钮、描述列表），其余 antd 组件仍然是项目基础 UI 库。
-
-#### antd 可直接使用的组件（不受限制）
-
-| 分类                                   | 可直接使用的 antd 组件                                                                     |
-| -------------------------------------- | ------------------------------------------------------------------------------------------ |
-| 布局                                   | Row Col Space Divider Layout Flex                                                          |
-| 导航                                   | Menu Breadcrumb Tabs Pagination Steps Dropdown                                             |
-| 反馈                                   | Modal Drawer message                                                                       |
-| otification Spin Tooltip Popover Alert |
-| 数据展示                               | Tag Badge Avatar Image Tree Timeline Empty Card Statistic List Progress Segmented Calendar |
-| 输入                                   | Input Select DatePicker Switch Radio Checkbox（在 SForm 外独立使用时）                     |
-| 其他                                   | Result Skeleton ConfigProvider Upload（在 SForm 外独立使用时）                             |
-
-> **核心原则**：sdesign 管 CRUD 四件套，antd 管其余一切。
->
-> **AI 防幻觉提示**：不要臆想 sdesign 中不存在的组件（如 ~~SModal~~、~~SDrawer~~、~~STag~~、~~SMenu~~）。不确定时查阅 .ai/sdesign/components/ 目录。
+sdesign 管 CRUD 四件套（Table/Form/Button/Descriptions），antd 管其余一切。不要臆想 sdesign 不存在的组件（如 ~~SModal~~、~~SDrawer~~、~~STag~~），不确定时查阅 `.ai/sdesign/components/` 目录。
 
 ### 导入规则
 
@@ -97,6 +68,13 @@ pnpm type-check    # 仅 tsc
 
 - 如果已存在对应功能的 spec.md → 直接跳到步骤 2，按 Task 逐个开发
 - 如果不存在 → 进入步骤 1，先拆解需求
+
+**会话恢复协议**（spec.md 存在时执行）：
+
+检查 `specs/[feature]/sessions/` 目录下是否有 `session-*.md` 文件：
+
+- 如果有 → 读取最新的 session 文件，恢复上下文（完成状态、决策记录、遗留问题）
+- 标准加载顺序：`AGENTS.md → spec.md → progress.md → sessions/（最新 session）`
 
 ### 步骤 1：拆解需求
 
@@ -130,7 +108,8 @@ pnpm type-check    # 仅 tsc
 | component   | 业务组件        | .ai/core/coding-standards.md（组件规范部分）                                  |
 | store       | 状态管理        | .ai/core/architecture.md（状态管理规范部分）                                  |
 | refactor    | 重构已有代码    | Read 目标文件 + 关联 API                                                      |
-| 不确定      | —               | .ai/core/architecture.md + .ai/core/coding-standards.md                       |
+
+> Task 类型无法判断时，Read `.ai/core/architecture.md` + `.ai/core/coding-standards.md` 作为兜底。
 
 预读顺序：
 
@@ -151,58 +130,29 @@ Glob: src/stores/*.ts          # 已有 Store
 
 选择一个最接近的已有模块，Read 其完整代码作为参考。
 
+> 如目标模块已存在（修改而非新增），先 Read `.ai/conventions/incremental-development.md`。
+
 ### 步骤 4：生成代码
 
-严格遵循以下约定生成代码：
-
-**API 模块**：
-
-- 文件：src/api/{module}/types.ts + src/api/{module}/index.ts
-- 导出对象命名：{module}Api
-- 标准方法：getList / getById / create / update / delete
-
-> ⚠️ **API 签名冲突处理**：当需求文档（spec.md）中的接口设计与 api-conventions.md 模板签名不一致时，**以需求文档为准**，但必须在 spec.md 的对应 Task 下标注偏离点（如：`<!-- deviation: getList 参数使用 POST body 而非 GET query -->`）。
-
-**页面组件**：
-
-- 列表页首选 SSearchTable
-- 表单页使用 SForm（items 配置式）
-- 详情页使用 SDetail（items 配置式）
-- 按钮使用 SButton（actionType 预设）
+按步骤 2 预读的指南和步骤 3 参考的模式生成代码，严格遵循第二节硬约束。
 
 > ⚠️ **页面交互模式**：生成列表页时，必须根据 crud-page.md 中「页面交互模式选择」决定新增/编辑/详情的承载方式（Modal / 独立页面 / Drawer），不可自行假设。
-
-**状态管理**：
-
-- 服务端状态用 ahooks useRequest
-- 客户端状态用 Zustand + immer + persist
+>
+> ⚠️ **API 签名冲突处理**：当 spec.md 接口设计与 api-conventions.md 不一致时，**以 spec.md 为准**，但须在对应 Task 下标注偏离点（如：`<!-- deviation: getList 参数使用 POST body 而非 GET query -->`）。
+>
+> 引入新依赖前，先 Read `.ai/core/tech-stack.md` 确认不在禁用列表中。
 
 ### 步骤 5：组件约束速查
 
-在输出 JSX 之前，逐条对照：
-
-- [ ] 目标文件是否在豁免目录（login/、error/、register/、layouts/、router/）？
-- [ ] 不在豁免目录：是否使用了 SForm 而非 antd Form？
-- [ ] 不在豁免目录：是否使用了 SButton 而非 antd Button？
-- [ ] 不在豁免目录：是否使用了 STable/SSearchTable 而非 antd Table？
-- [ ] 如果不在豁免目录：是否使用了 SDetail 而非 antd Descriptions？
-- [ ] 导入路径是否使用 @/ 或 src/ 别名？
-- [ ] 是否有 any 类型？
+对照第二节硬约束（组件替换 + 导入规则）+ 📖 `.ai/conventions/verification.md`「JSX 特有检查」章节自检。
 
 ### 步骤 6：验证循环
 
 > 📖 **参考**：.ai/conventions/verification.md
 
-**Level 1 - 代码级验证（AI 自执行）**：
-`bash
-pnpm verify
-`
+**Level 1**：执行 `pnpm verify`（见第二节验证命令），有错误按优先级修复（tsc > eslint > prettier），最多 3 轮，仍有错误则报告用户。
 
-- 有错误 → 按优先级修复（tsc > eslint > prettier）→ 再次 verify
-- 最多 3 轮，仍有错误 → 报告给用户
-
-**Level 2 - 功能级自检（AI 自检）**：
-逐条检查组件约束清单、代码质量清单、文件完整性清单（详见 verification.md）
+**Level 2**：逐条检查组件约束清单、代码质量清单、文件完整性清单（详见 verification.md）
 
 ### 步骤 7：更新进度
 
@@ -211,66 +161,27 @@ pnpm verify
 - Level 1 + Level 2 均通过 → 🟢
 - 任一 Level 未通过 → 🔴（附失败原因）
 
+**生成会话交接文档**：
+
+按 `.ai/specs/session-template.md` 生成 `specs/[feature]/sessions/session-{task-id}.md`，记录：
+
+- 完成状态、关键决策、文件变更、验证状态
+- 下一 Task 的入口上下文（约束、依赖、预读文档）
+
 ---
 
 ## 四、项目结构
 
-`src/
-├── api/[module]/         # API 层（types.ts + index.ts）
-├── components/
-│   ├── business/         # 业务组件（本项目复用）
-│   └── common/           # 通用组件（跨项目复用）
-├── constants/            # 常量（enum.ts + config.ts）
-├── hooks/                # 自定义 Hooks
-├── layouts/              # 布局组件（MainLayout.tsx）
-├── pages/[page-name]/    # 页面（index.tsx + components/）
-├── plugins/request/      # HTTP 封装（唯一允许使用 axios 的位置）
-├── router/               # 路由配置 + 守卫
-├── stores/               # Zustand 状态管理
-├── styles/               # 全局样式
-├── types/                # 全局类型定义
-└── utils/                # 工具函数`
-
----
-
-## 五、文档索引（场景驱动，强制预读）
-
-> ⚠️ **不是 按需查阅，而是场景匹配即必读。**
-
-| 场景             | 必读文件                                   | 何时触发                   |
-| ---------------- | ------------------------------------------ | -------------------------- |
-| **拆解需求**     | .ai/specs/template.md                      | 开发新功能前 **（强制）**  |
-| **验证流程**     | .ai/conventions/verification.md            | 代码生成后 **（强制）**    |
-| **增量开发**     | .ai/conventions/incremental-development.md | 修改已有模块时             |
-| **API 设计**     | .ai/conventions/api-conventions.md         | 新增 API 模块时            |
-| **API 模块**     | .ai/guides/api-module.md                   | 新增 API 模块 **（强制）** |
-| **CRUD 列表页**  | .ai/guides/crud-page.md                    | 生成列表页 **（强制）**    |
-| **表单页**       | .ai/guides/form-page.md                    | 生成表单页 **（强制）**    |
-| **详情页**       | .ai/guides/detail-page.md                  | 生成详情页 **（强制）**    |
-| **sdesign 组件** | .ai/sdesign/components/ 下对应组件         | 使用任何 S\* 组件时        |
-| **架构规范**     | .ai/core/architecture.md                   | 新增模块/目录时            |
-| **代码规范**     | .ai/core/coding-standards.md               | 首次生成代码时             |
-| **技术栈约束**   | .ai/core/tech-stack.md                     | 引入新依赖时               |
+> 详见 `.ai/core/architecture.md`「项目结构（强制）」章节。
 
 ---
 
 ## 六、动态发现策略
 
-不维护静态文件清单，通过工具搜索获取实时上下文：
+> 详见 `.ai/conventions/incremental-development.md`「动态发现策略」章节。步骤 3 已包含核心 Glob 命令。
 
-`bash
+---
 
-# 发现已有模块
+## 七、纠错沉淀（用户纠正时触发）
 
-Glob: src/api/_/index.ts
-Glob: src/pages/_/index.tsx
-Glob: src/components/business/\*_/_.tsx
-Glob: src/stores/\*.ts
-
-# 发现具体实现
-
-Grep: export interface [Entity] # 查找类型定义
-Grep: export const [module]Api # 查找 API 导出
-Grep: import._[Component] # 查找组件引用
-Grep: path:._[route] in src/router/ # 查找路由配置
-`
+当用户指出写法错误/过时时，**必须** Read `.ai/conventions/correction-workflow.md` 并按其四层防御体系执行沉淀。禁止只口头应答而不落实到文件。

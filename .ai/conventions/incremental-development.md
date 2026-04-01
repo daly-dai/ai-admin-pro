@@ -62,10 +62,7 @@ Read: src/pages/product/index.tsx → 页面结构模式
 ### 场景 1: 新增 CRUD 模块
 
 ```
-前置阅读（强制）:
-  - .ai/guides/api-module.md
-  - .ai/guides/crud-page.md
-  - .ai/sdesign/components/（SSearchTable.md + SForm.md + SDetail.md + SButton.md）
+前置阅读（强制）: 按 AGENTS.md 步骤 2「场景预读」表中 api + page-list 类型读取对应文档
 
 执行步骤:
 1. 读 AGENTS.md（约定 + 硬约束 + 豁免范围）
@@ -78,9 +75,7 @@ Read: src/pages/product/index.tsx → 页面结构模式
 ### 场景 2: 新增表单页（新增/编辑）
 
 ```
-前置阅读（强制）:
-  - .ai/guides/form-page.md
-  - .ai/sdesign/components/SForm.md
+前置阅读（强制）: 按 AGENTS.md 步骤 2「场景预读」表中 page-form 类型读取对应文档
 
 执行步骤:
 1. 确认目标文件路径是否在豁免目录
@@ -92,9 +87,7 @@ Read: src/pages/product/index.tsx → 页面结构模式
 ### 场景 3: 新增详情页
 
 ```
-前置阅读（强制）:
-  - .ai/guides/detail-page.md
-  - .ai/sdesign/components/SDetail.md
+前置阅读（强制）: 按 AGENTS.md 步骤 2「场景预读」表中 page-detail 类型读取对应文档
 
 执行步骤:
 1. 确认目标文件路径是否在豁免目录

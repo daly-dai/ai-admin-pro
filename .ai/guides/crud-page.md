@@ -90,3 +90,62 @@ const [editingId, setEditingId] = useState<string>();
   }
 />;
 ```
+
+### 弹层封装原则
+
+> ⚠️ **关键约定**：Modal/Drawer 的 open/close 状态不应由列表页管理，应完全封装在子组件内部。列表页只负责列表编排。
+
+**反例（❌ 错误）**：列表页管理弹层状态
+
+```tsx
+// {Entity}Page.tsx — 列表页不应管理 Modal 状态
+const {Entity}Page = () => {
+  const [modalOpen, setModalOpen] = useState(false);  // ❌ 弹层状态泄漏到列表页
+  return (
+    <>
+      <SSearchTable ... />
+      {modalOpen && <Modal><{Entity}Form /></Modal>}  {/* ❌ */}
+    </>
+  );
+};
+```
+
+**正例（✅ 正确）**：子组件内部管理弹层
+
+```tsx
+// {Entity}FormModal.tsx — 容器组件，内部管理 Modal
+const {Entity}FormModal = forwardRef<{Entity}FormModalRef, Props>((props, ref) => {
+  const [open, setOpen] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    open: (mode, id?) => { setOpen(true); },
+  }));
+
+  return (
+    {open && (
+      <Modal open onCancel={() => setOpen(false)} footer={null}>
+        <{Entity}Form onSuccess={() => { setOpen(false); props.onSuccess?.(); }} />
+      </Modal>
+    )}
+  );
+});
+
+// {Entity}Page.tsx — 列表页保持简洁
+const {Entity}Page = () => {
+  const formRef = useRef<{Entity}FormModalRef>(null);
+  return (
+    <>
+      <SSearchTable
+        tableTitle={{ actionNode: <SButton actionType="create" onClick={() => formRef.current?.open('create')} /> }}
+      />
+      <{Entity}FormModal ref={formRef} onSuccess={() => tableRef.current?.refresh()} />
+    </>
+  );
+};
+```
+
+**核心原则**：
+
+1. 列表页只做编排，不管弹层生命周期
+2. 弹层组件通过 ref 暴露 open 方法供外部调用
+3. Modal 使用条件渲染 `{open && <Modal/>}` 模式
