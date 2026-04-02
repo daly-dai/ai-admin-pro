@@ -103,7 +103,7 @@ input | inputNumber | password | textarea | select | slider | radio | radioGroup
 
 1. 修正组件：使用 `SSearchTable` 或 `STable + SForm.Search`
 2. 修正状态：使用 `useSearchTable` hook
-3. 修正 API：调用 `{module}Api.getList`
+3. 修正 API：调用 `getListByGet`
 4. 修正按钮：使用 `SButton` + `actionType`
 
 ### 表单页修正
@@ -111,8 +111,8 @@ input | inputNumber | password | textarea | select | slider | radio | radioGroup
 参考 `.ai/self-correction/form-page.md`：
 
 1. 修正组件：使用 `SForm` + `items` 配置
-2. 修正提交：创建调用 `create`，编辑调用 `update`
-3. 修正回填：编辑页调用 `getById` 并 `setFieldsValue`
+2. 修正提交：创建调用 `createByPost`，编辑调用 `updateByPut`
+3. 修正回填：编辑页调用 `getByIdByGet` 并 `setFieldsValue`
 4. 修正按钮：使用 `SButton` + `actionType`
 
 ### 详情页修正
@@ -120,7 +120,7 @@ input | inputNumber | password | textarea | select | slider | radio | radioGroup
 参考 `.ai/self-correction/detail-page.md`：
 
 1. 修正组件：使用 `SDetail` + `items` 配置
-2. 修正数据：调用 `{module}Api.getById`
+2. 修正数据：调用 `getByIdByGet`
 3. 修正布局：使用 `column` 控制列数
 
 ### 输出要求

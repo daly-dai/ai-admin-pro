@@ -145,10 +145,12 @@ export default [ComponentName];
 
 ## API层规范
 
-### 1. 模块组织
+> 完整 API 规范（命名约定、方法命名规则、类型定义模板、createRequest 配置、useRequest 用法）
+> → 详见 `.ai/conventions/api-conventions.md`（SSOT）
+
+### 模块组织
 
 ```typescript
-// 按业务模块组织
 api/
 ├── [moduleA]/      # 模块A（如: product, order）
 │   ├── index.ts    # API实现
@@ -159,22 +161,12 @@ api/
 └── index.ts        # 统一导出
 ```
 
-### 2. API对象模式
-
-使用对象字面量组织同一模块的 API 方法，通过命名导出（`export const {module}Api`）供页面使用。
-
-> 完整模板见 `.ai/conventions/api-conventions.md`。
-
-使用示例：`const { data } = useRequest(getListByGet);`
-
-### 3. 类型定义位置
+### 类型定义位置
 
 ```typescript
 // 类型定义在 api/[module]/types.ts
 // 不要在API文件中定义类型
 ```
-
-> 完整类型定义模板（Entity、EntityQuery、EntityFormData、EntityStatus）见 `.ai/conventions/api-conventions.md`。
 
 ## 状态管理规范
 

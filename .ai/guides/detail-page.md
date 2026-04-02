@@ -37,10 +37,12 @@
 
 ## 决策点
 
+> ⚠️ **强制要求**：使用 sdesign 组件前必须 Read 对应组件文档（`.ai/sdesign/components/*.md`），禁止猜测属性。
+
 - **基础详情**：`<SDetail title="xxx" dataSource={data} items={items} column={2} />`
 - **分组详情**：`<SDetail.Group groupItems={[{ groupTitle, items }]} />`
 - **操作按钮**：使用 `SButton.Group` + `actionType`（如 `edit`、`delete`、`back`）
-- **数据加载**：调用 `{module}Api.getById` 获取详情
+- **数据加载**：调用 `getByIdByGet` 获取详情
 
 ## 布局
 

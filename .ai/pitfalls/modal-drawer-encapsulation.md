@@ -16,7 +16,7 @@ const {Entity}Page = () => {
     <>
       <SSearchTable
         columns={columns}
-        requestFn={{module}Api.getList}
+        requestFn={getListByGet}
       />
       {modalOpen && (
         <Modal open onCancel={() => setModalOpen(false)}>  {/* ❌ */}
@@ -77,7 +77,7 @@ const {Entity}Page = () => {
         ref={tableRef}
         tableTitle={{ actionNode: <SButton actionType="create" onClick={() => formRef.current?.open('create')} /> }}
         columns={columns}
-        requestFn={{module}Api.getList}
+        requestFn={getListByGet}
       />
       <{Entity}FormModal ref={formRef} onSuccess={() => tableRef.current?.refresh()} />
     </>

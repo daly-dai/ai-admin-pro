@@ -73,87 +73,17 @@
 
 ### 2.4 转换为内部 YAML
 
-解析后转换为与 `api-conventions.md` 对齐的内部格式：
+解析后转换为与 `api-conventions.md` 对齐的内部格式。
+
+> **YAML 格式参考** → `api-conventions.md`「接口定义格式」章节（`module` / `types` / `interfaces` 结构）。
+> **方法命名规则** → `api-conventions.md`「方法命名规则」表。
+
+在标准 YAML 基础上，spec-gen 模式额外追加 `deviations` 节：
 
 ```yaml
-module: { module_name }
-name: { 中文名 }
-basePath: /api/{module}
+# module / types / interfaces 结构同 api-conventions.md，此处不重复
 
-types:
-  { EntityName }:
-    - name: { fieldName }
-      type: { TypeScript 类型 }
-      required: true/false
-      desc: { 字段描述 }
-      enum: [{ 枚举值 }] # 如有
-
-interfaces:
-  - name: getListByGet
-    desc: { 描述 }
-    method: GET/POST
-    path: /api/{module}
-    query:
-      - name: { paramName }
-        type: { 类型 }
-        required: true/false
-        desc: { 描述 }
-    body: # POST 时
-      - name: { fieldName }
-        type: { 类型 }
-        required: true/false
-    response:
-      type: PageData<{EntityName}>
-
-  - name: getByIdByGet
-    desc: { 描述 }
-    method: GET
-    path: /api/{module}/{id}
-    params:
-      - name: id
-        type: string
-        required: true
-    response:
-      type: { EntityName }
-
-  - name: createByPost
-    desc: { 描述 }
-    method: POST
-    path: /api/{module}
-    body:
-      - name: { fieldName }
-        type: { 类型 }
-        required: true/false
-    response:
-      type: { EntityName }
-
-  - name: updateByPut
-    desc: { 描述 }
-    method: PUT
-    path: /api/{module}/{id}
-    params:
-      - name: id
-        type: string
-        required: true
-    body:
-      - name: { fieldName }
-        type: { 类型 }
-        required: true/false
-    response:
-      type: { EntityName }
-
-  - name: deleteByDelete
-    desc: { 描述 }
-    method: DELETE
-    path: /api/{module}/{id}
-    params:
-      - name: id
-        type: string
-        required: true
-    response:
-      type: void
-
-deviations: # 与 api-conventions 标准的偏离
+deviations: # 与 api-conventions 标准的偏离（spec-gen 特有）
   - item: { 偏离项 }
     standard: { 标准定义 }
     actual: { 实际定义 }

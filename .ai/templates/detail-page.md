@@ -85,7 +85,7 @@ const items: SDetailItem[] = [
 
 1. 修正组件：使用 `SDetail` + `items` 配置，不使用 `Descriptions`
 2. 修正导入：从 `@dalydb/sdesign` 导入组件
-3. 修正数据：调用 `{module}Api.getById` 获取详情
+3. 修正数据：调用 `getByIdByGet` 获取详情
 4. 修正按钮：使用 `SButton.Group` + `actionType` 预设
 5. 修正布局：使用 `column` 控制列数（通常为 2）
 

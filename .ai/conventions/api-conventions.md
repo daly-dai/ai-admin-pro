@@ -1,7 +1,42 @@
-# API约定
+# API 约定（唯一数据源）
 
-> AI根据后端接口定义生成前端代码的约定
+> ⚠️ 本文件是 API 规范的**唯一权威来源（SSOT）**，其他文件引用本文件，不重复定义。
 > 组件库文档参考: `.ai/sdesign/components/`
+
+## 命名约定
+
+| 对象     | 命名规则           | 示例              |
+| -------- | ------------------ | ----------------- |
+| API 对象 | `{module}Api`      | `productApi`      |
+| 实体类型 | `{Entity}`         | `Product`         |
+| 查询参数 | `{Entity}Query`    | `ProductQuery`    |
+| 表单数据 | `{Entity}FormData` | `ProductFormData` |
+| 接口方法 | `{name}By{HTTP}`   | `getListByGet`    |
+
+## 方法命名规则
+
+接口方法名必须添加 HTTP 方法后缀，明确标识请求类型：
+
+| HTTP 方法 | 后缀       | 示例                  |
+| --------- | ---------- | --------------------- |
+| GET       | `ByGet`    | `getListByGet`        |
+| POST      | `ByPost`   | `createByPost`        |
+| PUT       | `ByPut`    | `updateByPut`         |
+| DELETE    | `ByDelete` | `deleteByDelete`      |
+| PATCH     | `ByPatch`  | `updateStatusByPatch` |
+
+## 多后端服务配置
+
+使用 `createRequest` 创建独立实例，支持对接不同后端服务：
+
+| 配置          | 说明                                            | 默认值         |
+| ------------- | ----------------------------------------------- | -------------- |
+| `prefix`      | URL 前缀（baseURL）                             | `''`           |
+| `codeKey`     | 状态码字段名，如 `code`、`returnCode`、`status` | `code`         |
+| `successCode` | 成功状态码值，如 `200`、`0`、`true`             | `200`          |
+| `dataKey`     | 数据字段名，用于解包，如 `data`、`result`       | `''`（不解包） |
+| `msgKey`      | 消息字段名，如 `message`、`msg`                 | `message`      |
+| `timeout`     | 超时时间（毫秒）                                | `30000`        |
 
 ## 接口定义格式
 
@@ -45,15 +80,13 @@ types:
       desc: [字段描述]
 ```
 
-## AI生成规则
+## AI 生成规则
 
 ### 1. 类型定义生成 (api/[module]/types.ts)
 
 ```typescript
-// 枚举类型
 export type [Entity]Status = '[value1]' | '[value2]';
 
-// 实体接口
 export interface [Entity] {
   id: string;
   [fieldName]: [fieldType];
@@ -61,26 +94,23 @@ export interface [Entity] {
   createTime: string;
 }
 
-// 查询参数
 export interface [Entity]Query {
   page?: number;
   pageSize?: number;
   [filterField]?: [filterType];
 }
 
-// 表单数据
 export interface [Entity]FormData {
   [fieldName]: [fieldType];
   status: [Entity]Status;
 }
 ```
 
-### 2. API实现生成 (api/[module]/index.ts)
+### 2. API 实现生成 (api/[module]/index.ts)
 
 ```typescript
 import { createRequest } from '@/plugins/request';
 
-// 创建请求实例
 export const [module]Api = createRequest({
   prefix: '/[module]',
   codeKey: 'code',
@@ -89,7 +119,6 @@ export const [module]Api = createRequest({
   msgKey: 'message',
 });
 
-// 方法名必须添加请求类型后缀：ByGet、ByPost、ByPut、ByDelete、ByPatch
 export const getListByGet = (params?: [Entity]Query) =>
   [module]Api.get<PageData<[Entity]>>('/[module]', { params });
 
@@ -106,23 +135,18 @@ export const deleteByDelete = (id: string) =>
   [module]Api.delete(`/[module]/${id}`);
 ```
 
-### 3. 页面组件生成（使用 useRequest）
+### 3. 页面调用规范（useRequest）
 
 ```tsx
 import { useRequest } from 'ahooks';
 import { getListByGet, createByPost, deleteByDelete } from '@/api/[module]';
 
-// 列表页
+// 列表查询
 const { data, loading, refresh } = useRequest(getListByGet, {
   defaultParams: [{ page: 1, pageSize: 10 }],
 });
 
-// 搜索
-const handleSearch = (values: ProductQuery) => {
-  run(values);
-};
-
-// 创建
+// 创建（手动触发）
 const { run: handleCreate } = useRequest(createByPost, {
   manual: true,
   onSuccess: () => {
@@ -131,7 +155,7 @@ const { run: handleCreate } = useRequest(createByPost, {
   },
 });
 
-// 删除
+// 删除（手动触发）
 const { run: handleDelete } = useRequest(deleteByDelete, {
   manual: true,
   onSuccess: () => {
@@ -141,7 +165,25 @@ const { run: handleDelete } = useRequest(deleteByDelete, {
 });
 ```
 
-> 完整组件 Props 定义请参考: `.ai/sdesign/components/` 下对应组件文档
+### useRequest 常用配置
+
+| 配置            | 说明                            |
+| --------------- | ------------------------------- |
+| `manual`        | 是否手动触发（写操作设为 true） |
+| `defaultParams` | 默认请求参数                    |
+| `onSuccess`     | 成功回调                        |
+| `onError`       | 错误回调                        |
+| `refreshDeps`   | 依赖变化自动刷新                |
+| `ready`         | 是否就绪（可控制是否发起请求）  |
+
+## 硬约束
+
+- 使用 `import { createRequest } from '@/plugins/request'`，禁止直接 axios
+- 使用 `import type` 导入类型
+- 禁止 `any`，所有方法都需要泛型注解
+- 添加 JSDoc 注释
+- **方法名必须添加 HTTP 方法后缀**
+- **页面中使用 useRequest**，避免手动定义 loading/data/error
 
 ## 字段类型映射
 
@@ -168,17 +210,11 @@ const { run: handleDelete } = useRequest(deleteByDelete, {
    - 非标准方法名（如 `batchEnableByPost` 代替 `updateByPut`）
    - 分页参数命名不同（如 `current/size` 代替 `page/pageSize`）
 
-```markdown
-<!-- 标注格式示例 -->
-<!-- deviation: getListByGet 使用 POST /api/users/search，参数通过 body 传递而非 query -->
-```
-
 ## 特殊字段处理
 
 ### 1. 状态字段
 
 ```typescript
-// 自动生成valueEnum
 {
   title: '状态',
   dataIndex: 'status',
@@ -192,7 +228,6 @@ const { run: handleDelete } = useRequest(deleteByDelete, {
 ### 2. 时间字段
 
 ```typescript
-// 自动使用dateTime类型
 {
   title: '创建时间',
   dataIndex: 'createTime',
@@ -204,7 +239,6 @@ const { run: handleDelete } = useRequest(deleteByDelete, {
 ### 3. 操作字段
 
 ```typescript
-// 自动生成操作列
 {
   title: '操作',
   valueType: 'option',

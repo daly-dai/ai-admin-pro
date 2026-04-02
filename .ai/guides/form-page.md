@@ -37,8 +37,10 @@ cascader | SCascader | table | dependency
 
 ## 决策点
 
-- **新增页**：调用 `{module}Api.create`
-- **编辑页**：调用 `{module}Api.getById` 获取数据 + `{module}Api.update` 提交
+> ⚠️ **强制要求**：使用 sdesign 组件前必须 Read 对应组件文档（`.ai/sdesign/components/*.md`），禁止猜测属性。
+
+- **新增页**：调用 `createByPost`
+- **编辑页**：调用 `getByIdByGet` 获取数据 + `updateByPut` 提交
 - **分组表单**：使用 `SForm.Group` + `groupItems`
 - **字段联动**：使用 `type: 'dependency'` + `depNames` + `render`
 

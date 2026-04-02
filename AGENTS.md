@@ -32,6 +32,8 @@
 
 ### 组件使用
 
+> ⚠️ **强制要求**：在使用 sdesign 组件前，必须先 Read 对应的组件文档（`.ai/sdesign/components/*.md`），禁止猜测属性。
+
 | 禁止直接使用      | 必须替换为            | 来源            |
 | ----------------- | --------------------- | --------------- |
 | antd Table        | STable / SSearchTable | @dalydb/sdesign |
@@ -130,6 +132,10 @@ pnpm type-check    # 仅 tsc
 - 是否存在 `import axios`、`any` 类型、`../../` 相对路径
 - API 对象命名是否正确（`{module}Api`）
 - SForm 字段联动是否用 `type: 'dependency'`，Modal 是否用条件渲染 `{open && <Modal/>}`
+
+**Level 3（错题集对照）**：生成页面代码前，Read `.ai/pitfalls/index.md` 获取错题索引，对照当前生成的代码逐条排查。如有匹配的错误模式，立即修正。
+
+> ⚠️ 此步骤对所有涉及页面/组件代码生成的模式（page-first、api-connect、incremental、full-sdd）均为**必选项**，不可跳过。
 
 ---
 

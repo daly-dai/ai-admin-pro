@@ -15,6 +15,6 @@
 
 - 只生成 API 层，不生成页面（除非用户明确要求）
 - 字段类型从接口文档映射，不猜测
-- API 对象命名：`{module}Api`，5 个标准方法：getList / getById / create / update / delete
+- API 对象命名：`{module}Api`，方法命名规则 → `api-conventions.md`「方法命名规则」表（方法名必须添加 HTTP 方法后缀）
 
 > 🔒 **输出锁**：本模式仅允许创建/修改 `src/api/{module}/types.ts` 和 `src/api/{module}/index.ts`，禁止创建其他文件。

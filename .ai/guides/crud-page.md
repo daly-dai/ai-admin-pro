@@ -34,9 +34,11 @@ src/pages/{module}/edit.tsx   — 编辑页
 
 ## 关键约定
 
+> ⚠️ **强制要求**：使用 sdesign 组件前必须 Read 对应组件文档（`.ai/sdesign/components/*.md`），禁止猜测属性。
+
 - API 对象命名：`{module}Api`
-- 5 个标准方法：`getList` / `getById` / `create` / `update` / `delete`
-- SSearchTable 的 `requestFn` 直接传 `{module}Api.getList`
+- 5 个标准方法：`getListByGet` / `getByIdByGet` / `createByPost` / `updateByPut` / `deleteByDelete`
+- SSearchTable 的 `requestFn` 直接传 `getListByGet` 函数
 - `paginationFields` 配置分页字段映射
 - 操作列使用 `SButton` + `actionType`（如 `edit`、`delete`）
 
