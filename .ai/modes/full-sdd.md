@@ -12,6 +12,7 @@
 
 2. **逐 Task 执行**（循环）：
    - **预读**：根据 Task 类型读取对应模板（见下表）+ 页面类读取 API 数据源
+   - **读 sdesign 组件文档**（页面类 Task 必选）：Read 页面中使用的所有 sdesign 组件文档（`.ai/sdesign/components/{组件名}.md`），未读文档的组件禁止使用
    - **读错题集**：Read `.ai/pitfalls/index.md`，对照错题避免已知错误模式
    - **生成代码**：按模板和数据源生成，遵循硬约束
    - **验证**：`pnpm verify` + 脑内自检硬约束
@@ -31,7 +32,6 @@
 
 **补充预读（按需，非必读）**：
 
-- 首次接触 sdesign 组件 → 查阅 `.ai/sdesign/components/` 下对应组件文档
 - 首次新增模块/目录 → Read `.ai/core/architecture.md`
 - 页面交互模式决策 → 查阅 `.ai/templates/crud-page.md`「页面交互模式选择」章节
 - 修改已有模块 → Read `.ai/conventions/incremental-development.md`

@@ -9,11 +9,16 @@
    - 表单页 → `.ai/templates/form-designer.md`
    - 详情页 → `.ai/templates/detail-page.md`
 2. **读错题集**：Read `.ai/pitfalls/index.md`，对照错题避免已知错误模式
-3. **生成占位 API**：
+3. **读 sdesign 组件文档**：根据页面类型 Read 对应组件文档（未读文档的组件禁止使用）
+   - 列表页 → `SSearchTable.md` + `SButton.md`
+   - 表单页 → `SForm.md` + `SButton.md`
+   - 详情页 → `SDetail.md`
+   - 用到其他 sdesign 组件 → 读对应 `.ai/sdesign/components/{组件名}.md`
+4. **生成占位 API**：
    - `src/api/{module}/types.ts` — 根据描述定义临时类型，未确认字段加 `// TODO: 待接口确认`
    - `src/api/{module}/index.ts` — 方法签名完整，URL 用 `'/api/TODO/{module}'` 占位
-4. **生成页面代码**：基于占位类型生成可渲染的页面，严格使用 sdesign 组件
-5. **验证**：`pnpm verify`，最多 3 轮修复
+5. **生成页面代码**：基于占位类型生成可渲染的页面，严格使用 sdesign 组件
+6. **验证**：`pnpm verify`，最多 3 轮修复
 
 **约束**：
 

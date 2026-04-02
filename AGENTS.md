@@ -32,7 +32,19 @@
 
 ### 组件使用
 
-> ⚠️ **强制要求**：在使用 sdesign 组件前，必须先 Read 对应的组件文档（`.ai/sdesign/components/*.md`），禁止猜测属性。
+> 🚫 **阻断性要求**：代码中每使用一个 sdesign 组件，**必须先 Read 该组件的文档**（`.ai/sdesign/components/{ComponentName}.md`）。
+> **未读文档 = 禁止使用该组件。没有例外。**
+>
+> 常见需读文档：
+>
+> - `SSearchTable` → Read `.ai/sdesign/components/SSearchTable.md`
+> - `SForm` → Read `.ai/sdesign/components/SForm.md`
+> - `SButton` → Read `.ai/sdesign/components/SButton.md`
+> - `SDetail` → Read `.ai/sdesign/components/SDetail.md`
+> - `STable` → Read `.ai/sdesign/components/STable.md`
+> - 其他 sdesign 组件同理，文档路径：`.ai/sdesign/components/{组件名}.md`
+>
+> ⚠️ **禁止凭记忆、猜测或参考其他 AI 生成的代码来使用 sdesign 组件的属性。文档是唯一可信来源。**
 
 | 禁止直接使用      | 必须替换为            | 来源            |
 | ----------------- | --------------------- | --------------- |
