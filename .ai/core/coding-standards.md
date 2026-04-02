@@ -33,6 +33,25 @@ interface ProductQuery {}
 interface ProductFormData {}
 ```
 
+### 3. 未使用参数处理
+
+> 回调函数中未使用的参数必须加 `_` 前缀，ESLint 默认忽略以 `_` 开头的参数。
+
+```typescript
+// ✅ 正确：未使用的参数加 _ 前缀
+render: (_, record) => <SButton onClick={() => edit(record.id)}>编辑</SButton>
+render: (_text, _record, index) => index + 1
+items.map((_item, index) => index)
+
+// ❌ 错误：未使用的参数不加 _ 前缀，触发 no-unused-vars
+render: (text, record) => <SButton onClick={() => edit(record.id)}>编辑</SButton>
+
+// ❌ 错误：使用 void 或 eslint-disable 绕过
+render: (text, record) => { void text; return ...; }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+render: (text, record) => ...
+```
+
 #### 命名冲突处理
 
 当 API 模块的实体类型名与全局已有类型冲突时（如 `User` 与 `src/types/` 下的全局 `User` 类型），按以下规则处理：

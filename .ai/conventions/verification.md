@@ -85,7 +85,9 @@ AI 在提交代码前，**必须**逐条自检以下项目：
 - [ ] 路径使用 @/ 或 src/ 别名，无 ../../ 相对路径
 - [ ] 状态管理使用 Zustand，无 Redux
 - [ ] API 对象命名正确（{module}Api）
+- [ ] API 方法名添加了 HTTP 后缀（getListByGet/createByPost 等，禁止无后缀的 getList/create）
 - [ ] API 标准方法齐全（getListByGet/getByIdByGet/createByPost/updateByPut/deleteByDelete）
+- [ ] 回调函数中未使用的参数已加 `_` 前缀（如 render 中 `(_, record) => ...`）
 - [ ] 页面中使用 useRequest，避免手动定义 loading/data/error
       `
 

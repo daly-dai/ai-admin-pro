@@ -6,7 +6,7 @@
 
 1. **读已有代码**：Read `src/api/{module}/types.ts` + `src/api/{module}/index.ts`
 2. **读接口文档**：解析用户提供的 swagger / 接口文档
-3. **读错题集**：Read `.ai/pitfalls/index.md`，对照错题避免已知错误模式
+3. **读错题集**：Read `.ai/pitfalls/index.md`，按「适用场景」匹配当前页面类型，将匹配的核心规则作为硬性约束执行。不确定时再按需 Read 对应详情文件
 4. **对比差异**：生成变更清单（新增字段 / 删除字段 / 类型变更 / URL 替换），告知用户
 5. **更新 API 层**：
    - types.ts — 用真实类型替换临时类型，删除 `// TODO` 注释

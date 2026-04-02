@@ -13,7 +13,7 @@
 2. **逐 Task 执行**（循环）：
    - **预读**：根据 Task 类型读取对应模板（见下表）+ 页面类读取 API 数据源
    - **读 sdesign 组件文档**（页面类 Task 必选）：Read 页面中使用的所有 sdesign 组件文档（`.ai/sdesign/components/{组件名}.md`），未读文档的组件禁止使用
-   - **读错题集**：Read `.ai/pitfalls/index.md`，对照错题避免已知错误模式
+   - **读错题集**：Read `.ai/pitfalls/index.md`，按「适用场景」匹配当前 Task 页面类型，将匹配的核心规则作为硬性约束执行。不确定时再按需 Read 对应详情文件
    - **生成代码**：按模板和数据源生成，遵循硬约束
    - **验证**：`pnpm verify` + 脑内自检硬约束
    - **更新进度**：specs/[feature]/progress.md 标记 🟢 或 🔴
