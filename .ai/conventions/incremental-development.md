@@ -142,7 +142,7 @@ Read: src/pages/product/index.tsx → 页面结构模式
 src/
 ├── api/order/          # API 层
 │   ├── types.ts        # 类型定义（Order, OrderQuery, OrderFormData）
-│   └── index.ts        # API 实现（orderApi.getList/getById/create/update/delete）
+│   └── index.ts        # API 实现（getListByGet/getByIdByGet/createByPost/updateByPut/deleteByDelete）
 ├── pages/order/        # 页面层
 │   ├── index.tsx       # 列表页（入口）
 │   └── components/     # 页面私有组件

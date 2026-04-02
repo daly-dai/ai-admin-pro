@@ -21,30 +21,81 @@ src/api/{module}/index.ts  — API 实现
 | 实体类型 | `{Entity}`         | `Product`         |
 | 查询参数 | `{Entity}Query`    | `ProductQuery`    |
 | 表单数据 | `{Entity}FormData` | `ProductFormData` |
+| 接口方法 | `{name}By{HTTP}`   | `getListByGet`    |
 
-## 5 个标准方法
+## 方法命名规则
+
+接口方法名必须添加 HTTP 方法后缀，明确标识请求类型：
+
+| HTTP 方法 | 后缀       | 示例                  |
+| --------- | ---------- | --------------------- |
+| GET       | `ByGet`    | `getListByGet`        |
+| POST      | `ByPost`   | `createByPost`        |
+| PUT       | `ByPut`    | `updateByPut`         |
+| DELETE    | `ByDelete` | `deleteByDelete`      |
+| PATCH     | `ByPatch`  | `updateStatusByPatch` |
+
+## 多后端服务配置
+
+项目支持对接多个后端服务，每个服务可能返回不同的数据结构。使用 `createRequest` 创建独立实例：
 
 ```typescript
-export const {module}Api = {
-  getList: (params?: {Entity}Query) =>
-    request.get<PageData<{Entity}>>('/api/{module}', { params }),
-  getById: (id: string) =>
-    request.get<{Entity}>(`/api/{module}/${id}`),
-  create: (data: {Entity}FormData) =>
-    request.post<{Entity}>('/api/{module}', data),
-  update: (id: string, data: Partial<{Entity}>) =>
-    request.put<{Entity}>(`/api/{module}/${id}`, data),
-  delete: (id: string) =>
-    request.delete(`/api/{module}/${id}`),
-};
+import { createRequest } from '@/plugins/request';
+
+// 默认实例（向后兼容）
+// import { request } from '@/plugins/request';
+
+// 创建独立实例
+export const {module}Api = createRequest({
+  prefix: '/api/{module}',    // URL 前缀（baseURL）
+  codeKey: 'code',            // 状态码字段名（根据后端调整）
+  successCode: 200,           // 成功状态码值（根据后端调整）
+  dataKey: '',                // 数据字段名（空则不解包）
+  msgKey: 'message',          // 消息字段名（根据后端调整）
+});
+```
+
+### 配置项说明
+
+| 配置          | 说明                                            | 默认值         |
+| ------------- | ----------------------------------------------- | -------------- |
+| `prefix`      | URL 前缀（baseURL）                             | `''`           |
+| `codeKey`     | 状态码字段名，如 `code`、`returnCode`、`status` | `code`         |
+| `successCode` | 成功状态码值，如 `200`、`0`、`true`             | `200`          |
+| `dataKey`     | 数据字段名，用于解包，如 `data`、`result`       | `''`（不解包） |
+| `msgKey`      | 消息字段名，如 `message`、`msg`                 | `message`      |
+| `timeout`     | 超时时间（毫秒）                                | `30000`        |
+
+### 使用示例
+
+```typescript
+// 方法名必须添加请求类型后缀：ByGet、ByPost、ByPut、ByDelete、ByPatch
+export const getListByGet = (params?: ProductQuery) =>
+  productApi.get<PageData<Product>>('/product', { params });
+
+export const getByIdByGet = (id: string) =>
+  productApi.get<Product>(`/product/${id}`);
+
+export const createByPost = (data: ProductFormData) =>
+  productApi.post<Product>('/product', data);
+
+export const updateByPut = (id: string, data: Partial<Product>) =>
+  productApi.put<Product>(`/product/${id}`, data);
+
+export const deleteByDelete = (id: string) =>
+  productApi.delete(`/product/${id}`);
+
+// 导出完整 API 对象
+export { productApi };
 ```
 
 ## 硬约束
 
-- 使用 `import { request } from '@/plugins/request'`，禁止直接 axios
+- 使用 `import { createRequest } from '@/plugins/request'`，禁止直接 axios
 - 使用 `import type` 导入类型
 - 禁止 `any`，所有方法都需要泛型注解
 - 添加 JSDoc 注释
+- **方法名必须添加 HTTP 方法后缀**：`ByGet`、`ByPost`、`ByPut`、`ByDelete`、`ByPatch`
 
 ## 接口定义格式
 

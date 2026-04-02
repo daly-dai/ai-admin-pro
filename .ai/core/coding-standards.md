@@ -75,10 +75,12 @@ const [ComponentName]: React.FC<[ComponentName]Props> = ({ [entity], on[Action] 
   // 3. State定义
   const [expanded, setExpanded] = useState(false);
 
-  // 4. Hooks使用
-  const { loading, run: handle[Action] } = useRequest([module]Api.[method], {
-    manual: true,
-  });
+  // 4. Hooks使用 - 使用独立方法 + useRequest
+import { getListByGet, createByPost } from '@/api/[module]';
+
+const { loading, run: handleFetch } = useRequest(getListByGet, {
+  manual: true,
+});
 
   // 5. 事件处理
   const handle[Action] = useCallback(() => {
@@ -163,7 +165,7 @@ api/
 
 > 完整模板见 `.ai/conventions/api-conventions.md`。
 
-使用示例：`const { data } = useRequest([module]Api.getList);`
+使用示例：`const { data } = useRequest(getListByGet);`
 
 ### 3. 类型定义位置
 
@@ -235,16 +237,16 @@ export * from './app';
 
 ```typescript
 // 统一在 request.ts 中处理
-// 组件中只处理业务错误
+// 组件中只处理业务错误，使用 useRequest 自动处理 loading/data/error
 
-const { run: submit } = useRequest([module]Api.create, {
+const { run: submit } = useRequest(createByPost, {
   manual: true,
   onSuccess: () => {
     message.success('创建成功');
   },
   onError: (error) => {
     // 只处理需要特殊处理的错误
-    if (error.code === '[ERROR_CODE]') {
+    if (error.message.includes('[ERROR_CODE]')) {
       message.error('[错误提示]');
     }
   },
@@ -285,9 +287,9 @@ const { run: submit } = useRequest([module]Api.create, {
  * @param params 查询参数
  * @returns [实体]列表数据
  * @example
- * const { list, total } = await [module]Api.getList({ page: 1 });
+ * const { data } = await getListByGet({ page: 1 });
  */
-const getList = (params?: [Entity]Query): Promise<PageData<[Entity]>> => {...};
+const getListByGet = (params?: [Entity]Query): Promise<PageData<[Entity]>> => {...};
 ```
 
 ### 2. 代码注释

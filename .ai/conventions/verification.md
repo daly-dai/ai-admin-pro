@@ -85,7 +85,8 @@ AI 在提交代码前，**必须**逐条自检以下项目：
 - [ ] 路径使用 @/ 或 src/ 别名，无 ../../ 相对路径
 - [ ] 状态管理使用 Zustand，无 Redux
 - [ ] API 对象命名正确（{module}Api）
-- [ ] API 标准方法齐全（getList/getById/create/update/delete）
+- [ ] API 标准方法齐全（getListByGet/getByIdByGet/createByPost/updateByPut/deleteByDelete）
+- [ ] 页面中使用 useRequest，避免手动定义 loading/data/error
       `
 
 #### 文件完整性检查

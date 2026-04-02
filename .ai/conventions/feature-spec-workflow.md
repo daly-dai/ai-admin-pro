@@ -89,7 +89,7 @@ types:
       enum: [{ 枚举值 }] # 如有
 
 interfaces:
-  - name: getList
+  - name: getListByGet
     desc: { 描述 }
     method: GET/POST
     path: /api/{module}
@@ -104,6 +104,54 @@ interfaces:
         required: true/false
     response:
       type: PageData<{EntityName}>
+
+  - name: getByIdByGet
+    desc: { 描述 }
+    method: GET
+    path: /api/{module}/{id}
+    params:
+      - name: id
+        type: string
+        required: true
+    response:
+      type: { EntityName }
+
+  - name: createByPost
+    desc: { 描述 }
+    method: POST
+    path: /api/{module}
+    body:
+      - name: { fieldName }
+        type: { 类型 }
+        required: true/false
+    response:
+      type: { EntityName }
+
+  - name: updateByPut
+    desc: { 描述 }
+    method: PUT
+    path: /api/{module}/{id}
+    params:
+      - name: id
+        type: string
+        required: true
+    body:
+      - name: { fieldName }
+        type: { 类型 }
+        required: true/false
+    response:
+      type: { EntityName }
+
+  - name: deleteByDelete
+    desc: { 描述 }
+    method: DELETE
+    path: /api/{module}/{id}
+    params:
+      - name: id
+        type: string
+        required: true
+    response:
+      type: void
 
 deviations: # 与 api-conventions 标准的偏离
   - item: { 偏离项 }
@@ -229,18 +277,18 @@ Step 5: 业务规则验证
 
 将 PRD 的页面功能需求映射到 Swagger 接口：
 
-| PRD 功能 | 期望接口     | Swagger 匹配规则                                                    |
-| -------- | ------------ | ------------------------------------------------------------------- |
-| 列表展示 | getList      | `GET /basePath` 或 `POST /basePath/search` 或 `POST /basePath/list` |
-| 详情查看 | getById      | `GET /basePath/{id}` 或 `GET /basePath/detail`                      |
-| 新增     | create       | `POST /basePath`                                                    |
-| 编辑     | update       | `PUT /basePath/{id}` 或 `PATCH /basePath/{id}`                      |
-| 删除     | delete       | `DELETE /basePath/{id}`                                             |
-| 批量删除 | batchDelete  | `DELETE /basePath/batch` 或 `POST /basePath/batch-delete`           |
-| 批量操作 | batch\*      | 路径含 `batch` / `bulk` 关键词                                      |
-| 状态变更 | updateStatus | `PUT/PATCH` + 路径含 `status` / `enable` / `disable`                |
-| 导出     | export       | `GET/POST` + 路径含 `export` / `download`                           |
-| 树形数据 | getTree      | `GET` + 路径含 `tree`                                               |
+| PRD 功能 | 期望接口          | Swagger 匹配规则                                                    |
+| -------- | ----------------- | ------------------------------------------------------------------- |
+| 列表展示 | getListByGet      | `GET /basePath` 或 `POST /basePath/search` 或 `POST /basePath/list` |
+| 详情查看 | getByIdByGet      | `GET /basePath/{id}` 或 `GET /basePath/detail`                      |
+| 新增     | createByPost      | `POST /basePath`                                                    |
+| 编辑     | updateByPut       | `PUT /basePath/{id}` 或 `PATCH /basePath/{id}`                      |
+| 删除     | deleteByDelete    | `DELETE /basePath/{id}`                                             |
+| 批量删除 | batchDeleteByPost | `DELETE /basePath/batch` 或 `POST /basePath/batch-delete`           |
+| 批量操作 | batch\*ByPost     | 路径含 `batch` / `bulk` 关键词                                      |
+| 状态变更 | updateStatusByPut | `PUT/PATCH` + 路径含 `status` / `enable` / `disable`                |
+| 导出     | export            | `GET/POST` + 路径含 `export` / `download`                           |
+| 树形数据 | getTree           | `GET` + 路径含 `tree`                                               |
 
 ---
 
