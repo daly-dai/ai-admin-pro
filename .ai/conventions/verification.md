@@ -113,6 +113,20 @@ AI 在提交代码前，**必须**逐条自检以下项目：
 - [ ] 列表页是否仅通过 ref 或 props 触发弹层，不直接持有弹层状态？
       `
 
+#### 功能逻辑检查
+
+> ⚠️ AI 在 `pnpm verify` 通过后，**必须**逐条自检以下功能逻辑项。这些项无法被静态检查工具捕获。
+
+`markdown
+
+- [ ] 所有 API 调用是否通过 useRequest 包装（SSearchTable 的 requestFn 除外）？
+- [ ] 新增表单的 onFinish 是否调用了 useRequest 返回的 run 方法（而非直接 await api.xxx()）？
+- [ ] 编辑表单是否用 useRequest + ready 加载详情数据（而非 useEffect + 手动 setState）？
+- [ ] 详情页是否用 useRequest 加载数据并正确传递 loading 状态给 SDetail？
+- [ ] 写操作（创建/编辑/删除）的 useRequest 是否配置了 onSuccess 回调（提示 + 刷新/跳转）？
+- [ ] 是否存在 Record<string, any> 或其他 any 用法？如有，替换为具体实体类型或 Record<string, unknown>
+      `
+
 ### 人工确认点
 
 AI 自检通过后，标记为「AI 自检通过」，以下项目由人工最终确认：

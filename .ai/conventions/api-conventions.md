@@ -137,44 +137,117 @@ export const deleteByDelete = (id: string) =>
 
 ### 3. 页面调用规范（useRequest）
 
+> ⚠️ **阻断性要求**：所有页面中的 API 调用**必须**通过 `useRequest` 包装，禁止直接 `await api.xxx()` 手动管理 loading/data/error 状态。
+> **唯一例外**：SSearchTable 的 `requestFn` 直接传 API 方法（组件内部已封装请求管理）。
+
+#### 场景一：列表页
+
 ```tsx
 import { useRequest } from 'ahooks';
-import { getListByGet, createByPost, deleteByDelete } from '@/api/[module]';
+import { getListByGet, deleteByDelete } from '@/api/[module]';
 
-// 列表查询
-const { data, loading, refresh } = useRequest(getListByGet, {
-  defaultParams: [{ page: 1, pageSize: 10 }],
-});
-
-// 创建（手动触发）
-const { run: handleCreate } = useRequest(createByPost, {
-  manual: true,
-  onSuccess: () => {
-    message.success('创建成功');
-    refresh();
-  },
-});
+// 列表查询（SSearchTable 内部管理，不需要手动 useRequest）
+// <SSearchTable requestFn={getListByGet} ... />
 
 // 删除（手动触发）
 const { run: handleDelete } = useRequest(deleteByDelete, {
   manual: true,
   onSuccess: () => {
     message.success('删除成功');
-    refresh();
+    actionRef.current?.reload();
   },
 });
 ```
 
+#### 场景二：新增表单页
+
+```tsx
+import { useRequest } from 'ahooks';
+import { createByPost } from '@/api/[module]';
+
+const { run: handleCreate, loading: submitLoading } = useRequest(createByPost, {
+  manual: true,
+  onSuccess: () => {
+    message.success('创建成功');
+    navigate(-1); // 或关闭弹窗
+  },
+});
+
+// SForm onFinish 中调用
+const onFinish = (values: [Entity]FormData) => {
+  handleCreate(values);
+};
+```
+
+#### 场景三：编辑表单页
+
+```tsx
+import { useRequest } from 'ahooks';
+import { getByIdByGet, updateByPut } from '@/api/[module]';
+
+// 加载详情数据（自动触发，ready 控制）
+const { data: detail, loading: detailLoading } = useRequest(
+  () => getByIdByGet(id!),
+  { ready: !!id },
+);
+
+// 提交编辑（手动触发）
+const { run: handleUpdate, loading: submitLoading } = useRequest(
+  (values: Partial<[Entity]FormData>) => updateByPut(id!, values),
+  {
+    manual: true,
+    onSuccess: () => {
+      message.success('更新成功');
+      navigate(-1);
+    },
+  },
+);
+```
+
+#### 场景四：详情页
+
+```tsx
+import { useRequest } from 'ahooks';
+import { getByIdByGet } from '@/api/[module]';
+
+// 加载详情数据
+const { data: detail, loading } = useRequest(() => getByIdByGet(id!), {
+  ready: !!id,
+});
+
+// SDetail 中使用
+// <SDetail dataSource={detail} items={items} loading={loading} />
+```
+
+#### 反模式（❌ 禁止）
+
+```tsx
+// ❌ 禁止：直接 await + 手动管理状态
+const [loading, setLoading] = useState(false);
+const [data, setData] = useState<[Entity]>();
+
+useEffect(() => {
+  setLoading(true);
+  getByIdByGet(id).then(setData).finally(() => setLoading(false));
+}, [id]);
+
+// ❌ 禁止：在 onFinish 中直接 await
+const onFinish = async (values: [Entity]FormData) => {
+  await createByPost(values); // 没有 loading 控制、没有统一错误处理
+  message.success('创建成功');
+};
+```
+
 ### useRequest 常用配置
 
-| 配置            | 说明                            |
-| --------------- | ------------------------------- |
-| `manual`        | 是否手动触发（写操作设为 true） |
-| `defaultParams` | 默认请求参数                    |
-| `onSuccess`     | 成功回调                        |
-| `onError`       | 错误回调                        |
-| `refreshDeps`   | 依赖变化自动刷新                |
-| `ready`         | 是否就绪（可控制是否发起请求）  |
+| 配置            | 说明                                      |
+| --------------- | ----------------------------------------- |
+| `manual`        | 是否手动触发（写操作设为 true）           |
+| `defaultParams` | 默认请求参数                              |
+| `onSuccess`     | 成功回调                                  |
+| `onError`       | 错误回调                                  |
+| `refreshDeps`   | 依赖变化自动刷新                          |
+| `ready`         | 是否就绪（false 时不发起请求，常用于 id） |
 
 ## 硬约束
 
