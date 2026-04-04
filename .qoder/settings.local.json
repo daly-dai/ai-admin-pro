@@ -1,4 +1,7 @@
 {
   "permissions": {},
-  "outputStyle": "Vibe"
+  "outputStyle": "Vibe",
+  "repowiki": {
+    "enabled": false
+  }
 }
