@@ -6,6 +6,18 @@
 
 ---
 
+## 静态变量表
+
+| 变量        | 说明                     | 示例              |
+| ----------- | ------------------------ | ----------------- |
+| `{module}`  | 当前模块名（小写）       | `user`、`order`   |
+| `{Entity}`  | 当前实体名（大写驼峰）   | `User`、`Order`   |
+| `{feature}` | 当前功能名（中划线连接） | `user-management` |
+
+> 使用示例：`src/api/{module}/types.ts` → `src/api/user/types.ts`
+
+---
+
 ## 一、阶段判断（AI 接到请求后第一步）
 
 > ⚠️ **阶段判断阶段不读取任何文件**，仅根据用户消息中的关键词和上下文判断。判断完成后再按对应阶段的步骤执行。
@@ -78,17 +90,31 @@ PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适
 | antd Button       | SButton               | @dalydb/sdesign |
 | antd Descriptions | SDetail               | @dalydb/sdesign |
 
-> 完整的组件文档列表、豁免范围、sdesign/antd 关系 → 详见 `.ai/core/coding-standards.md`「sdesign 组件约束」
+#### 何时不使用 sdesign 组件
+
+| 场景                                                                                | 处理方式                         |
+| ----------------------------------------------------------------------------------- | -------------------------------- |
+| 页面位于 `src/pages/login/`、`src/pages/error/`、`src/layouts/`、`src/router/` 目录 | 可使用 antd 原生组件             |
+| 需要实现 sdesign 不支持的复杂交互（拖拽排序、虚拟滚动）                             | 可使用 antd 原生组件，需说明原因 |
+| 用户明确要求使用 antd 原生组件                                                      | 按用户要求执行                   |
+
+> 完整的组件文档列表 → 详见 `.ai/core/coding-standards.md`「sdesign 组件约束」
 
 ### 导入规则
 
-- 禁止 import axios -- 使用 import { request } from '@/plugins/request'
-- 禁止 `any` 类型 -- 使用具体类型或泛型。**保底类型**：当确实无法确定结构时，使用 `Record<string, unknown>` 而非 `Record<string, any>`，并优先从已有实体类型推导（如 `Partial<Entity>`、`Pick<Entity, 'id' | 'name'>`）
-- 类型导入使用 import type { ... }
-- 路径使用 @/ 或 src/ 别名，禁止 ../../ 相对路径
-- 状态管理使用 Zustand + immer，禁止 Redux
-- API 方法名必须添加 HTTP 后缀（`{name}By{HTTP}`，如 `getListByGet`） -- 详见 `api-conventions.md`
-- 未使用参数加 `_` 前缀（如 `(_, record) => ...`） -- 禁止 void / eslint-disable 绕过
+| 规则       | 正确示例                                      | 错误示例                                 |
+| ---------- | --------------------------------------------- | ---------------------------------------- |
+| HTTP 请求  | `import { request } from '@/plugins/request'` | `import axios from 'axios'`              |
+| 类型定义   | `Record<string, unknown>`                     | `Record<string, any>`                    |
+| 类型导入   | `import type { User } from './types'`         | `import { User } from './types'`         |
+| 路径别名   | `import { X } from '@/components/X'`          | `import { X } from '../../components/X'` |
+| 状态管理   | `import { create } from 'zustand'`            | `import { createStore } from 'redux'`    |
+| API 命名   | `getListByGet()`、`createByPost()`            | `getList()`、`create()`                  |
+| 未使用参数 | `(_, record) => ...`                          | `(index, record) => ...` // index 未使用 |
+
+> **保底类型**：当确实无法确定结构时，使用 `Record<string, unknown>`，并优先从已有实体类型推导（如 `Partial<Entity>`、`Pick<Entity, 'id' | 'name'>`）
+>
+> 详见 `.ai/conventions/api-conventions.md`
 
 ### 全局类型复用
 
@@ -110,10 +136,16 @@ pnpm type-check    # 仅 tsc
 
 > AI 的输出范围必须严格匹配用户的请求边界，禁止自行扩展。
 > **判断依据**：用户请求中明确提到的交付物。未提及的不生成，不猜测，不自行扩展。
+>
+> **量化标准**：
+>
+> - 响应文字不超过 200 词（代码除外）
+> - 单次最多创建 3 个新文件
+> - 单次修改不超过 5 个已有文件
 
 ### 风险操作确认
 
-根据操作可逆性和影响范围分类，AI 必须遵循以下确认规则：
+> 详见 `.ai/core/security-rules.md` 完整规则表
 
 | 分类           | 示例                                                                                                                  | AI 行为                               |
 | -------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
@@ -121,9 +153,20 @@ pnpm type-check    # 仅 tsc
 | **需确认操作** | 删除已有文件、修改 package.json 依赖、修改 eslint / rsbuild / tsconfig 等全局配置、修改 `.ai/` 下的规范文件           | 透明告知操作内容 + 等待用户确认后执行 |
 | **禁止操作**   | 修改不在当前输出锁范围内的文件、自行安装新依赖包、修改 src/plugins/ 或 src/router/ 等基础设施代码（除非用户明确要求） | 必须拒绝，向用户说明原因              |
 
+#### 权限等级（用户显式声明）
+
+| 等级       | 触发词             | 规则摘要                      |
+| ---------- | ------------------ | ----------------------------- |
+| 保守模式   | 「使用保守模式」   | 所有写操作前必须确认          |
+| 标准模式   | 默认               | 修改/删除需确认，创建无需确认 |
+| 全自主模式 | 「使用全自主模式」 | 仅删除和修改全局配置需确认    |
+
 > ⚠️ **原则**：暂停确认的代价很低，而超出范围的修改代价可能非常高。
 >
-> - 遇到类型报错或 lint 错误时，只修复当前输出锁范围内的文件，不扩展修改范围
+> **遇到类型报错或 lint 错误时**：
+>
+> - 只修复当前输出锁范围内的文件
+> - 不扩展修改范围
 > - 发现现有代码可能有问题时，告知用户而不是自行修改
 > - 不确定是否在输出锁范围内时，先确认再操作
 
