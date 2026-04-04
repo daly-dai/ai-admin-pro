@@ -19,17 +19,17 @@
 
 ```
 Layer 1: ESLint 机械拦截     → 0 token 成本，100% 可靠
-Layer 2: AGENTS.md 核心速查   → 已常驻上下文，高频错误前置预防
+Layer 2: 硬约束 + 代码规范速查  → 已常驻上下文，高频错误前置预防
 Layer 3: 文件模式自动触发     → 按需加载，~200 token/次
 Layer 4: 错题集按需检索       → 按需加载，~200 token/次
 ```
 
 一个纠正**至少沉淀到一个层**：按 L1→L2→L3→L4 优先级匹配到第一个合适的层，但 **Layer 1 可与 Layer 2 或 Layer 3 联动**。
 
-> **分层协作原则**：Layer 1（ESLint）在步骤 6 verify 时拦截已生成的错误代码，Layer 2/3 在步骤 5/步骤 2 预防错误生成。L1 与 L2/L3 解决不同时间点的问题，可联动。
+> **分层协作原则**：Layer 1（ESLint）在验证阶段拦截已生成的错误代码，Layer 2/3 在硬约束/模式文件阶段预防错误生成。L1 与 L2/L3 解决不同时间点的问题，可联动。
 >
-> - L1 + 高频错误 → 同时写 L2（步骤 5 全局预防）
-> - L1 + 模式绑定错误 → 同时写 L3（步骤 2 场景预防）
+> - L1 + 高频错误 → 同时写 L2（硬约束全局预防）
+> - L1 + 模式绑定错误 → 同时写 L3（模式文件场景预防）
 > - L1 + 低频无模式 → 仅 L1（ESLint message 引导修复即可）
 
 ---
@@ -50,15 +50,15 @@ Step 1: 能否用 ESLint 机械检测？
   └─ 不能 → Step 2
          ↓
 Step 2: 此错误是否高频（>30% 的同类场景会触发）？
-  ├─ 是 → 写入 Layer 2（AGENTS.md 步骤 5 / verification.md 自检清单）→ ✅ 结束
+  ├─ 是 → 写入 Layer 2（AGENTS.md 硬约束 / verification.md 自检清单）→ ✅ 结束
   └─ 否 → Step 3
          ↓
 Step 3: 此错误是否绑定特定文件模式？
-  ├─ 是 → 写入 Layer 3（.ai/pitfalls/{pattern}.md + AGENTS.md 步骤 2 触发表）→ ✅ 结束
+  ├─ 是 → 写入 Layer 3（.ai/pitfalls/{pattern}.md + 对应阶段的模式文件）→ ✅ 结束
   └─ 否 → 写入 Layer 4（.ai/pitfalls/index.md + 独立错题文件）→ ✅ 结束
 ```
 
-> **分层协作规则**：Layer 1（ESLint）可与 Layer 2 或 Layer 3 联动，因为它们解决不同时间点的问题（L1=步骤 6 兜底，L2=步骤 5 预防，L3=步骤 2 预防）。Layer 2/3/4 之间仍互斥。
+> **分层协作规则**：Layer 1（ESLint）可与 Layer 2 或 Layer 3 联动，因为它们解决不同时间点的问题（L1=验证阶段兜底，L2=硬约束预防，L3=模式文件预防）。Layer 2/3/4 之间仍互斥。
 
 ---
 
@@ -94,11 +94,11 @@ Step 3: 此错误是否绑定特定文件模式？
 ],
 ```
 
-### Layer 2: 核心速查（AGENTS.md / verification.md）
+### Layer 2: 核心速查（coding-standards.md / verification.md）
 
 写入位置二选一：
 
-- **组件/JSX 相关** → AGENTS.md 步骤 5「组件约束速查」追加条目
+- **组件/JSX 相关** → .ai/core/coding-standards.md「sdesign 组件约束」追加条目
 - **代码模式相关** → .ai/conventions/verification.md Level 2「AI 自检清单」追加条目
 
 **写入要求**：
@@ -117,7 +117,7 @@ Step 3: 此错误是否绑定特定文件模式？
 **写入步骤**：
 
 1. 创建或更新 `.ai/pitfalls/{pattern}.md`（按组件/场景命名，如 `modal-form.md`、`search-table.md`）
-2. 在 AGENTS.md 步骤 2 场景预读表格下方追加触发规则
+2. 在对应阶段的模式文件中追加触发规则
 
 **pitfalls 文件格式**（150-200 token 以内）：
 
@@ -170,12 +170,12 @@ Step 3: 此错误是否绑定特定文件模式？
 
 ### 各层容量上限
 
-| 层级    | 计量对象                                 | 上限 |
-| ------- | ---------------------------------------- | :--: |
-| Layer 1 | eslint.config.mjs 中纠错相关的自定义规则 | 无限 |
-| Layer 2 | AGENTS.md 步骤 5 + verification.md 条目  |  15  |
-| Layer 3 | .ai/pitfalls/ 中的场景文件数             |  20  |
-| Layer 4 | .ai/pitfalls/index.md 索引条目数         |  30  |
+| 层级    | 计量对象                                   | 上限 |
+| ------- | ------------------------------------------ | :--: |
+| Layer 1 | eslint.config.mjs 中纠错相关的自定义规则   | 无限 |
+| Layer 2 | coding-standards.md + verification.md 条目 |  15  |
+| Layer 3 | .ai/pitfalls/ 中的场景文件数               |  20  |
+| Layer 4 | .ai/pitfalls/index.md 索引条目数           |  30  |
 
 > Layer 1 不限容量，因为 ESLint 规则是 0 token 成本的机械拦截，不占用上下文。
 

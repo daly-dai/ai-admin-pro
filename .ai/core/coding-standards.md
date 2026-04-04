@@ -2,6 +2,44 @@
 
 > AI生成代码时必须遵循的规范
 
+## sdesign 组件约束
+
+> 🚫 **阻断性要求**：代码中每使用一个 sdesign 组件，**必须先 Read 该组件的文档**（`.ai/sdesign/components/{ComponentName}.md`）。
+> **未读文档 = 禁止使用该组件。没有例外。**
+>
+> 常见需读文档：
+>
+> - `SSearchTable` → Read `.ai/sdesign/components/SSearchTable.md`
+> - `SForm` → Read `.ai/sdesign/components/SForm.md`
+> - `SButton` → Read `.ai/sdesign/components/SButton.md`
+> - `SDetail` → Read `.ai/sdesign/components/SDetail.md`
+> - `STable` → Read `.ai/sdesign/components/STable.md`
+> - 其他 sdesign 组件同理，文档路径：`.ai/sdesign/components/{组件名}.md`
+>
+> ⚠️ **禁止凭记忆、猜测或参考其他 AI 生成的代码来使用 sdesign 组件的属性。文档是唯一可信来源。**
+
+**豁免范围（仅限以下目录中的文件）**：src/pages/login/、src/pages/error/、src/pages/register/、src/layouts/、src/router/
+
+这些属于基础设施代码，可直接使用 antd 组件。**不在上述目录中的业务页面，必须使用 sdesign 组件。**
+
+### sdesign 与 antd 的关系
+
+sdesign 管 CRUD 四件套（Table/Form/Button/Descriptions），antd 管其余一切。不要臆想 sdesign 不存在的组件（如 ~~SModal~~、~~SDrawer~~、~~STag~~），不确定时查阅 `.ai/sdesign/components/` 目录。
+
+## 全局类型复用（禁止重复定义）
+
+> 以下类型已在 `src/types/index.ts` 中全局定义，**禁止在模块 types.ts 中重新定义**。
+> 响应拦截器已自动解包 `ApiResponse`，`request.get<T>()` 直接返回业务数据 `T`。
+
+| 全局类型         | 用途                                     | 正确用法                                                    |
+| ---------------- | ---------------------------------------- | ----------------------------------------------------------- |
+| `PageData<T>`    | 分页响应结构                             | `request.get<PageData<Entity>>('/api/xxx', { params })`     |
+| `PageQuery`      | 分页查询基类                             | `interface XxxQuery extends PageQuery { keyword?: string }` |
+| `ApiResponse<T>` | 响应包装（拦截器已解包，API 层无需关心） | 不直接使用                                                  |
+| `ApiError`       | 错误结构                                 | 不直接使用                                                  |
+
+**模块 types.ts 只定义**：实体接口（`Entity`）、查询参数（`EntityQuery extends PageQuery`）、表单数据（`EntityFormData`）。
+
 ## TypeScript规范
 
 ### 1. 类型定义

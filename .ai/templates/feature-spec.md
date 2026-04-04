@@ -1,7 +1,7 @@
 # Prompt: 功能规格书生成
 
 > **用途**：spec-gen 模式的输出模板，AI 根据 Swagger + PRD 合并生成
-> **流程位置**：对应 AGENTS.md 模式 F: spec-gen 步骤 5
+> **流程位置**：对应 AGENTS.md 阶段②：接口合并（分支A）
 > **参考文件**：`.ai/conventions/feature-spec-workflow.md`（合并工作流规范）
 
 ---
@@ -319,7 +319,7 @@
 <!--
   - 差异影响列关联第五章差异编号，标注哪些 Task 受差异决策影响
   - 如差异决策导致某 Task 移除（如接口不存在且决定本期不实现），直接删除该行
-  - Task 类型和必读文档对应 AGENTS.md 第三节 full-sdd 的 Task 类型表
+  - Task 类型和必读文档对应各阶段模式文件
 -->
 
 ---

@@ -5,7 +5,7 @@
 ## AI 阅读顺序
 
 ```
-1. AGENTS.md → 唯一入口，判断工作模式（api-gen / page-first / api-connect / incremental / spec-gen / full-sdd）
+1. AGENTS.md → 唯一入口，判断阶段（① 画 Demo / ② 接口合并 / ③ 改造适配 / ④ 接口对接 / ⑤ 迭代修复）
 2. modes/{mode}.md → 按匹配的模式读取对应流程文件，获取详细步骤和输出锁
 3. 按模式步骤按需读取 templates/ / guides/ / conventions/ 等文件
 ```
@@ -20,13 +20,12 @@
 │   ├── architecture.md          # 架构规范、项目结构
 │   ├── coding-standards.md      # 代码规范
 │   └── tech-stack.md            # 技术栈定义和约束
-├── modes/                       # 工作模式流程（每个模式一个文件）
-│   ├── api-gen.md               # 接口生成模式
-│   ├── page-first.md            # 页面先行模式
-│   ├── api-connect.md           # 接口对接模式
-│   ├── incremental.md           # 增量修改模式
-│   ├── spec-gen.md              # 功能规格书生成模式
-│   └── full-sdd.md              # 完整 SDD 模式
+├── modes/                       # 工作模式流程（每个阶段一个文件）
+│   ├── demo.md                  # ① 画 Demo 模式
+│   ├── api-merge.md             # ② 接口合并模式
+│   ├── demo-refine.md           # ③ 改造适配模式
+│   ├── api-connect.md           # ④ 接口对接模式
+│   ├── incremental.md           # ⑤ 迭代修复模式
 ├── conventions/                 # 开发约定
 │   ├── api-conventions.md       # API 规范（SSOT，唯一权威来源）
 │   ├── feature-spec-workflow.md # Swagger+PRD 合并工作流
@@ -63,7 +62,7 @@
 ## 开发流程
 
 ```
-① 模式判断（AGENTS.md 模式表）
+① 阶段判断（AGENTS.md 阶段总览表）
    ↓ 根据用户消息关键词匹配模式
 ② 读取模式文件（modes/{mode}.md）
    ↓ 获取步骤、约束、输出锁
