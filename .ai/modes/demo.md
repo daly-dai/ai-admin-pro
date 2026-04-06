@@ -11,7 +11,7 @@
 >
 > - 组件使用规则（sdesign 组件替换 antd）
 > - 导入规则（路径别名、类型导入、API 命名）
-> - 范围限定原则（响应不超过 200 词，单次最多 3 个新文件）
+> - 范围限定原则（响应不超过 200 词，单次最多 5 个新文件）
 > - 风险操作确认（修改需确认，创建无需确认）
 
 ---
@@ -49,9 +49,9 @@
 
 ### 2. 规范化 PRD
 
-Read `.ai/specs/prd-template.md`，以其 9 个章节为检查清单，将用户提供的任意格式文档规范化为结构化信息：
+Read `.ai/specs/prd-checklist.md`，以其 9 个章节为提取清单，将用户提供的任意格式文档规范化为结构化信息：
 
-- 以 prd-template 的章节结构为基准逐章提取
+- 以 prd-checklist 的章节结构为基准逐章提取
 - 自由文本描述 → 标准表格格式（字段定义表、查询参数表、表格列表、表单字段表等）
 - 缺失信息标 `[?]`，不猜测
 - 此规范化结果将在后续阶段②中作为 PRD 输入使用
@@ -75,7 +75,7 @@ Read `.ai/specs/prd-template.md`，以其 9 个章节为检查清单，将用户
 
 ### 5. 生成占位 API
 
-- **读 API 命名规范**：Read `.ai/conventions/api-conventions.md`
+- **读 API 规范**：Read `.ai/conventions/api-conventions.md`（Demo 阶段精简版）
 - `src/api/{module}/types.ts` — 根据规范化 PRD 定义临时类型，未确认字段加 `// TODO: 待接口确认`
 - `src/api/{module}/index.ts` — **方法名必须使用 `{name}By{HTTP}` 后缀**（如 `getListByGet`、`createByPost`），URL 用 `'/api/TODO/{module}'` 占位
 - 单页面模式：**只定义当前页面所需的接口方法**，不预生成其他页面的接口

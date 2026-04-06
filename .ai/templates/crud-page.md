@@ -100,6 +100,58 @@ input | inputNumber | password | textarea | select | slider | radio | radioGroup
 />
 ```
 
+## useRequest 用法示例
+
+### 列表页删除操作
+
+```tsx
+const { run: handleDelete } = useRequest(deleteByDelete, {
+  manual: true,
+  onSuccess: () => {
+    message.success('删除成功');
+    actionRef.current?.reload();
+  },
+});
+```
+
+### 新增表单
+
+```tsx
+const { run: handleCreate, loading: submitLoading } = useRequest(createByPost, {
+  manual: true,
+  onSuccess: () => {
+    message.success('创建成功');
+    navigate(-1);
+  },
+});
+const onFinish = (values: [Entity]FormData) => { handleCreate(values); };
+```
+
+### 编辑表单
+
+```tsx
+const { data: detail } = useRequest(() => getByIdByGet(id!), { ready: !!id });
+const { run: handleUpdate, loading: submitLoading } = useRequest(
+  (values: Partial<[Entity]FormData>) => updateByPut(id!, values),
+  { manual: true, onSuccess: () => { message.success('更新成功'); navigate(-1); } },
+);
+```
+
+> ❌ 禁止手动 `useState` 管理 loading/data + `useEffect` 中直接 await，必须用 useRequest。
+
+## 特殊列配置
+
+```typescript
+// 状态列
+{ title: '状态', dataIndex: 'status', valueEnum: { active: { text: '启用', status: 'Success' }, inactive: { text: '禁用', status: 'Default' } } }
+
+// 时间列
+{ title: '创建时间', dataIndex: 'createTime', valueType: 'dateTime', search: false }
+
+// 操作列
+{ title: '操作', valueType: 'option', render: (_, record) => [<Button key="edit">编辑</Button>, <Button key="delete" danger>删除</Button>] }
+```
+
 ## 自我修正规则
 
 生成代码后，AI 必须按照以下规则自动修正，直接输出正确代码：

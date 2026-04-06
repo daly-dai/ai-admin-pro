@@ -4,7 +4,7 @@
 
 ## 技术栈（固定）
 
-> 详见 `.ai/core/tech-stack.md`
+> ⚠️ 技术栈详情必须 Read `.ai/core/tech-stack.md`
 
 ## 项目结构（强制）
 
@@ -46,7 +46,6 @@ src/
 │   │   └── index.ts        # 守卫导出
 │   ├── routes/            # 路由配置目录
 │   │   ├── auth.tsx        # 认证相关路由
-│   │   ├── dashboard.tsx   # 仪表盘相关路由
 │   │   ├── error.tsx       # 错误页面路由
 │   │   └── index.tsx       # 路由配置整合
 │   ├── utils/             # 工具目录
@@ -90,8 +89,7 @@ export default ComponentName;
 
 API 模块采用 `types.ts`（类型定义）+ `index.ts`（API 对象）双文件结构，导出 `{module}Api` 对象，包含 5 个标准方法（getList/getById/create/update/delete）。
 
-> 完整类型模板和 API 对象模板见 `.ai/conventions/api-conventions.md`。
-> 开发指南见 `.ai/guides/api-module.md`。
+> 完整类型模板和 API 对象模板 → ⚠️ 接口合并/改造阶段必须 Read `.ai/conventions/api-conventions.md`。
 
 ### 3. 状态管理规范（强制）
 
@@ -138,70 +136,35 @@ export const use[Domain]Store = create<[Domain]State>()(
 
 ### 4. 页面组件规范（强制）
 
+管理后台列表页使用 `SSearchTable` 一体化组件，表单页使用 `SForm`，详情页使用 `SDetail`。
+
 ```typescript
-// pages/[module]/index.tsx
-import React from 'react';
-import { [module]Api } from '@api/[module]';
-import { SColumnsType, SFormItems, SSearchTable } from '@dalydb/sdesign';
-import type { [Entity], [Entity]Query } from '@api/[module]/types';
-
+// pages/[module]/index.tsx — 列表页最小骨架
 const [Module]Page: React.FC = () => {
-
-  // 搜索表单配置
   const formItems: SFormItems[] = [
-    {
-      label: '[字段标签]',
-      name: '[fieldName]',
-      type: '[input|select|...]',
-    },
-    // ...
+    { label: '名称', name: 'keyword', type: 'input' },
   ];
 
-  // 表格列配置
-  const columns: SColumnsType = [
-    {
-      title: '[列标题]',
-      dataIndex: '[fieldName]',
-      width: 120,
-    },
-    // ...
+  const columns: SColumnsType<[Entity]> = [
+    { title: '名称', dataIndex: 'name', width: 200 },
+    { title: '创建时间', dataIndex: 'createTime', width: 180, render: 'datetime' },
   ];
 
   return (
     <SSearchTable
-      headTitle={{
-        children: '[页面标题]',
-        desc: '[页面描述]',
-      }}
-      tableTitle={{
-        children: '[表格标题]',
-      }}
-      requestFn={[module]Api.getList}
-      options={{
-        paginationFields: {
-          current: 'current',
-          pageSize: 'pageSize',
-          total: 'total',
-          list: 'list',
-        },
-      }}
-      formProps={{
-        items: formItems,
-        columns: 3,
-        showExpand: true,
-        defaultExpand: false,
-      }}
-      tableProps={{
-        columns,
-        rowKey: 'id',
-        scroll: { x: 1200 },
-      }}
+      headTitle={{ children: '[页面标题]' }}
+      requestFn={getListByGet}
+      formProps={{ items: formItems, columns: 3 }}
+      tableProps={{ columns, rowKey: 'id' }}
     />
   );
 };
 
 export default [Module]Page;
 ```
+
+> ⚠️ 生成页面前必须 Read 对应模板（`.ai/templates/crud-page.md`）
+> ⚠️ 使用 sdesign 组件前必须 Read 对应组件文档（`.ai/sdesign/components/{组件名}.md`）
 
 ## 禁止事项
 

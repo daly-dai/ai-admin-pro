@@ -77,6 +77,20 @@ const items: SDetailItem[] = [
 />
 ```
 
+### useRequest 数据加载
+
+```tsx
+import { useRequest } from 'ahooks';
+import { getByIdByGet } from '@/api/[module]';
+
+const { data: detail, loading } = useRequest(() => getByIdByGet(id!), {
+  ready: !!id,
+});
+
+// SDetail 中使用
+<SDetail dataSource={detail} items={items} loading={loading} />;
+```
+
 ## 自我修正规则
 
 生成代码后，AI 必须按照以下规则自动修正，直接输出正确代码：

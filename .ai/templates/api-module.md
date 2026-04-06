@@ -113,3 +113,12 @@ const { run: handleDelete } = useRequest(deleteByDelete, {
   },
 });
 ```
+
+## useRequest 场景速查
+
+| 场景        | 用法                                                      | 关键配置        |
+| ----------- | --------------------------------------------------------- | --------------- |
+| 列表查询    | SSearchTable `requestFn={getListByGet}`                   | 组件内部管理    |
+| 删除/写操作 | `useRequest(deleteByDelete, { manual: true, onSuccess })` | `manual: true`  |
+| 详情加载    | `useRequest(() => getByIdByGet(id!), { ready: !!id })`    | `ready` 控制    |
+| 表单提交    | `useRequest(createByPost, { manual: true, onSuccess })`   | onFinish 调 run |
