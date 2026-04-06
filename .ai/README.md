@@ -7,10 +7,10 @@
 ```
 1. AGENTS.md → 唯一入口，判断阶段（① 画 Demo / ② 接口合并 / ③ 改造适配 / ④ 接口对接 / ⑤ 迭代修复）
 2. modes/{mode}.md → 按匹配的模式读取对应流程文件，获取详细步骤和输出锁
-3. 按模式步骤按需读取 templates/ / guides/ / conventions/ 等文件
+3. 按模式步骤按需读取 templates/ / conventions/ 等文件
 ```
 
-> ⚠️ 不要跳过模式判断直接生成代码，也不要一次性读取所有文件。按模式步骤渐进式加载。
+> 不要跳过模式判断直接生成代码，也不要一次性读取所有文件。按模式步骤渐进式加载。
 
 ## 目录结构
 
@@ -18,36 +18,30 @@
 .ai/
 ├── core/                        # 核心规范
 │   ├── architecture.md          # 架构规范、项目结构
-│   ├── coding-standards.md      # 代码规范
+│   ├── coding-standards.md      # 代码规范（TypeScript/React/API 质量标准）
+│   ├── lifecycle-advanced.md    # 生命周期补充（非线性跳转、弹性退出、Task 拆解）
 │   └── tech-stack.md            # 技术栈定义和约束
 ├── modes/                       # 工作模式流程（每个阶段一个文件）
 │   ├── demo.md                  # ① 画 Demo 模式
 │   ├── api-merge.md             # ② 接口合并模式
 │   ├── demo-refine.md           # ③ 改造适配模式
 │   ├── api-connect.md           # ④ 接口对接模式
-│   ├── incremental.md           # ⑤ 迭代修复模式
+│   └── incremental.md           # ⑤ 迭代修复模式
 ├── conventions/                 # 开发约定
 │   ├── api-conventions.md       # API 规范（SSOT，唯一权威来源）
-│   ├── feature-spec-workflow.md # Swagger+PRD 合并工作流
-│   ├── incremental-development.md # 增量开发规范
 │   ├── verification.md          # 验证流程规范（三级验证体系）
 │   └── correction-workflow.md   # 纠错沉淀工作流（四层防御）
-├── guides/                      # 开发指南（按模式步骤按需读取）
-│   ├── crud-page.md             # CRUD 页面开发指南
-│   ├── api-module.md            # API 模块开发指南
-│   ├── form-page.md             # 表单页面开发指南
-│   └── detail-page.md           # 详情页面开发指南
-├── templates/                   # 代码模板
-│   ├── api-module.md            # API 模块代码模板
-│   ├── crud-page.md             # CRUD 页面代码模板
-│   ├── detail-page.md           # 详情页面代码模板
-│   ├── form-designer.md         # 表单页面代码模板
+├── templates/                   # 代码模板 + 开发指南（合并）
+│   ├── api-module.md            # API 模块模板
+│   ├── crud-page.md             # CRUD 页面模板（含交互模式选择 + 弹层封装原则）
+│   ├── form-page.md             # 表单页面模板
+│   ├── detail-page.md           # 详情页面模板
 │   └── feature-spec.md          # 功能规格书输出模板
-├── specs/                       # 需求规格（开发前必读）
+├── specs/                       # 需求规格
 │   ├── template.md              # 需求拆解模板
 │   ├── progress-template.md     # 进度追踪模板
 │   ├── session-template.md      # 会话交接模板
-│   ├── prd-template.md          # PRD 模板
+│   ├── prd-template.md          # PRD 模板（含 AI 提取清单）
 │   └── [feature]/               # 每个功能的需求目录
 ├── pitfalls/                    # 错题集（已知错误模式）
 │   ├── index.md                 # 错题索引
@@ -74,8 +68,6 @@
 ```
 
 ## 硬约束验证
-
-所有代码规范通过 ESLint + TypeScript + Prettier 机械化强制执行：
 
 ```bash
 pnpm verify        # 全量验证（tsc + eslint + prettier）

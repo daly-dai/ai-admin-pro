@@ -35,7 +35,7 @@
 
 **AI 必读文档**:
 
-- [ ] .ai/guides/api-module.md
+- [ ] .ai/templates/api-module.md
 - [ ] .ai/conventions/api-conventions.md
 
 ### Task 2: 基础数据列表页
@@ -60,7 +60,7 @@
 
 **AI 必读文档**:
 
-- [ ] .ai/guides/crud-page.md
+- [ ] .ai/templates/crud-page.md
 - [ ] .ai/sdesign/components/SSearchTable.md
 - [ ] .ai/sdesign/components/SButton.md
 
@@ -85,7 +85,7 @@
 
 **AI 必读文档**:
 
-- [ ] .ai/guides/form-page.md
+- [ ] .ai/templates/form-page.md
 - [ ] .ai/sdesign/components/SForm.md
 
 ### Task 4: 基础数据编辑页
@@ -109,7 +109,7 @@
 
 **AI 必读文档**:
 
-- [ ] .ai/guides/form-page.md
+- [ ] .ai/templates/form-page.md
 - [ ] .ai/sdesign/components/SForm.md
 
 ### Task 5: 基础数据详情页
@@ -133,7 +133,7 @@
 
 **AI 必读文档**:
 
-- [ ] .ai/guides/detail-page.md
+- [ ] .ai/templates/detail-page.md
 - [ ] .ai/sdesign/components/SDetail.md
 
 ## 验证计划

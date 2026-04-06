@@ -1,233 +1,62 @@
 ﻿# 验证流程规范
 
-> 定义 AI 生成代码后的验证标准，确保每个 Task 的交付质量
+> ⚠️ **验证阶段仅用于检查和修复已生成文件中的错误，禁止创建新文件或添加新功能。**
 
-> ⚠️ **验证阶段仅用于检查和修复已生成文件中的错误，禁止在验证阶段创建新文件或添加新功能。** 验证失败时，只修复报告的错误，不超出当前阶段的输出锁范围。
+## 验证范围限制
 
-## 验证范围限制（重要）
+`pnpm verify` 输出整个项目错误，但 **AI 只处理当前输出锁范围内的文件**：
 
-`pnpm verify` 可能输出整个项目的错误，但 **AI 只处理当前输出锁范围内的文件**：
+| 当前阶段   | 只处理这些路径的错误                                      |
+| ---------- | --------------------------------------------------------- |
+| ① 画 Demo  | `src/api/{module}/` + `src/pages/{module}/`               |
+| ② 接口合并 | `src/api/{module}/types.ts` + `src/api/{module}/index.ts` |
+| ③ 改造适配 | `src/api/{module}/` + `src/pages/{module}/`（仅已有文件） |
+| ④ 接口对接 | 用户指定的页面文件 + 对应 API 文件                        |
+| ⑤ 迭代修复 | 用户指定的文件                                            |
 
-| 当前阶段   | 只处理这些路径的错误                                     |
-| ---------- | -------------------------------------------------------- |
-| ① 画 Demo  | `src/api/{module}/` + `src/pages/{module}/` 下的文件     |
-| ② 接口合并 | `src/api/{module}/types.ts`、`src/api/{module}/index.ts` |
-| ③ 改造适配 | `src/api/{module}/` + `src/pages/{module}/` 下的已有文件 |
-| ④ 接口对接 | 用户指定的页面文件 + 对应的 API 文件                     |
-| ⑤ 迭代修复 | 用户指定的文件                                           |
+其他模块错误在报告中列出（如「⚠️ 发现 3 个其他模块错误」），但不读取、不分析、不修复。
 
-**其他模块的错误**：在验证报告中列出（如「⚠️ 发现 3 个其他模块错误，不在本次修复范围内」），但 **不读取、不分析、不修复**。用户如需修复，应另开任务。
+## 错题集对照（涉及页面代码的阶段必选）
 
-## 错题集对照（所有涉及页面代码的阶段必选）
-
-生成页面代码前，Read `.ai/pitfalls/index.md`，按「适用场景」匹配当前页面类型，将匹配的核心规则作为硬性约束对照当前代码逐条排查。如有匹配的错误模式，立即修正。不确定时再按需 Read 对应详情文件。
-
-> ⚠️ 此步骤对所有涉及页面/组件代码生成的阶段（① 画 Demo、③ 改造适配、④ 接口对接、⑤ 迭代修复）均为**必选项**，不可跳过。
-
----
+生成页面代码前 Read `.ai/pitfalls/index.md`，按「适用场景」匹配当前页面类型，逐条排查。
 
 ## 三级验证体系
 
-`Task 开发完成
-    ↓
-【Level 1】代码级验证（自动化）
-    ↓ 通过
-【Level 2】功能级验证（AI 辅助 + 人工）
-    ↓ 通过
-【Level 3】业务级验证（人工）
-    ↓ 通过
-Task 完成 ✓`
+```
+Task 完成 → Level 1（自动化）→ Level 2（AI 自检）→ Level 3（人工）→ ✓
+```
 
----
+### Level 1：代码级验证（AI 自执行）
 
-## Level 1: 代码级验证（自动化，AI 自执行）
+```bash
+pnpm verify  # tsc + eslint + prettier
+```
 
-> **执行者**：AI（自动执行）
-> **触发时机**：每个 Task 代码生成后立即执行
+自修复：有错误 → 按优先级修复（tsc > eslint > prettier）→ 再次 verify → 最多 3 轮。
 
-### 验证命令
+### Level 2：AI 自检清单
 
-`bash
-pnpm verify        # tsc + eslint + prettier 全量检查
-`
+Level 1 通过后逐条检查：
 
-### 验证内容
+- [ ] 业务页面使用 sdesign 组件（SSearchTable/SForm/SButton/SDetail），未使用不存在的 sdesign 组件
+- [ ] 无 any 类型，未直接 import axios，类型导入用 `import type`
+- [ ] API 方法名带 HTTP 后缀（getListByGet/createByPost 等）
+- [ ] SForm 字段联动用 `type: 'dependency'` + `depNames`
+- [ ] Modal 用条件渲染 `{open && <Modal/>}`，封装在子组件内
+- [ ] 所有 API 调用通过 useRequest 包装（SSearchTable.requestFn 除外）
+- [ ] 写操作 useRequest 配置了 onSuccess（提示 + 刷新/跳转）
+- [ ] types.ts 类型完整（Entity + EntityQuery + EntityFormData）
 
-| 检查项          | 工具     | 说明                                         |
-| --------------- | -------- | -------------------------------------------- |
-| TypeScript 类型 | sc       | 类型错误、缺失导入、类型不匹配               |
-| ESLint 规则     | eslint   | 禁止 any、禁止直接 axios、组件约束、导入路径 |
-| Prettier 格式   | prettier | 代码格式统一                                 |
+### Level 3：业务级验证（人工）
 
-### 自修复流程
+对照 `specs/[feature]/spec.md` 验证核心功能、边界情况、联调结果。
 
-`pnpm verify → 有错误 → 按优先级修复 → 再次 verify
-                              ↓
-                    最多 3 轮，仍有错误 → 报告给用户`
+### 失败处理
 
-**修复优先级**： sc 错误 > eslint 错误 > prettier 格式
+| 层级    | 处理方式                              |
+| ------- | ------------------------------------- |
+| Level 1 | AI 自动修复，最多 3 轮                |
+| Level 2 | AI 修复后重新自检，仍不通过则报告用户 |
+| Level 3 | 标记未通过，回到对应 Task 修复        |
 
-### 通过标准
-
-`bash
-$ pnpm verify
-
-# 输出：无错误，0 exit code
-
-`
-
----
-
-## Level 2: 功能级验证（AI 辅助 + 人工确认）
-
-> **执行者**：AI 检查清单 + 人工确认
-> **触发时机**：Level 1 通过后
-
-### AI 自检清单
-
-AI 在提交代码前，**必须**逐条自检以下项目：
-
-#### 组件约束检查
-
-`markdown
-
-- [ ] 目标文件不在豁免目录（login/error/layouts/router）
-- [ ] 业务页面使用 SSearchTable 而非 antd Table
-- [ ] 业务页面使用 SForm 而非 antd Form
-- [ ] 业务页面使用 SButton 而非 antd Button
-- [ ] 业务页面使用 SDetail 而非 antd Descriptions
-- [ ] 未使用 sdesign 中不存在的组件（如 ~~SModal~~、~~SDrawer~~）
-      `
-
-#### 代码质量检查
-
-`markdown
-
-- [ ] 无 any 类型
-- [ ] 未直接 import axios，使用 request 封装
-- [ ] 类型导入使用 import type { ... }
-- [ ] 路径使用 @/ 或 src/ 别名，无 ../../ 相对路径
-- [ ] 状态管理使用 Zustand，无 Redux
-- [ ] API 对象命名正确（{module}Api）
-- [ ] API 方法名添加了 HTTP 后缀（getListByGet/createByPost 等，禁止无后缀的 getList/create）
-- [ ] API 标准方法齐全（getListByGet/getByIdByGet/createByPost/updateByPut/deleteByDelete）
-- [ ] 回调函数中未使用的参数已加 `_` 前缀（如 render 中 `(_, record) => ...`）
-- [ ] 页面中使用 useRequest，避免手动定义 loading/data/error
-      `
-
-#### 文件完整性检查
-
-`markdown
-
-- [ ] types.ts 中类型定义完整（Entity, EntityQuery, EntityFormData）
-- [ ] API 模块统一导出（api/index.ts）
-- [ ] 页面文件包含 index.tsx
-- [ ] 页面私有组件放在 components/ 子目录
-- [ ] 路由配置已更新（如需要）
-      `
-
-#### JSX 特有检查
-
-`markdown
-
-- [ ] SForm 字段联动是否用 `type: 'dependency'` + `depNames` 而非外部 useWatch 控制渲染？
-- [ ] SDatePickerRange 是否用 `rangeKeys` 拆分字段而非手动 getFieldValue 拆分？
-- [ ] Modal 是否使用条件渲染 `{open && <Modal/>}` 而非 destroyOnClose？
-- [ ] Modal/Drawer 是否封装在子组件内部，而非由列表页管理 open 状态？
-- [ ] 列表页是否仅通过 ref 或 props 触发弹层，不直接持有弹层状态？
-      `
-
-#### 功能逻辑检查
-
-> ⚠️ AI 在 `pnpm verify` 通过后，**必须**逐条自检以下功能逻辑项。这些项无法被静态检查工具捕获。
-
-`markdown
-
-- [ ] 所有 API 调用是否通过 useRequest 包装（SSearchTable 的 requestFn 除外）？
-- [ ] 新增表单的 onFinish 是否调用了 useRequest 返回的 run 方法（而非直接 await api.xxx()）？
-- [ ] 编辑表单是否用 useRequest + ready 加载详情数据（而非 useEffect + 手动 setState）？
-- [ ] 详情页是否用 useRequest 加载数据并正确传递 loading 状态给 SDetail？
-- [ ] 写操作（创建/编辑/删除）的 useRequest 是否配置了 onSuccess 回调（提示 + 刷新/跳转）？
-- [ ] 是否存在 Record<string, any> 或其他 any 用法？如有，替换为具体实体类型或 Record<string, unknown>
-      `
-
-### 人工确认点
-
-AI 自检通过后，标记为「AI 自检通过」，以下项目由人工最终确认：
-
-`markdown
-
-- [ ] 页面在开发服务器中正常渲染（无白屏、无报错）
-- [ ] 搜索/筛选功能可用
-- [ ] 分页功能正常
-- [ ] 表单提交成功，数据正确
-- [ ] 编辑模式数据回填正确
-- [ ] 删除操作有确认提示
-      `
-
----
-
-## Level 3: 业务级验证（人工）
-
-> **执行者**：人工
-> **触发时机**：Level 2 通过后，或在功能联调完成后
-
-### 验证方式
-
-对照 specs/[feature]/spec.md 中的需求概要和完成标准，逐条验证。
-
-### 验证清单模板
-
-`markdown
-
-## [功能名称] 业务验证
-
-### 核心功能
-
-- [ ] [需求点1] 描述 → 实际表现：
-- [ ] [需求点2] 描述 → 实际表现：
-- [ ] [需求点3] 描述 → 实际表现：
-
-### 边界情况
-
-- [ ] 空数据状态展示
-- [ ] 超长文本截断/换行
-- [ ] 必填字段未填的提示
-- [ ] 网络异常时的错误提示
-- [ ] 重复提交的防护
-
-### 联调验证
-
-- [ ] 接口返回数据格式与预期一致
-- [ ] 分页参数和响应正确
-- [ ] 新增后列表刷新
-- [ ] 编辑后数据更新
-- [ ] 删除后列表刷新
-      `
-
----
-
-## 验证与 Task 的对应关系
-
-每个 Task 的 spec.md 中已定义「完成标准」，验证时严格对照执行：
-
-`Task 完成标准
-├── 包含 pnpm verify → Level 1 覆盖
-├── 包含页面渲染/交互 → Level 2 覆盖
-└── 包含业务需求匹配 → Level 3 覆盖`
-
-## 快速验证流程（简易场景）
-
-对于简单的 Task（如纯 API 模块、纯样式调整），可以简化为：
-
-`pnpm verify（Level 1）→ AI 自检清单（Level 2 核心）→ 完成`
-
-跳过 Level 3，但必须在 Task 的完成标准中注明：「本 Task 无需业务级验证」。
-
-## 验证失败处理
-
-| 失败层级 | 处理方式                                   |
-| -------- | ------------------------------------------ |
-| Level 1  | AI 自动修复，最多 3 轮                     |
-| Level 2  | AI 修复后重新自检，仍不通过则报告用户      |
-| Level 3  | 标记为未通过，记录问题，回到对应 Task 修复 |
+简易场景（纯 API 模块、纯样式）可简化为 Level 1 + Level 2 核心项。

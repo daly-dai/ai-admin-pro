@@ -94,6 +94,6 @@ const {Entity}Page = () => {
 
 ## 相关规范
 
-- `.ai/guides/crud-page.md`「弹层封装原则」
+- `.ai/templates/crud-page.md`「弹层封装原则」
 - `.ai/core/coding-standards.md`「容器组件说明」
 - `.ai/core/coding-standards.md`「sdesign 组件约束」

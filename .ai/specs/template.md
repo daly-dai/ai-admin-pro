@@ -70,8 +70,8 @@ efactor
 
 <!-- 根据类型选择必读文档（不可跳过） -->
 
-- [ ] .ai/guides/api-module.md
-- [ ] .ai/guides/crud-page.md
+- [ ] .ai/templates/api-module.md
+- [ ] .ai/templates/crud-page.md
 - [ ] .ai/sdesign/components/SSearchTable.md
 
 ### Task 2: [Task 标题]
@@ -166,7 +166,7 @@ efactor | 重构 | 优化现有代码 |
 
 **AI 必读文档**:
 
-- [ ] .ai/guides/api-module.md
+- [ ] .ai/templates/api-module.md
 - [ ] .ai/conventions/api-conventions.md
 
 ### Task 2: 主题列表页
@@ -193,7 +193,7 @@ efactor | 重构 | 优化现有代码 |
 
 **AI 必读文档**:
 
-- [ ] .ai/guides/crud-page.md
+- [ ] .ai/templates/crud-page.md
 - [ ] .ai/sdesign/components/SSearchTable.md
 - [ ] .ai/sdesign/components/SButton.md
 
@@ -221,7 +221,7 @@ efactor | 重构 | 优化现有代码 |
 
 **AI 必读文档**:
 
-- [ ] .ai/guides/form-page.md
+- [ ] .ai/templates/form-page.md
 - [ ] .ai/sdesign/components/SForm.md
 
 ### Task 4: 主题详情页
@@ -245,7 +245,7 @@ efactor | 重构 | 优化现有代码 |
 
 **AI 必读文档**:
 
-- [ ] .ai/guides/detail-page.md
+- [ ] .ai/templates/detail-page.md
 - [ ] .ai/sdesign/components/SDetail.md
 
 ## 验证计划

@@ -108,7 +108,7 @@
 
 <!-- 根据下一个 Task 类型列出 -->
 
-- [ ] {.ai/guides/xxx.md}
+- [ ] {.ai/templates/xxx.md}
 - [ ] {.ai/sdesign/components/xxx.md}
 
 ## 已知问题
