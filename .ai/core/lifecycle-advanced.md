@@ -28,7 +28,7 @@
 
 ## Task 拆解通用能力
 
-多页面场景下的 Task 拆解机制（`specs/template.md` + `progress.md` + 逐 Task 执行 + `session-template.md`）下沉为通用能力：
+多页面场景下的 Task 拆解机制（`specs/template.md` + `progress.md` + 逐 Task 执行）下沉为通用能力：
 
 | 阶段       | 何时启用 Task 拆解                           |
 | ---------- | -------------------------------------------- |

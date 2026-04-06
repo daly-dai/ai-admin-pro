@@ -74,6 +74,12 @@ efactor
 - [ ] .ai/templates/crud-page.md
 - [ ] .ai/sdesign/components/SSearchTable.md
 
+**关键决策**:
+
+<!-- Task 执行中做出的重要技术决策，防止后续会话"纠正"回错误写法 -->
+<!-- 格式：决策点 | 选择方案 | 原因 -->
+<!-- 示例：API 签名偏离 | getList 用 POST | 后端要求复杂查询条件走 body -->
+
 ### Task 2: [Task 标题]
 
 （同上格式）

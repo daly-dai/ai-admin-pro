@@ -40,7 +40,7 @@
 ├── specs/                       # 需求规格
 │   ├── template.md              # 需求拆解模板
 │   ├── progress-template.md     # 进度追踪模板
-│   ├── session-template.md      # 会话交接模板
+
 │   ├── prd-template.md          # PRD 模板（含 AI 提取清单）
 │   └── [feature]/               # 每个功能的需求目录
 ├── pitfalls/                    # 错题集（已知错误模式）

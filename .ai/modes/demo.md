@@ -34,7 +34,3 @@
 
 - **单页面**：🔒 `src/api/{module}/types.ts` + `index.ts` + 一个页面文件
 - **多页面**：🔒 `src/api/{module}/` + `src/pages/{module}/*.tsx`（逐 Task）+ `specs/[feature]/`
-
-## 会话交接
-
-多页面跨会话中断时按 `specs/session-template.md` 生成交接文档。
