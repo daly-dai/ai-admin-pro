@@ -15,7 +15,7 @@
 
 1. **读模板**：列表页→`templates/crud-page.md` | 表单页→`templates/form-page.md` | 详情页→`templates/detail-page.md`；多页面还需读 `specs/template.md` + `specs/progress-template.md`
 2. **规范化 PRD**：Read `.ai/specs/prd-template.md`「AI 提取清单」，按 9 章提取，缺失标 `[?]`
-3. **读错题集 + sdesign 文档**：Read `.ai/pitfalls/index.md` 匹配页面类型 → Read 对应 sdesign 组件文档（未读文档的组件禁止使用）
+3. **读错题集 + sdesign 文档**：读取 `.ai/pitfalls/index.md` 匹配页面类型 → 读取 对应 sdesign 组件文档（未读文档的组件禁止使用）
 4. **生成占位 API**：
    - `src/api/{module}/types.ts` — 未确认字段加 `// TODO: 待接口确认`
    - `src/api/{module}/index.ts` — 方法名必须带 HTTP 后缀，URL 用 `'/api/TODO/{module}'` 占位

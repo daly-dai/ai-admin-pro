@@ -7,7 +7,7 @@
 1. **读目标文件**：根据用户描述定位并读取
 2. **如涉及类型变更**：同时读取 `src/api/{module}/types.ts`
 3. **读错题集**：Read `.ai/pitfalls/index.md` 匹配修改涉及的页面类型
-4. **读 sdesign 文档**：如涉及 sdesign 组件修改，Read 对应组件文档
+4. **读 sdesign 文档**：如涉及 sdesign 组件修改，读取 对应组件文档
 5. **最小范围修改**：只改用户提到的内容，不重构不相关代码
 6. **验证**：`pnpm verify`，最多 3 轮
 

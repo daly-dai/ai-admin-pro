@@ -4,7 +4,7 @@
 
 ## 技术栈（固定）
 
-> ⚠️ 技术栈详情必须 Read `.ai/core/tech-stack.md`
+> ⚠️ 技术栈详情必须 读取 `.ai/core/tech-stack.md`
 
 ## 项目结构（强制）
 
@@ -89,7 +89,7 @@ export default ComponentName;
 
 API 模块采用 `types.ts`（类型定义）+ `index.ts`（API 对象）双文件结构，导出 `{module}Api` 对象，包含 5 个标准方法（getList/getById/create/update/delete）。
 
-> 完整类型模板和 API 对象模板 → ⚠️ 接口合并/改造阶段必须 Read `.ai/conventions/api-conventions.md`。
+> 完整类型模板和 API 对象模板 → ⚠️ 接口合并/改造阶段必须 读取 `.ai/conventions/api-conventions.md`。
 
 ### 3. 状态管理规范（强制）
 
@@ -163,8 +163,8 @@ const [Module]Page: React.FC = () => {
 export default [Module]Page;
 ```
 
-> ⚠️ 生成页面前必须 Read 对应模板（`.ai/templates/crud-page.md`）
-> ⚠️ 使用 sdesign 组件前必须 Read 对应组件文档（`.ai/sdesign/components/{组件名}.md`）
+> ⚠️ 生成页面前必须 读取 对应模板（`.ai/templates/crud-page.md`）
+> ⚠️ 使用 sdesign 组件前必须 读取 对应组件文档（`.ai/sdesign/components/{组件名}.md`）
 
 ## 禁止事项
 
