@@ -92,8 +92,9 @@ pitfalls 文件格式：
 
 ## 沉淀记录
 
-| 日期       | 纠正内容                                              | 命中层 |
-| ---------- | ----------------------------------------------------- | :----: |
-| 2026-03-23 | destroyOnClose → 条件渲染 {open && \<Modal/>}         |   L1   |
-| 2026-03-23 | Modal.confirm → SConfirm 组件                         |   L1   |
-| 2026-04-02 | 可编辑表格用 EditableProTable 而非 SForm type='table' |   L3   |
+| 日期       | 纠正内容                                                      | 命中层 |
+| ---------- | ------------------------------------------------------------- | :----: |
+| 2026-03-23 | destroyOnClose → 条件渲染 {open && \<Modal/>}                 |   L1   |
+| 2026-04-02 | 可编辑表格用 EditableProTable 而非 SForm type='table'         |   L3   |
+| 2026-04-07 | SConfirm 组件 → Modal.confirm（SConfirm 弃用）                |   L4   |
+| 2026-04-07 | type:'dependency' → useWatch + 动态 items（弃用 SDependency） |   L4   |

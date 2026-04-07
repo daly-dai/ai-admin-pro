@@ -95,14 +95,14 @@ export default tseslint.config(
       ],
       // 示例：禁止在非豁免目录使用 Modal.confirm
       // .eslintrc 中配置 no-restricted-syntax 或自定义规则
-      'no-restricted-properties': [
-        'error',
-        {
-          object: 'Modal',
-          property: 'confirm',
-          message: '使用 SConfirm 组件替代',
-        },
-      ],
+      // 'no-restricted-properties': [
+      //   'error',
+      //   {
+      //     object: 'Modal',
+      //     property: 'confirm',
+      //     message: '使用 SConfirm 组件替代',
+      //   },
+      // ],
     },
   },
 );

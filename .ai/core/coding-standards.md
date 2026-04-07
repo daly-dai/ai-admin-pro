@@ -7,13 +7,11 @@
 ### 类型定义
 
 ```typescript
-// 正确：显式返回类型 + 泛型注解
-export const getListByGet = (
-  params?: ProductQuery,
-): Promise<PageData<Product>> =>
+// 正确：泛型注解（返回类型由泛型自动推导，无需显式声明）
+export const getListByGet = (params?: ProductQuery) =>
   productApi.get<PageData<Product>>('/api/product', { params });
 
-// 错误：无返回类型、无泛型
+// 错误：无泛型、无 HTTP 后缀、直接 axios
 export const getList = async (params) => {
   return request.get('/api/product');
 };

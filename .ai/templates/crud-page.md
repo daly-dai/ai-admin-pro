@@ -125,8 +125,26 @@ input | inputNumber | password | textarea | select | slider |
 radio | radioGroup | switch | treeSelect | upload |
 datePicker | SDatePicker | datePickerRange | SDatePickerRange |
 timePicker | timePickerRange | checkbox | checkGroup |
-cascader | SCascader | table | dependency
+cascader | SCascader | table
 ```
+
+> ⛔ `dependency` 已弃用，字段联动统一使用 `SForm.useWatch` + 动态 items（详见 `form-page.md`）。
+
+## 确认弹窗
+
+> 删除、批量操作等危险操作使用 antd `Modal.confirm` 进行二次确认。
+
+```tsx
+import { Modal } from 'antd';
+
+// 删除确认
+const handleDelete = (id: string) => {
+  Modal.confirm({
+    title: '确认删除',
+    content: '删除后不可恢复，确认删除？',
+    onOk: () => runDelete(id),
+  });
+};
 
 ## STable 列配置
 
@@ -134,3 +152,4 @@ cascader | SCascader | table | dependency
 - `render`: 支持 `'datetime'` | `'date'` | `'ellipsis'` 快捷类型
 
 > 完整 Props 定义请参考: `.ai/sdesign/components/` 下对应组件文档
+```

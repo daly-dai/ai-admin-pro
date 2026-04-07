@@ -21,22 +21,24 @@
 | `fieldProps` | 传递给底层控件的 props（options, maxLength 等）     |
 | `colProps`   | 栅格布局（`{ span: 12 }`）                          |
 
-## 22 种控件类型
+## 21 种控件类型
 
 ```
 input | inputNumber | password | textarea | select | slider |
 radio | radioGroup | switch | treeSelect | upload |
 datePicker | SDatePicker | datePickerRange | SDatePickerRange |
 timePicker | timePickerRange | checkbox | checkGroup |
-cascader | SCascader | table | dependency
+cascader | SCascader | table
 ```
+
+> ⛔ `dependency` 已弃用，字段联动统一使用 `SForm.useWatch` + 动态 items。
 
 ## 决策点
 
 - **新增页**：调用 `createByPost`
 - **编辑页**：`getByIdByGet` 加载 + `updateByPut` 提交
 - **分组表单**：`SForm.Group` + `groupItems`
-- **字段联动**：`type: 'dependency'` + `depNames` + `render`
+- **字段联动**：`SForm.useWatch(fieldName, form)` + 条件展开 items
 
 ## 交互模式
 
@@ -59,12 +61,16 @@ cascader | SCascader | table | dependency
   { title: '工作信息', items: [...] },
 ]} />
 
-// 字段联动
-{
-  type: 'dependency',
-  depNames: ['type'],
-  render: (form) => form.getFieldValue('type') === '1' ? <Input /> : null
-}
+// 字段联动（useWatch + 动态 items）
+const typeValue = SForm.useWatch('type', form);
+
+const formItems: SFormItems[] = [
+  { label: '类型', name: 'type', type: 'select', fieldProps: { options: typeOptions } },
+  // 条件展开：仅当 type === '1' 时显示
+  ...(typeValue === '1'
+    ? [{ label: '扩展字段', name: 'extra', type: 'input' as const }]
+    : []),
+];
 ```
 
 ## 布局

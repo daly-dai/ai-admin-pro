@@ -98,17 +98,29 @@ PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适
 | 需要实现 sdesign 不支持的复杂交互（拖拽排序、虚拟滚动）                             | 可使用 antd 原生组件，需说明原因 |
 | 用户明确要求使用 antd 原生组件                                                      | 按用户要求执行                   |
 
+#### 可直接使用的 antd 组件
+
+| 组件          | 使用场景                             |
+| ------------- | ------------------------------------ |
+| Modal.confirm | 操作二次确认（删除、提交等危险操作） |
+| Modal         | 自定义弹窗（配合条件渲染）           |
+| Tag / message | 状态标签、操作提示                   |
+| Card / Spin   | 页面容器、加载状态                   |
+| InputNumber   | SForm 联动场景中的数字输入控件       |
+
+> 以上 antd 组件不在 ESLint 禁止名单中，业务页面可直接导入使用。
+
 ### 导入规则
 
-| 规则       | 正确示例                                      | 错误示例                                 |
-| ---------- | --------------------------------------------- | ---------------------------------------- |
-| HTTP 请求  | `import { request } from '@/plugins/request'` | `import axios from 'axios'`              |
-| 类型定义   | `Record<string, unknown>`                     | `Record<string, any>`                    |
-| 类型导入   | `import type { User } from './types'`         | `import { User } from './types'`         |
-| 路径别名   | `import { X } from '@/components/X'`          | `import { X } from '../../components/X'` |
-| 状态管理   | `import { create } from 'zustand'`            | `import { createStore } from 'redux'`    |
-| API 命名   | `getListByGet()`、`createByPost()`            | `getList()`、`create()`                  |
-| 未使用参数 | `(_, record) => ...`                          | `(index, record) => ...` // index 未使用 |
+| 规则       | 正确示例                                            | 错误示例                                 |
+| ---------- | --------------------------------------------------- | ---------------------------------------- |
+| HTTP 请求  | `import { createRequest } from '@/plugins/request'` | `import axios from 'axios'`              |
+| 类型定义   | `Record<string, unknown>`                           | `Record<string, any>`                    |
+| 类型导入   | `import type { User } from './types'`               | `import { User } from './types'`         |
+| 路径别名   | `import { X } from '@/components/X'`                | `import { X } from '../../components/X'` |
+| 状态管理   | `import { create } from 'zustand'`                  | `import { createStore } from 'redux'`    |
+| API 命名   | `getListByGet()`、`createByPost()`                  | `getList()`、`create()`                  |
+| 未使用参数 | `(_, record) => ...`                                | `(index, record) => ...` // index 未使用 |
 
 > **保底类型**：当确实无法确定结构时，使用 `Record<string, unknown>`，并优先从已有实体类型推导（如 `Partial<Entity>`、`Pick<Entity, 'id' | 'name'>`）
 >
