@@ -14,6 +14,7 @@
     "prettier": "prettier -c --write . --cache",
     "prettier-import-sort": "npm run prettier -- --plugin=@ianvs/prettier-plugin-sort-imports",
     "preview": "rsbuild preview",
+    "scaffold": "tsx .ai/tools/scaffold/index.ts",
     "sync-ai-docs": "tsx .ai/tools/sync-sdesign-docs.ts",
     "task:prompt": "tsx .ai/tools/gen-task-prompt.ts",
     "type-check": "tsc --noEmit",
