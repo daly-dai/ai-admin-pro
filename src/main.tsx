@@ -1,8 +1,8 @@
-import React from 'react';
 import { SConfigProvider } from '@dalydb/sdesign';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import dayjs from 'dayjs';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 
@@ -28,7 +28,7 @@ const globalDict: Record<string, Record<string, string>> = {
  * 文件上传地址配置
  * 可通过环境变量 VITE_UPLOAD_URL 配置不同环境的上传地址
  */
-const uploadUrl = import.meta.env.VITE_UPLOAD_URL || '/api/upload';
+// const uploadUrl = import.meta.env.VITE_UPLOAD_URL || '/api/upload';
 
 // 设置dayjs语言
 dayjs.locale('zh-cn');
@@ -44,7 +44,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         },
       }}
     >
-      <SConfigProvider globalDict={globalDict} uploadUrl={uploadUrl}>
+      <SConfigProvider globalDict={globalDict}>
         <RouterProvider router={router} />
       </SConfigProvider>
     </ConfigProvider>

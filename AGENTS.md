@@ -41,6 +41,23 @@ PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适
 | ④    | 接口对接 | 真实接口就绪 + "对接/联调/替换mock"     | 占位URL→真实URL，删除TODO注释                                | `modes/api-connect.md`                     | `src/api/{module}/` + 用户确认的页面文件                                    | diff对比 → 确认 → 替换                                                   |
 | ⑤    | 迭代修复 | "改一下/加字段/修复/调整"               | 最小范围修改                                                 | `modes/incremental.md`                     | 仅用户指定的目标文件及其直接关联的类型文件                                  | 最小范围改动                                                             |
 
+### 工具能力：Scaffold 场景化生成（阶段判断前优先匹配）
+
+> 需求匹配下表任一场景时，**优先使用 scaffold**，不进入阶段判断。
+
+| 需求特征                  | scene  | 生成内容                   |
+| ------------------------- | ------ | -------------------------- |
+| 新增弹框表单 / 独立表单页 | form   | FormModal 或 Create+Edit   |
+| 新增详情抽屉 / 详情页     | detail | DetailDrawer 或 DetailPage |
+| 新增列表页                | list   | index.tsx (SSearchTable)   |
+| 只需类型定义              | types  | types.ts                   |
+| 只需 API 层               | api    | api/index.ts               |
+| 完整 CRUD（新模块）       | crud   | 全部 5-6 个文件            |
+
+**步骤**：生成 `temp/scaffold/{module}.json`（含 `"scene"` 字段，参考 `.ai/tools/scaffold/types.ts`）→ `pnpm scaffold {module}` → `pnpm verify`
+
+**不匹配时**：进入下方阶段判断，走对应阶段流程。
+
 ### 阶段判断
 
 | 用户信号                            | 进入阶段                                     |

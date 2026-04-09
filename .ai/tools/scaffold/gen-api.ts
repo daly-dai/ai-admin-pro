@@ -2,6 +2,7 @@
  * Scaffold CLI — 生成 src/api/{module}/index.ts
  */
 
+import { getIdType } from './normalize.js';
 import type { ApiSceneConfig, ScaffoldConfig } from './types.js';
 import { httpSuffix, jsdoc, lcFirst } from './utils.js';
 
@@ -10,6 +11,7 @@ type ApiGenConfig = ApiSceneConfig | ScaffoldConfig;
 
 export function genApi(config: ApiGenConfig): string {
   const { entity, basePath } = config;
+  const idType = getIdType(config);
   const apiVar = `${lcFirst(entity)}Api`;
   const todoPath = basePath.replace(/^\/api\//, '/api/TODO/');
 
@@ -53,7 +55,9 @@ export function genApi(config: ApiGenConfig): string {
 
   // getByIdByGet
   lines.push(jsdoc('根据 ID 获取详情'));
-  lines.push(`export const getByIdByGet = (id: string): Promise<${entity}> =>`);
+  lines.push(
+    `export const getByIdByGet = (id: ${idType}): Promise<${entity}> =>`,
+  );
   lines.push(`  ${apiVar}.get<${entity}>(\`${todoPath}/\${id}\`);`);
   lines.push('');
 
@@ -68,14 +72,14 @@ export function genApi(config: ApiGenConfig): string {
   // updateByPut
   lines.push(jsdoc('编辑'));
   lines.push(
-    `export const updateByPut = (id: string, data: Partial<${entity}FormData>): Promise<${entity}> =>`,
+    `export const updateByPut = (id: ${idType}, data: Partial<${entity}FormData>): Promise<${entity}> =>`,
   );
   lines.push(`  ${apiVar}.put<${entity}>(\`${todoPath}/\${id}\`, data);`);
   lines.push('');
 
   // deleteByDelete
   lines.push(jsdoc('删除'));
-  lines.push(`export const deleteByDelete = (id: string): Promise<void> =>`);
+  lines.push(`export const deleteByDelete = (id: ${idType}): Promise<void> =>`);
   lines.push(`  ${apiVar}.delete<void>(\`${todoPath}/\${id}\`);`);
 
   // ─── 非标准接口 ───

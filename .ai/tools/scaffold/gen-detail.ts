@@ -2,24 +2,13 @@
  * Scaffold CLI — 生成详情（Drawer 模式 或 Page 模式）
  */
 
+import { collectDetailEnumMaps } from './collectors.js';
+import { getIdType } from './normalize.js';
 import type { DetailSceneConfig, ScaffoldConfig } from './types.js';
 import { toUpperSnake } from './utils.js';
 
 /** 详情生成器接受的配置类型 */
 type DetailGenConfig = DetailSceneConfig | ScaffoldConfig;
-
-/** 收集详情页需要导入的枚举 MAP */
-function collectDetailEnumImports(config: DetailGenConfig): Set<string> {
-  const imports = new Set<string>();
-  for (const group of config.detail.groups) {
-    for (const item of group.items) {
-      if (item.enumName) {
-        imports.add(`${toUpperSnake(item.enumName)}_MAP`);
-      }
-    }
-  }
-  return imports;
-}
 
 /** 生成 SDetail.Group items 代码 */
 function genDetailGroupItems(config: DetailGenConfig): string {
@@ -58,6 +47,7 @@ function genDetailGroupItems(config: DetailGenConfig): string {
 
 function genDetailDrawer(config: DetailGenConfig): string {
   const { entity, module, detail } = config;
+  const idType = getIdType(config);
   const lines: string[] = [];
 
   lines.push(
@@ -68,7 +58,7 @@ function genDetailDrawer(config: DetailGenConfig): string {
   lines.push("import { SDetail, SButton } from '@dalydb/sdesign';");
   lines.push(`import { getByIdByGet } from '@/api/${module}';`);
 
-  const enumImports = collectDetailEnumImports(config);
+  const enumImports = collectDetailEnumMaps(config.detail.groups);
   if (enumImports.size > 0) {
     lines.push(
       `import { ${[...enumImports].join(', ')} } from '@/api/${module}/types';`,
@@ -78,7 +68,7 @@ function genDetailDrawer(config: DetailGenConfig): string {
   lines.push('');
 
   lines.push(`export interface ${entity}DetailDrawerRef {`);
-  lines.push('  open: (id: string) => void;');
+  lines.push(`  open: (id: ${idType}) => void;`);
   lines.push('}');
   lines.push('');
 
@@ -86,7 +76,7 @@ function genDetailDrawer(config: DetailGenConfig): string {
     `const ${entity}DetailDrawer = forwardRef<${entity}DetailDrawerRef>((_, ref) => {`,
   );
   lines.push('  const [open, setOpen] = useState(false);');
-  lines.push('  const [detailId, setDetailId] = useState<string>();');
+  lines.push(`  const [detailId, setDetailId] = useState<${idType}>();`);
   lines.push('');
 
   lines.push('  useImperativeHandle(ref, () => ({');
@@ -144,7 +134,7 @@ function genDetailPage(config: DetailGenConfig): string {
   lines.push("import { SDetail, SButton } from '@dalydb/sdesign';");
   lines.push(`import { getByIdByGet } from '@/api/${module}';`);
 
-  const enumImports = collectDetailEnumImports(config);
+  const enumImports = collectDetailEnumMaps(config.detail.groups);
   if (enumImports.size > 0) {
     lines.push(
       `import { ${[...enumImports].join(', ')} } from '@/api/${module}/types';`,

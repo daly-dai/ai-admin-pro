@@ -1,11 +1,12 @@
-import React from 'react';
+import type { User } from '@/stores/user';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Button, Card, Checkbox, Form, Input, message } from 'antd';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from 'src/stores';
 
-import type { User } from '@/types';
+// import type { User } from '@/types';
 
 interface LoginForm {
   username: string;
@@ -63,7 +64,7 @@ const LoginPage: React.FC = () => {
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       }}
     >
-      <Card style={{ width: 400, borderRadius: 8 }} bordered={false}>
+      <Card style={{ width: 400, borderRadius: 8 }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <h1 style={{ fontSize: 28, color: '#1677ff', marginBottom: 8 }}>
             AI Frontend

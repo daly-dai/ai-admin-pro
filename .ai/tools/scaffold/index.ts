@@ -15,15 +15,16 @@ import { genDetail } from './gen-detail.js';
 import { genForm } from './gen-form.js';
 import { genListPage } from './gen-list-page.js';
 import { genTypes } from './gen-types.js';
-import type {
-  ApiSceneConfig,
-  CrudSceneConfig,
-  DetailSceneConfig,
-  FormSceneConfig,
-  ListSceneConfig,
-  SceneConfig,
-  TypesSceneConfig,
-} from './types.js';
+import { normalizeConfig, preNormalizeConfig } from './normalize.js';
+import {
+  isApiScene,
+  isCrudScene,
+  isDetailScene,
+  isFormScene,
+  isListScene,
+  isTypesScene,
+} from './type-guards.js';
+import type { SceneConfig } from './types.js';
 import { tryPrettier, writeFileWithDir } from './utils.js';
 import { validateConfig } from './validate.js';
 
@@ -51,67 +52,43 @@ const SCENE_LABELS: Record<string, string> = {
 function generateByScene(
   config: SceneConfig,
 ): { path: string; content: string }[] {
-  const scene = config.scene || 'crud';
   const files: { path: string; content: string }[] = [];
 
-  switch (scene) {
-    case 'form': {
-      const result = genForm(config as FormSceneConfig);
-      files.push(...result.files);
-      break;
-    }
-    case 'detail': {
-      const result = genDetail(config as DetailSceneConfig);
-      files.push(...result.files);
-      break;
-    }
-    case 'list': {
-      files.push({
-        path: `src/pages/${config.module}/index.tsx`,
-        content: genListPage(config as ListSceneConfig),
-      });
-      break;
-    }
-    case 'types': {
-      files.push({
-        path: `src/api/${config.module}/types.ts`,
-        content: genTypes(config as TypesSceneConfig),
-      });
-      break;
-    }
-    case 'api': {
-      files.push({
-        path: `src/api/${config.module}/index.ts`,
-        content: genApi(config as ApiSceneConfig),
-      });
-      break;
-    }
-    case 'crud':
-    default: {
-      const crudConfig = config as CrudSceneConfig;
-      // 1. types
-      files.push({
-        path: `src/api/${crudConfig.module}/types.ts`,
-        content: genTypes(crudConfig),
-      });
-      // 2. api
-      files.push({
-        path: `src/api/${crudConfig.module}/index.ts`,
-        content: genApi(crudConfig),
-      });
-      // 3. list page
-      files.push({
-        path: `src/pages/${crudConfig.module}/index.tsx`,
-        content: genListPage(crudConfig),
-      });
-      // 4. form
-      const formResult = genForm(crudConfig);
-      files.push(...formResult.files);
-      // 5. detail
-      const detailResult = genDetail(crudConfig);
-      files.push(...detailResult.files);
-      break;
-    }
+  if (isFormScene(config)) {
+    files.push(...genForm(config).files);
+  } else if (isDetailScene(config)) {
+    files.push(...genDetail(config).files);
+  } else if (isListScene(config)) {
+    files.push({
+      path: `src/pages/${config.module}/index.tsx`,
+      content: genListPage(config),
+    });
+  } else if (isTypesScene(config)) {
+    files.push({
+      path: `src/api/${config.module}/types.ts`,
+      content: genTypes(config),
+    });
+  } else if (isApiScene(config)) {
+    files.push({
+      path: `src/api/${config.module}/index.ts`,
+      content: genApi(config),
+    });
+  } else if (isCrudScene(config)) {
+    // 全量 CRUD
+    files.push({
+      path: `src/api/${config.module}/types.ts`,
+      content: genTypes(config),
+    });
+    files.push({
+      path: `src/api/${config.module}/index.ts`,
+      content: genApi(config),
+    });
+    files.push({
+      path: `src/pages/${config.module}/index.tsx`,
+      content: genListPage(config),
+    });
+    files.push(...genForm(config).files);
+    files.push(...genDetail(config).files);
   }
 
   return files;
@@ -146,8 +123,10 @@ function main(): void {
     );
   }
 
-  // ─── 校验配置 ───
-  const config = validateConfig(rawConfig);
+  // ─── 预处理 + 校验 + 标准化配置 ───
+  preNormalizeConfig(rawConfig as Record<string, unknown>);
+  const validated = validateConfig(rawConfig);
+  const config = normalizeConfig(validated);
   const scene = config.scene || 'crud';
   const sceneLabel = SCENE_LABELS[scene] || scene;
   const configLabel =

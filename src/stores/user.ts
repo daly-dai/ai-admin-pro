@@ -1,7 +1,16 @@
-import type { User } from 'src/types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  nickname: string;
+  avatar: string;
+  status: string;
+  createTime: string;
+}
 
 interface UserState {
   // State

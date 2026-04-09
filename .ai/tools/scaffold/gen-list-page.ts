@@ -2,6 +2,8 @@
  * Scaffold CLI — 生成 src/pages/{module}/index.tsx (列表页)
  */
 
+import { collectListEnumMaps } from './collectors.js';
+import { getIdType } from './normalize.js';
 import type { ListSceneConfig, ScaffoldConfig } from './types.js';
 import { enumOptionsCode, httpSuffix, toUpperSnake } from './utils.js';
 
@@ -16,6 +18,7 @@ function handlerMatchesApi(handler: string, apiName: string): boolean {
 
 export function genListPage(config: ListGenConfig): string {
   const { entity, module, listPage } = config;
+  const idType = getIdType(config);
   const formMode = 'form' in config && config.form ? config.form.mode : 'page';
   const detailMode =
     'detail' in config && config.detail ? config.detail.mode : 'page';
@@ -35,17 +38,10 @@ export function genListPage(config: ListGenConfig): string {
   const typeFileImports = new Set<string>([entity]);
 
   // 收集枚举 MAP imports
-  const enumMapImports = new Set<string>();
-  for (const col of listPage.columns) {
-    if (col.enumName) {
-      enumMapImports.add(`${toUpperSnake(col.enumName)}_MAP`);
-    }
-  }
-  for (const q of config.queryParams) {
-    if (q.enumName) {
-      enumMapImports.add(`${toUpperSnake(q.enumName)}_MAP`);
-    }
-  }
+  const enumMapImports = collectListEnumMaps(
+    listPage.columns,
+    config.queryParams,
+  );
 
   // 收集 extra API imports
   for (const act of [...listPage.actions, ...(listPage.toolbarActions || [])]) {
@@ -176,7 +172,7 @@ export function genListPage(config: ListGenConfig): string {
 
   // ─── 操作函数 ───
   // handleDelete
-  lines.push('  const handleDelete = (id: string) => {');
+  lines.push(`  const handleDelete = (id: ${idType}) => {`);
   lines.push('    Modal.confirm({');
   lines.push("      title: '确认删除',");
   lines.push("      content: '删除后不可恢复，确认删除？',");
@@ -196,11 +192,11 @@ export function genListPage(config: ListGenConfig): string {
   // handleEdit
   if (isFormModal) {
     lines.push(
-      `  const handleEdit = (id: string) => formRef.current?.open('edit', id);`,
+      `  const handleEdit = (id: ${idType}) => formRef.current?.open('edit', id);`,
     );
   } else {
     lines.push(
-      `  const handleEdit = (id: string) => navigate(\`/${module}/edit/\${id}\`);`,
+      `  const handleEdit = (id: ${idType}) => navigate(\`/${module}/edit/\${id}\`);`,
     );
   }
   lines.push('');
@@ -208,11 +204,11 @@ export function genListPage(config: ListGenConfig): string {
   // handleDetail
   if (isDetailDrawer) {
     lines.push(
-      `  const handleDetail = (id: string) => detailRef.current?.open(id);`,
+      `  const handleDetail = (id: ${idType}) => detailRef.current?.open(id);`,
     );
   } else {
     lines.push(
-      `  const handleDetail = (id: string) => navigate(\`/${module}/detail/\${id}\`);`,
+      `  const handleDetail = (id: ${idType}) => navigate(\`/${module}/detail/\${id}\`);`,
     );
   }
   lines.push('');
@@ -236,14 +232,14 @@ export function genListPage(config: ListGenConfig): string {
     const runName = `run${extraApi.name.charAt(0).toUpperCase() + extraApi.name.slice(1)}`;
 
     if (act.confirm) {
-      lines.push(`  const ${act.handler} = (id: string) => {`);
+      lines.push(`  const ${act.handler} = (id: ${idType}) => {`);
       lines.push('    Modal.confirm({');
       lines.push(`      title: '${act.confirm}',`);
       lines.push(`      onOk: () => ${runName}(id),`);
       lines.push('    });');
       lines.push('  };');
     } else {
-      lines.push(`  const ${act.handler} = (id: string) => ${runName}(id);`);
+      lines.push(`  const ${act.handler} = (id: ${idType}) => ${runName}(id);`);
     }
     lines.push('');
   }

@@ -28,3 +28,13 @@ export interface ApiError {
   message: string;
   details?: unknown;
 }
+
+/** 用户 */
+export interface User {
+  id: string;
+  name: string;
+  username?: string;
+  nickname?: string;
+  avatar?: string;
+  email?: string;
+}

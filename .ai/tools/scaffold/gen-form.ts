@@ -2,8 +2,10 @@
  * Scaffold CLI — 生成表单（Modal 模式 或 Page 模式）
  */
 
+import { collectFormEnumMaps, matchEnum } from './collectors.js';
+import { getIdType } from './normalize.js';
 import type { FormFieldDef, FormSceneConfig, ScaffoldConfig } from './types.js';
-import { enumOptionsCode, toUpperSnake } from './utils.js';
+import { enumOptionsCode } from './utils.js';
 
 /** 表单生成器接受的配置类型 */
 type FormGenConfig = FormSceneConfig | ScaffoldConfig;
@@ -26,26 +28,15 @@ function genFormItemsCode(
     }
     // fieldProps
     const fp = f.fieldProps || {};
-    // const enumDef = config.enums?.find(
-    //   (e) =>
-    //     e.name.toLowerCase().includes(f.name.toLowerCase()) ||
-    //     f.name.toLowerCase().includes(e.name.replace(/([A-Z])/g, '_$1').toLowerCase().replace(/^_/, '')),
-    // );
 
     // 如果是 select 且没有显式 fieldProps.options，尝试从枚举生成
     if (f.type === 'select' && !fp.options) {
-      // 查找匹配的枚举
-      const matchedEnum = config.enums?.find((e) => {
-        const fieldLower = f.name.toLowerCase();
-        const enumLower = e.name.toLowerCase();
-        return (
-          enumLower.includes(fieldLower) ||
-          fieldLower.includes(enumLower.replace('contract', '').toLowerCase())
-        );
-      });
-      if (matchedEnum) {
+      const matched = config.enums
+        ? matchEnum(f.name, config.enums)
+        : undefined;
+      if (matched) {
         lines.push(
-          `      fieldProps: { options: ${enumOptionsCode(matchedEnum.name)}, allowClear: true },`,
+          `      fieldProps: { options: ${enumOptionsCode(matched.name)}, allowClear: true },`,
         );
       } else if (Object.keys(fp).length > 0) {
         lines.push(`      fieldProps: ${JSON.stringify(fp)},`);
@@ -110,6 +101,7 @@ function genWatchCode(config: FormGenConfig): {
 
 function genFormModal(config: FormGenConfig): string {
   const { entity, module, form } = config;
+  const idType = getIdType(config);
 
   const lines: string[] = [];
 
@@ -119,7 +111,6 @@ function genFormModal(config: FormGenConfig): string {
   );
   lines.push("import { Modal, message } from 'antd';");
   lines.push("import { useRequest } from 'ahooks';");
-  lines.push("import { Form } from 'antd';");
   lines.push("import type { SFormItems } from '@dalydb/sdesign';");
   lines.push("import { SForm, SButton } from '@dalydb/sdesign';");
   lines.push(
@@ -128,20 +119,7 @@ function genFormModal(config: FormGenConfig): string {
   lines.push(`import type { ${entity}FormData } from '@/api/${module}/types';`);
 
   // 枚举 MAP imports
-  const enumImports = new Set<string>();
-  for (const f of form.fields) {
-    if (f.type === 'select') {
-      const matchedEnum = config.enums?.find((e) => {
-        const fl = f.name.toLowerCase();
-        const el = e.name.toLowerCase();
-        return (
-          el.includes(fl) ||
-          fl.includes(el.replace('contract', '').toLowerCase())
-        );
-      });
-      if (matchedEnum) enumImports.add(`${toUpperSnake(matchedEnum.name)}_MAP`);
-    }
-  }
+  const enumImports = collectFormEnumMaps(form.fields, config.enums);
   if (enumImports.size > 0) {
     lines.push(
       `import { ${[...enumImports].join(', ')} } from '@/api/${module}/types';`,
@@ -152,7 +130,7 @@ function genFormModal(config: FormGenConfig): string {
 
   // Types
   lines.push(`export interface ${entity}FormModalRef {`);
-  lines.push("  open: (mode: 'create' | 'edit', id?: string) => void;");
+  lines.push(`  open: (mode: 'create' | 'edit', id?: ${idType}) => void;`);
   lines.push('}');
   lines.push('');
   lines.push(`interface ${entity}FormModalProps {`);
@@ -168,8 +146,8 @@ function genFormModal(config: FormGenConfig): string {
   lines.push(
     "  const [mode, setMode] = useState<'create' | 'edit'>('create');",
   );
-  lines.push('  const [editId, setEditId] = useState<string>();');
-  lines.push('  const [form] = Form.useForm();');
+  lines.push(`  const [editId, setEditId] = useState<${idType}>();`);
+  lines.push('  const [form] = SForm.useForm();');
   lines.push('');
 
   // useImperativeHandle
@@ -282,14 +260,13 @@ function genFormCreatePage(config: FormGenConfig): string {
   lines.push("import { message } from 'antd';");
   lines.push("import { useNavigate } from 'react-router-dom';");
   lines.push("import { useRequest } from 'ahooks';");
-  lines.push("import { Form } from 'antd';");
   lines.push("import type { SFormItems } from '@dalydb/sdesign';");
   lines.push("import { SForm, SButton } from '@dalydb/sdesign';");
   lines.push(`import { createByPost } from '@/api/${module}';`);
   lines.push(`import type { ${entity}FormData } from '@/api/${module}/types';`);
 
   // 枚举 imports
-  const enumImports = collectFormEnumImports(config);
+  const enumImports = collectFormEnumMaps(config.form.fields, config.enums);
   if (enumImports.size > 0) {
     lines.push(
       `import { ${[...enumImports].join(', ')} } from '@/api/${module}/types';`,
@@ -299,7 +276,7 @@ function genFormCreatePage(config: FormGenConfig): string {
   lines.push('');
   lines.push(`const ${entity}Create: React.FC = () => {`);
   lines.push('  const navigate = useNavigate();');
-  lines.push('  const [form] = Form.useForm();');
+  lines.push('  const [form] = SForm.useForm();');
   lines.push('');
 
   lines.push(`  const { run: runCreate, loading } = useRequest(`);
@@ -360,13 +337,12 @@ function genFormEditPage(config: FormGenConfig): string {
   lines.push("import { message, Spin } from 'antd';");
   lines.push("import { useNavigate, useParams } from 'react-router-dom';");
   lines.push("import { useRequest } from 'ahooks';");
-  lines.push("import { Form } from 'antd';");
   lines.push("import type { SFormItems } from '@dalydb/sdesign';");
   lines.push("import { SForm, SButton } from '@dalydb/sdesign';");
   lines.push(`import { getByIdByGet, updateByPut } from '@/api/${module}';`);
   lines.push(`import type { ${entity}FormData } from '@/api/${module}/types';`);
 
-  const enumImports = collectFormEnumImports(config);
+  const enumImports = collectFormEnumMaps(config.form.fields, config.enums);
   if (enumImports.size > 0) {
     lines.push(
       `import { ${[...enumImports].join(', ')} } from '@/api/${module}/types';`,
@@ -377,7 +353,7 @@ function genFormEditPage(config: FormGenConfig): string {
   lines.push(`const ${entity}Edit: React.FC = () => {`);
   lines.push('  const navigate = useNavigate();');
   lines.push('  const { id } = useParams<{ id: string }>();');
-  lines.push('  const [form] = Form.useForm();');
+  lines.push('  const [form] = SForm.useForm();');
   lines.push('');
 
   // 加载详情
@@ -441,25 +417,6 @@ function genFormEditPage(config: FormGenConfig): string {
   lines.push(`export default ${entity}Edit;`);
 
   return lines.join('\n') + '\n';
-}
-
-/** 收集表单中需要导入的枚举 MAP */
-function collectFormEnumImports(config: FormGenConfig): Set<string> {
-  const imports = new Set<string>();
-  for (const f of config.form.fields) {
-    if (f.type === 'select') {
-      const matchedEnum = config.enums?.find((e) => {
-        const fl = f.name.toLowerCase();
-        const el = e.name.toLowerCase();
-        return (
-          el.includes(fl) ||
-          fl.includes(el.replace('contract', '').toLowerCase())
-        );
-      });
-      if (matchedEnum) imports.add(`${toUpperSnake(matchedEnum.name)}_MAP`);
-    }
-  }
-  return imports;
 }
 
 // ─── 导出 ───

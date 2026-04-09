@@ -11,23 +11,7 @@
 
 > 多页面时向用户确认：「文档涵盖多个页面，我将按 Task 逐页面生成。如只需先出某个页面，请告知。」
 
-## 路径选择（进入步骤前先判断）
-
-```
-PRD 到达 → 需求匹配标准 CRUD 场景？
-              ├─ 是 → 🚀 Scaffold 路径（路径 A）
-              └─ 否 → 📝 手动生成路径（路径 B）
-```
-
-### 路径 A：Scaffold 路径
-
-> 读取 `.ai/tools/scaffold/usage.md`，按其中的场景匹配表和步骤执行。
-
-### 路径 B：手动生成路径
-
-> 当需求超出 scaffold 场景能力（如可编辑表格、拖拽排序、复杂自定义布局等），走下方原有步骤。
-
-## 步骤（路径 B）
+## 步骤
 
 1. **读模板**：列表页→`templates/crud-page.md` | 表单页→`templates/form-page.md` | 详情页→`templates/detail-page.md`；多页面还需读 `specs/template.md` + `specs/progress-template.md`
 2. **规范化 PRD**：Read `.ai/specs/prd-template.md`「AI 提取清单」，按 9 章提取，缺失标 `[?]`
