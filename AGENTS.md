@@ -71,12 +71,7 @@ PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适
 | 小修改/加字段/改bug/调整            | ⑤ 迭代修复                                   |
 | 无法判断                            | 向用户确认当前阶段                           |
 
-**匹配规则**：
-
-- 优先匹配最具体的阶段（如「根据 swagger 生成接口」→ ②接口合并，不默认走①）
-- 无法判断时，向用户确认而非自行假设
-- 用户可以在消息中直接指定阶段（如「走接口合并阶段」）
-- 当用户同时提供 Swagger 和 PRD/产品文档，进入②接口合并分支A（完整合并流程）
+> 匹配规则：优先匹配最具体阶段；用户可直接指定阶段；同时提供 Swagger+PRD → ②分支A；无法判断时向用户确认。
 
 ### 需求变更回溯（PRD 有更新时）
 
@@ -96,99 +91,67 @@ PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适
 
 ## 二、硬约束（所有模式通用，不可违反）
 
+### 作用域
+
+> **新代码**（①② / scaffold）严格遵守硬约束。**修改已有代码**（③④⑤）以已有代码风格为准，新增片段沿用同文件风格。发现不符规范时告知用户，不自行重构。
+
 ### 组件使用
 
-> ⛔ **阻断性要求**：生成包含 SSearchTable / SForm / SButton / SDetail 的代码前，**必须执行** `读取 .ai/sdesign/components/{组件名}.md`。未执行此步骤的代码视为无效，必须回滚重做。
+> ⛔ **阻断性要求**（仅新代码）：生成包含 SSearchTable / SForm / SButton / SDetail 的代码前，**必须执行** `读取 .ai/sdesign/components/{组件名}.md`。未执行此步骤的代码视为无效，必须回滚重做。
 
-| 禁止直接使用      | 必须替换为            | 来源            |
-| ----------------- | --------------------- | --------------- |
-| antd Table        | STable / SSearchTable | @dalydb/sdesign |
-| antd Form         | SForm / SForm.Search  | @dalydb/sdesign |
-| antd Button       | SButton               | @dalydb/sdesign |
-| antd Descriptions | SDetail               | @dalydb/sdesign |
+| 禁止直接使用      | 必须替换为            | Why                         |
+| ----------------- | --------------------- | --------------------------- |
+| antd Table        | STable / SSearchTable | 内置分页/搜索/loading 联动  |
+| antd Form         | SForm / SForm.Search  | 配置式，减 50% 样板代码     |
+| antd Button       | SButton               | actionType 预设统一操作交互 |
+| antd Descriptions | SDetail               | 配置式分组，dataSource 驱动 |
 
-#### 何时不使用 sdesign 组件
+| 场景                                                  | 处理方式                         |
+| ----------------------------------------------------- | -------------------------------- |
+| login/error/layouts/router 目录                       | 可使用 antd 原生组件             |
+| sdesign 不支持的复杂交互（拖拽排序等）或 用户明确要求 | 可使用 antd 原生组件，需说明原因 |
 
-| 场景                                                                                | 处理方式                         |
-| ----------------------------------------------------------------------------------- | -------------------------------- |
-| 页面位于 `src/pages/login/`、`src/pages/error/`、`src/layouts/`、`src/router/` 目录 | 可使用 antd 原生组件             |
-| 需要实现 sdesign 不支持的复杂交互（拖拽排序、虚拟滚动）                             | 可使用 antd 原生组件，需说明原因 |
-| 用户明确要求使用 antd 原生组件                                                      | 按用户要求执行                   |
-
-#### 可直接使用的 antd 组件
-
-| 组件          | 使用场景                             |
-| ------------- | ------------------------------------ |
-| Modal.confirm | 操作二次确认（删除、提交等危险操作） |
-| Modal         | 自定义弹窗（配合条件渲染）           |
-| Tag / message | 状态标签、操作提示                   |
-| Card / Spin   | 页面容器、加载状态                   |
-| InputNumber   | SForm 联动场景中的数字输入控件       |
-
-> 以上 antd 组件不在 ESLint 禁止名单中，业务页面可直接导入使用。
+> 可直接用: Modal / Modal.confirm / Tag / message / Card / Spin / InputNumber（不在 ESLint 禁止名单中）
 
 ### 导入规则
 
-| 规则       | 正确示例                                            | 错误示例                                 |
-| ---------- | --------------------------------------------------- | ---------------------------------------- |
-| HTTP 请求  | `import { createRequest } from '@/plugins/request'` | `import axios from 'axios'`              |
-| 类型定义   | `Record<string, unknown>`                           | `Record<string, any>`                    |
-| 类型导入   | `import type { User } from './types'`               | `import { User } from './types'`         |
-| 路径别名   | `import { X } from '@/components/X'`                | `import { X } from '../../components/X'` |
-| 状态管理   | `import { create } from 'zustand'`                  | `import { createStore } from 'redux'`    |
-| API 命名   | `getListByGet()`、`createByPost()`                  | `getList()`、`create()`                  |
-| 未使用参数 | `(_, record) => ...`                                | `(index, record) => ...` // index 未使用 |
+| 规则       | 正确写法                                            | Why                            |
+| ---------- | --------------------------------------------------- | ------------------------------ |
+| HTTP 请求  | `import { createRequest } from '@/plugins/request'` | 统一拦截/鉴权/错误处理         |
+| 类型安全   | `Record<string, unknown>`                           | any 绕过类型检查，隐患累积     |
+| 类型导入   | `import type { User } from './types'`               | 树摇优化，运行时零残留         |
+| 路径别名   | `import { X } from '@/components/X'`                | 重构安全，路径不因移动断裂     |
+| 状态管理   | `import { create } from 'zustand'`                  | 轻量零 boilerplate，immer 友好 |
+| API 命名   | `getListByGet()` / `createByPost()`                 | 一眼识别 HTTP 方法             |
+| 未使用参数 | `(_, record) => ...`                                | ESLint no-unused-vars          |
 
-> **保底类型**：当确实无法确定结构时，使用 `Record<string, unknown>`，并优先从已有实体类型推导（如 `Partial<Entity>`、`Pick<Entity, 'id' | 'name'>`）
->
-> API 命名规范 SSOT → 详见 `.ai/conventions/api-conventions.md`
+> **保底类型**: `Record<string, unknown>`，优先从已有实体推导（`Partial<Entity>`）。API 命名 SSOT → `.ai/conventions/api-conventions.md`
 
-### 全局类型复用（禁止重复定义）
+### 全局类型（`src/types/index.ts`，禁止重复定义）
 
-> 以下类型已在 `src/types/index.ts` 中定义，模块 `types.ts` 禁止重新定义。
-> 响应拦截器已自动解包 `ApiResponse`，`request.get<T>()` 直接返回业务数据 `T`。
+> 拦截器已自动解包 `ApiResponse`，`request.get<T>()` 直接返回 `T`。
 
-| 类型             | 用途                                     | 使用示例                                                    |
-| ---------------- | ---------------------------------------- | ----------------------------------------------------------- |
-| `PageData<T>`    | 分页响应结构                             | `request.get<PageData<Entity>>('/api/xxx', { params })`     |
-| `PageQuery`      | 分页查询基类                             | `interface XxxQuery extends PageQuery { keyword?: string }` |
-| `ApiResponse<T>` | 响应包装（拦截器已解包，API 层无需关心） | 不直接使用                                                  |
-| `ApiError`       | 错误结构                                 | 不直接使用                                                  |
+- `PageData<T>` — 分页响应（`request.get<PageData<Entity>>('/api/xxx', { params })`）
+- `PageQuery` — 分页查询基类（`interface XxxQuery extends PageQuery { ... }`）
 
-模块 `types.ts` 只定义：实体接口（`{Entity}`）、查询参数（`{Entity}Query extends PageQuery`）、表单数据（`{Entity}FormData`）。
+模块 `types.ts` 只定义：`{Entity}` + `{Entity}Query extends PageQuery` + `{Entity}FormData`。
 
-### 验证命令
+### 验证
 
-```bash
-pnpm verify        # tsc + eslint + prettier 全量检查
-pnpm verify:fix    # eslint --fix + prettier --write 自动修复
-pnpm lint          # 仅 eslint
-pnpm type-check    # 仅 tsc
-```
-
-- git commit 自动运行 lint-staged（eslint + prettier）
-- git push 自动运行 type-check
+`pnpm verify`（tsc+eslint+prettier） | `pnpm verify:fix`（自动修复） | `pnpm lint` | `pnpm type-check`
+git hooks: commit → lint-staged | push → type-check
 
 ### 范围限定原则
 
-> AI 的输出范围必须严格匹配用户的请求边界，禁止自行扩展。
-> **判断依据**：用户请求中明确提到的交付物。未提及的不生成，不猜测，不自行扩展。
->
-> **量化标准**：
->
-> - 响应文字不超过 200 词（代码除外）
-> - 单次最多创建 5 个新文件
-> - 单次修改不超过 5 个已有文件
+> AI 输出范围必须严格匹配用户请求边界。未提及的不生成。**量化**: ≤200 词响应 / ≤5 新文件 / ≤5 修改文件
 
 ### 风险操作确认
 
-| 分类           | 示例                                                                                                                  | AI 行为                               |
-| -------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| **自由操作**   | 读取文件、搜索代码、pnpm verify、创建新模块文件（types.ts / index.ts / 页面文件）                                     | 无需确认，直接执行                    |
-| **需确认操作** | 删除已有文件、修改 package.json 依赖、修改 eslint / rsbuild / tsconfig 等全局配置、修改 `.ai/` 下的规范文件           | 透明告知操作内容 + 等待用户确认后执行 |
-| **禁止操作**   | 修改不在当前输出锁范围内的文件、自行安装新依赖包、修改 src/plugins/ 或 src/router/ 等基础设施代码（除非用户明确要求） | 必须拒绝，向用户说明原因              |
-
-#### 权限等级（用户显式声明）
+| 分类           | 示例                                                                                     | AI 行为        |
+| -------------- | ---------------------------------------------------------------------------------------- | -------------- |
+| **自由操作**   | 读取文件、搜索代码、pnpm verify、创建新模块文件                                          | 直接执行       |
+| **需确认操作** | 删除已有文件、修改 package.json/eslint/rsbuild/tsconfig、修改 `.ai/` 规范文件            | 告知+等待确认  |
+| **禁止操作**   | 修改输出锁范围外文件、自行安装依赖、修改 src/plugins/ 或 src/router/（除非用户明确要求） | 拒绝并说明原因 |
 
 | 等级       | 触发词             | 规则摘要                      |
 | ---------- | ------------------ | ----------------------------- |
@@ -196,14 +159,7 @@ pnpm type-check    # 仅 tsc
 | 标准模式   | 默认               | 修改/删除需确认，创建无需确认 |
 | 全自主模式 | 「使用全自主模式」 | 仅删除和修改全局配置需确认    |
 
-> ⚠️ **原则**：暂停确认的代价很低，而超出范围的修改代价可能非常高。
->
-> **遇到类型报错或 lint 错误时**：
->
-> - 只修复当前输出锁范围内的文件
-> - 不扩展修改范围
-> - 发现现有代码可能有问题时，告知用户而不是自行修改
-> - 不确定是否在输出锁范围内时，先确认再操作
+> 原则：暂停确认的代价很低，超出范围的修改代价非常高。类型报错处理 → `.ai/conventions/verification.md`
 
 ---
 
@@ -227,10 +183,4 @@ pnpm type-check    # 仅 tsc
 
 ## 六、扩展新阶段
 
-当出现现有阶段未覆盖的页面模式（如可编辑表格、拖拽排序等）时：
-
-1. 在 `.ai/modes/` 下新增对应模式文件（步骤 + 约束 + 输出锁）
-2. 如需代码模板，在 `.ai/templates/` 下新增对应模板文件
-3. 在第一节的阶段说明表中增加一行（触发信号 + 做什么）
-
-无需修改其他模式的流程。
+新页面模式（可编辑表格等）→ `.ai/modes/` 新增模式文件 + `.ai/templates/` 新增模板（可选）+ 第一节阶段表增行。

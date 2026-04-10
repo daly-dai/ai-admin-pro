@@ -16,6 +16,13 @@
 
 其他模块错误在报告中列出（如「⚠️ 发现 3 个其他模块错误」），但不读取、不分析、不修复。
 
+### 类型报错处理原则
+
+1. **禁止绕过**：不使用 `as any`、`@ts-ignore`、`@ts-expect-error` 消除类型错误。
+2. **优先推导**：从已有实体推导类型（`Partial<Entity>`、`Pick<Entity, 'id' | 'name'>`）。
+3. **保底类型**：无法推导时使用 `Record<string, unknown>`，禁止 `any`。
+4. **三方库类型缺失**：检查 `@types/xxx`，无则用 `declare module` 补充声明文件（`src/types/` 下）。
+
 ## 错题集对照（涉及页面代码的阶段必选）
 
 生成页面代码前 读取 `.ai/pitfalls/index.md`，按「适用场景」匹配当前页面类型，逐条排查。

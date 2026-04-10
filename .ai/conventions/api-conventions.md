@@ -76,12 +76,12 @@ types:
 
 ## 硬约束
 
-- 使用 `import { createRequest } from '@/plugins/request'`，禁止直接 axios
-- 使用 `import type` 导入类型
-- 禁止 `any`，所有方法都需要泛型注解
+> 通用硬约束（no any / no axios / import type / @/ 路径）→ `AGENTS.md` 第二节。以下为 API 层特有约束：
+
+- **方法名必须添加 HTTP 方法后缀**（`getListByGet` 等）
+- 所有方法需要泛型注解（返回类型由泛型推导）
 - 添加 JSDoc 注释
-- **方法名必须添加 HTTP 方法后缀**
-- **页面中使用 useRequest**，避免手动定义 loading/data/error
+- 页面中使用 useRequest 包装 API 调用（详见上方 useRequest 规范）
 
 ## 字段类型映射
 

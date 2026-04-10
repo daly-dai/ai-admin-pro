@@ -70,13 +70,6 @@ export const deleteByDelete = (id: string) =>
   {module}Api.delete(`/{module}/${id}`);
 ```
 
-## useRequest 场景速查
+## useRequest 用法
 
-| 场景        | 用法                                                      | 关键配置        |
-| ----------- | --------------------------------------------------------- | --------------- |
-| 列表查询    | SSearchTable `requestFn={getListByGet}`                   | 组件内部管理    |
-| 删除/写操作 | `useRequest(deleteByDelete, { manual: true, onSuccess })` | `manual: true`  |
-| 详情加载    | `useRequest(() => getByIdByGet(id!), { ready: !!id })`    | `ready` 控制    |
-| 表单提交    | `useRequest(createByPost, { manual: true, onSuccess })`   | onFinish 调 run |
-
-> 禁止手动 useState 管理 loading/data + useEffect 中直接 await，必须用 useRequest。
+> 场景速查 SSOT → `.ai/conventions/api-conventions.md`「useRequest 规范」

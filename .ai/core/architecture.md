@@ -138,38 +138,9 @@ export const use[Domain]Store = create<[Domain]State>()(
 
 管理后台列表页使用 `SSearchTable` 一体化组件，表单页使用 `SForm`，详情页使用 `SDetail`。
 
-```typescript
-// pages/[module]/index.tsx — 列表页最小骨架
-const [Module]Page: React.FC = () => {
-  const formItems: SFormItems[] = [
-    { label: '名称', name: 'keyword', type: 'input' },
-  ];
-
-  const columns: SColumnsType<[Entity]> = [
-    { title: '名称', dataIndex: 'name', width: 200 },
-    { title: '创建时间', dataIndex: 'createTime', width: 180, render: 'datetime' },
-  ];
-
-  return (
-    <SSearchTable
-      headTitle={{ children: '[页面标题]' }}
-      requestFn={getListByGet}
-      formProps={{ items: formItems, columns: 3 }}
-      tableProps={{ columns, rowKey: 'id' }}
-    />
-  );
-};
-
-export default [Module]Page;
-```
-
-> ⚠️ 生成页面前必须 读取 对应模板（`.ai/templates/crud-page.md`）
-> ⚠️ 使用 sdesign 组件前必须 读取 对应组件文档（`.ai/sdesign/components/{组件名}.md`）
+> 列表页骨架代码 → `.ai/core/coding-standards.md` 或 `.ai/templates/crud-page.md`
+> ⚠️ 生成页面前必须 读取 对应模板；使用 sdesign 组件前必须 读取 对应组件文档
 
 ## 禁止事项
 
-1. ❌ 不要使用 `any` 类型
-2. ❌ 不要直接使用 `axios`，使用封装后的 `request`
-3. ❌ 不要在组件内直接调用API，使用 `ahooks` 的 `useRequest`
-4. ❌ 不要使用相对路径 `../../`，使用 `src/`
-5. ❌ 不要直接修改Zustand状态，使用immer或set方法
+> 禁止规则 SSOT → `AGENTS.md` 硬约束 / `.ai/conventions/api-conventions.md`。本文件不重复定义。

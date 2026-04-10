@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "rsbuild build",
+    "compact:gen": "tsx .ai/tools/gen-compact.ts",
     "dev": "rsbuild dev",
     "postinstall": "pnpm sync-ai-docs",
     "lint": "eslint src/",

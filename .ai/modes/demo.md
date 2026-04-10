@@ -11,18 +11,30 @@
 
 > 多页面时向用户确认：「文档涵盖多个页面，我将按 Task 逐页面生成。如只需先出某个页面，请告知。」
 
-## 步骤
+## 路径选择
 
-1. **读模板**：列表页→`templates/crud-page.md` | 表单页→`templates/form-page.md` | 详情页→`templates/detail-page.md`；多页面还需读 `specs/template.md` + `specs/progress-template.md`
+| 需求特征                                      | 路径       | 步骤                                                     |
+| --------------------------------------------- | ---------- | -------------------------------------------------------- |
+| 匹配 scaffold 场景（见 AGENTS.md 工具能力表） | **Path A** | 生成 JSON → `pnpm scaffold` → `pnpm verify` → 补业务逻辑 |
+| 不匹配 scaffold                               | **Path B** | 读 compact 文件 → 规范化 PRD → 生成代码 → verify         |
+
+> Path A 详见 `AGENTS.md`「工具能力：Scaffold」。以下步骤为 Path B。
+
+## 步骤（Path B — 手动路径）
+
+1. **读 compact 指令文件**（单文件自包含，无需再读模板/组件文档/错题集）：
+   - 列表页 → `.ai/compact/manual-crud.md`
+   - 表单页 → `.ai/compact/manual-form.md`
+   - 详情页 → `.ai/compact/manual-detail.md`
+   - 多页面还需读 `specs/template.md` + `specs/progress-template.md`
 2. **规范化 PRD**：Read `.ai/specs/prd-template.md`「AI 提取清单」，按 9 章提取，缺失标 `[?]`
-3. **读错题集 + sdesign 文档**：读取 `.ai/pitfalls/index.md` 匹配页面类型 → 读取 对应 sdesign 组件文档（未读文档的组件禁止使用）
-4. **生成占位 API**：
+3. **生成占位 API**：
    - `src/api/{module}/types.ts` — 未确认字段加 `// TODO: 待接口确认`
    - `src/api/{module}/index.ts` — 方法名必须带 HTTP 后缀，URL 用 `'/api/TODO/{module}'` 占位
    - 单页面只定义当前页面所需接口；多页面一次性定义全部
-5. **生成页面代码**：严格使用 sdesign 组件，逐 Task 生成（每 Task = 单页面）
-6. **验证**：`pnpm verify`，最多 3 轮
-7. **更新进度**（多页面必选）：每个 Task 验证通过后立即更新 progress.md，禁止批量更新
+4. **生成页面代码**：按 compact 文件中的模板和规则生成，逐 Task 生成（每 Task = 单页面）
+5. **验证**：`pnpm verify`，最多 3 轮
+6. **更新进度**（多页面必选）：每个 Task 验证通过后立即更新 progress.md，禁止批量更新
 
 ## 约束
 
