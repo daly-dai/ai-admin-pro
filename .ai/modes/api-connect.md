@@ -11,7 +11,7 @@
 5. **更新 API 层**：types.ts 替换临时类型 + index.ts 替换占位 URL，删除 `// TODO`
 6. **读 sdesign 文档**：修改页面前 读取 对应组件文档
 7. **按需更新页面**：检查是否需要同步修改（新增搜索字段、列定义变更等），需确认
-8. **验证**：`pnpm verify`，最多 3 轮
+8. **验证**：按 `conventions/verification.md` 执行 Level 1 + Level 2，报错先查 `pitfalls/verify-errors.md`
 
 ## 约束
 

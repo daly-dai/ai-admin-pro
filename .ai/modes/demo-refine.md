@@ -18,7 +18,7 @@
 5. **向用户确认**：展示变更清单，等待确认
 6. **判断范围**：≤2 文件→直接改 | ≥3 文件→Task 拆解（每 Task = 一个页面改造）
 7. **执行改造**：更新 types.ts + index.ts + 页面代码，保留用户手动添加的自定义逻辑
-8. **验证**：`pnpm verify`，最多 3 轮
+8. **验证**：按 `conventions/verification.md` 执行 Level 1 + Level 2，报错先查 `pitfalls/verify-errors.md`
 
 ## 约束
 

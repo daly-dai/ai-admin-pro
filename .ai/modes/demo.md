@@ -33,7 +33,7 @@
    - `src/api/{module}/index.ts` — 方法名必须带 HTTP 后缀，URL 用 `'/api/TODO/{module}'` 占位
    - 单页面只定义当前页面所需接口；多页面一次性定义全部
 4. **生成页面代码**：按 compact 文件中的模板和规则生成，逐 Task 生成（每 Task = 单页面）
-5. **验证**：`pnpm verify`，最多 3 轮
+5. **验证**：按 `conventions/verification.md` 执行 Level 1 + Level 2，报错先查 `pitfalls/verify-errors.md`
 6. **更新进度**（多页面必选）：每个 Task 验证通过后立即更新 progress.md，禁止批量更新
 
 ## 约束

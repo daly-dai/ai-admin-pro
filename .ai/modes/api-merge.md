@@ -23,7 +23,7 @@
    - 差异分级：🔴 冲突→必须用户决策 | ⚠️ 需确认→AI 建议 | 🟢 自动→AI 处理
    - 权威性：类型/路径/必填→Swagger | 功能/交互/规则→PRD
 6. **输出 feature-spec**：`specs/[feature]/feature-spec.md`，展示差异汇总，等待用户决策 🔴 项
-7. **验证**：`pnpm verify`，最多 3 轮
+7. **验证**：按 `conventions/verification.md` 执行 Level 1 + Level 2，报错先查 `pitfalls/verify-errors.md`
 
 **约束**：🔴 项全部决策才算完成；⚠️ 项未决策按 AI 建议处理标 `[AI 默认]`
 
@@ -31,7 +31,7 @@
 
 1. **读模板**：`templates/api-module.md` + `conventions/api-conventions.md`
 2. **检查已有 API** → **解析 Swagger** → **生成/更新 API 层**（同分支 A 步骤 2-4）
-3. **验证**：`pnpm verify`，最多 3 轮
+3. **验证**：按 `conventions/verification.md` 执行 Level 1 + Level 2，报错先查 `pitfalls/verify-errors.md`
 4. **告知用户**：「API 层已生成。后续提供 PRD 可走完整合并流程。」
 
 ## 多轮机制（接口分批到达）

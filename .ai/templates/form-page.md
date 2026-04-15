@@ -31,7 +31,7 @@ timePicker | timePickerRange | checkbox | checkGroup |
 cascader | SCascader | table
 ```
 
-> ⛔ `dependency` 已弃用，字段联动统一使用 `SForm.useWatch` + 动态 items。
+> 联动规则见 `pitfalls/index.md` P004。
 
 ## 决策点
 

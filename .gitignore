@@ -43,3 +43,6 @@ lerna-debug.log*
 .cache
 .temp
 .eslintcache
+
+# Scaffold temp configs
+temp/

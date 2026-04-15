@@ -120,6 +120,8 @@ const { run: handleUpdate } = useRequest((values) => updateByPut(id!, values), {
 
 ## SForm 控件类型
 
+> 完整列表见 `sdesign/components/SForm.md`。联动规则见 `pitfalls/index.md` P004。
+
 ```
 input | inputNumber | password | textarea | select | slider |
 radio | radioGroup | switch | treeSelect | upload |
@@ -128,28 +130,10 @@ timePicker | timePickerRange | checkbox | checkGroup |
 cascader | SCascader | table
 ```
 
-> ⛔ `dependency` 已弃用，字段联动统一使用 `SForm.useWatch` + 动态 items（详见 `form-page.md`）。
-
 ## 确认弹窗
 
-> 删除、批量操作等危险操作使用 antd `Modal.confirm` 进行二次确认。
-
-```tsx
-import { Modal } from 'antd';
-
-// 删除确认
-const handleDelete = (id: string) => {
-  Modal.confirm({
-    title: '确认删除',
-    content: '删除后不可恢复，确认删除？',
-    onOk: () => runDelete(id),
-  });
-};
+> 删除、批量操作等危险操作使用 antd `Modal.confirm`。详见 `pitfalls/index.md` P005。
 
 ## STable 列配置
 
-- `dictKey`: 字典映射 key
-- `render`: 支持 `'datetime'` | `'date'` | `'ellipsis'` 快捷类型
-
-> 完整 Props 定义请参考: `.ai/sdesign/components/` 下对应组件文档
-```
+> `dictKey` 字典映射、`render` 快捷类型（datetime/date/ellipsis）。完整 Props 见 `sdesign/components/STable.md`。
