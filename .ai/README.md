@@ -50,7 +50,10 @@
 │   ├── README.md                # 组件索引
 │   └── components/              # 各组件详细文档（SForm.md, SSearchTable.md 等）
 └── tools/                       # 工具脚本
-    └── sync-sdesign-docs.ts     # 组件库文档同步
+    ├── scaffold/                # Scaffold CLI — 场景化代码生成（pnpm scaffold <module>）
+    ├── gen-compact.ts           # Compact 指令生成（pnpm compact:gen）
+    ├── gen-task-prompt.ts       # 跨会话 Task Prompt 生成（pnpm task:prompt <feature>）
+    └── sync-sdesign-docs.ts    # 组件库文档同步（pnpm sync-ai-docs，postinstall 自动执行）
 ```
 
 ## 开发流程

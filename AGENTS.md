@@ -18,11 +18,48 @@
 
 ---
 
-## 一、阶段判断（AI 接到请求后第一步）
+## 一、决策路由（AI 接到请求后第一步）
 
-> ⚠️ **阶段判断阶段不读取任何文件**，仅根据用户消息中的关键词和上下文判断。判断完成后再按对应阶段的步骤执行。
+> ⚠️ **不读取任何文件**，仅根据用户消息判断。**按顺序匹配，命中即停。**
 
-### 生命周期总览
+### Step 1 — Scaffold 场景化生成
+
+> 需求匹配下表任一场景时，**直接使用 scaffold**，不进入阶段流程。
+
+| 需求特征                  | scene  | 生成内容                   |
+| ------------------------- | ------ | -------------------------- |
+| 新增弹框表单 / 独立表单页 | form   | FormModal 或 Create+Edit   |
+| 新增详情抽屉 / 详情页     | detail | DetailDrawer 或 DetailPage |
+| 新增列表页                | list   | index.tsx (SSearchTable)   |
+| 只需类型定义              | types  | types.ts                   |
+| 只需 API 层               | api    | api/index.ts               |
+| 完整 CRUD（新模块）       | crud   | 全部 5-6 个文件            |
+
+**步骤**：生成 `temp/scaffold/{module}.json`（参考 `.ai/tools/scaffold/types.ts`）→ `pnpm scaffold {module}` → `pnpm verify`
+**✅ 命中 → 执行 → 结束。未命中 → Step 2。**
+
+### Step 2 — Compact 单文件指令
+
+> Scaffold 不匹配但属于标准页面时，读 compact 单文件一步生成。
+
+| 页面类型  | compact 文件                   |
+| --------- | ------------------------------ |
+| CRUD 列表 | `.ai/compact/manual-crud.md`   |
+| 独立表单  | `.ai/compact/manual-form.md`   |
+| 详情页    | `.ai/compact/manual-detail.md` |
+
+compact 自包含模板+Props+规则+验证清单，读 1 个文件即可生成。`pnpm compact:gen` 重新生成。
+**✅ 命中 → 读取 compact → 生成 → 结束。未命中 → Step 3。**
+
+### Step 3 — Task Prompt 跨会话生成
+
+> Task ≥ 3 且上下文有限 → Session 1 规划+API，后续 `pnpm task:prompt {feature}` 获取全部上下文。
+
+**✅ 命中 → 执行 → 结束。均未命中 → Step 4 阶段判断。**
+
+### Step 4 — 阶段判断（上方均未命中时）
+
+#### 生命周期总览
 
 ```
 PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适配 → ④ 接口对接 → ⑤ 迭代修复
@@ -41,24 +78,7 @@ PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适
 | ④    | 接口对接 | 真实接口就绪 + "对接/联调/替换mock"     | 占位URL→真实URL，删除TODO注释                                | `modes/api-connect.md`                     | `src/api/{module}/` + 用户确认的页面文件                                    | diff对比 → 确认 → 替换                                                   |
 | ⑤    | 迭代修复 | "改一下/加字段/修复/调整"               | 最小范围修改                                                 | `modes/incremental.md`                     | 仅用户指定的目标文件及其直接关联的类型文件                                  | 最小范围改动                                                             |
 
-### 工具能力：Scaffold 场景化生成（阶段判断前优先匹配）
-
-> 需求匹配下表任一场景时，**优先使用 scaffold**，不进入阶段判断。
-
-| 需求特征                  | scene  | 生成内容                   |
-| ------------------------- | ------ | -------------------------- |
-| 新增弹框表单 / 独立表单页 | form   | FormModal 或 Create+Edit   |
-| 新增详情抽屉 / 详情页     | detail | DetailDrawer 或 DetailPage |
-| 新增列表页                | list   | index.tsx (SSearchTable)   |
-| 只需类型定义              | types  | types.ts                   |
-| 只需 API 层               | api    | api/index.ts               |
-| 完整 CRUD（新模块）       | crud   | 全部 5-6 个文件            |
-
-**步骤**：生成 `temp/scaffold/{module}.json`（含 `"scene"` 字段，参考 `.ai/tools/scaffold/types.ts`）→ `pnpm scaffold {module}` → `pnpm verify`
-
-**不匹配时**：进入下方阶段判断，走对应阶段流程。
-
-### 阶段判断
+#### 阶段信号判断
 
 | 用户信号                            | 进入阶段                                     |
 | ----------------------------------- | -------------------------------------------- |
@@ -73,7 +93,7 @@ PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适
 
 > 匹配规则：优先匹配最具体阶段；用户可直接指定阶段；同时提供 Swagger+PRD → ②分支A；无法判断时向用户确认。
 
-### 需求变更回溯（PRD 有更新时）
+#### 需求变更回溯（PRD 有更新时）
 
 | 变更类型                       | 回到阶段                                                   | 处理范围                           |
 | ------------------------------ | ---------------------------------------------------------- | ---------------------------------- |
@@ -167,19 +187,13 @@ git hooks: commit → lint-staged | push → type-check
 
 > 验证阶段仅用于检查修复，禁止创建新文件。生成页面代码前必须 读取 `.ai/pitfalls/index.md` 对照错题集。
 
----
-
 ## 四、项目结构
 
 > 新建模块时 读取 `.ai/core/architecture.md` 确认目录结构。
 
----
-
 ## 五、纠错沉淀（用户纠正时触发）
 
 当用户指出写法错误/过时时，**必须** 读取 `.ai/conventions/correction-workflow.md` 并按其四层防御体系执行沉淀。禁止只口头应答而不落实到文件。
-
----
 
 ## 六、扩展新阶段
 
