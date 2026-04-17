@@ -15,14 +15,25 @@ export function genTypes(config: TypesGenConfig): string {
   if (config.enums && config.enums.length > 0) {
     for (const enumDef of config.enums) {
       const mapName = `${toUpperSnake(enumDef.name)}_MAP`;
-      lines.push(jsdoc(`${enumDef.name} 映射`));
-      lines.push(`export const ${mapName} = {`);
-      for (const entry of enumDef.entries) {
-        lines.push(`  ${entry.value}: '${entry.label}',`);
+      const hasEntries = enumDef.entries && enumDef.entries.length > 0;
+
+      if (hasEntries) {
+        lines.push(jsdoc(`${enumDef.name} 映射`));
+        lines.push(`export const ${mapName} = {`);
+        for (const entry of enumDef.entries!) {
+          lines.push(`  ${entry.value}: '${entry.label}',`);
+        }
+        lines.push('} as const;');
+        lines.push('');
+        lines.push(`export type ${enumDef.name} = keyof typeof ${mapName};`);
+      } else {
+        lines.push(
+          jsdoc(`${enumDef.name} 映射（TODO: 补充枚举数据或接入字典接口）`),
+        );
+        lines.push(`export const ${mapName}: Record<string, string> = {};`);
+        lines.push('');
+        lines.push(`export type ${enumDef.name} = string;`);
       }
-      lines.push('} as const;');
-      lines.push('');
-      lines.push(`export type ${enumDef.name} = keyof typeof ${mapName};`);
       lines.push('');
     }
   }

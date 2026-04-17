@@ -1,0 +1,28 @@
+{
+  "scene": "form",
+  "module": "user",
+  "entity": "User",
+  "label": "用户信息",
+
+  "apiNames": {
+    "getById": "getUserInfo",
+    "create": "addUser",
+    "update": "editUser"
+  },
+
+  "form": {
+    "mode": "modal",
+    "fields": [
+      {
+        "name": "username",
+        "label": "用户名",
+        "type": "input",
+        "required": true
+      },
+      { "name": "email", "label": "邮箱", "type": "input", "required": true },
+      { "name": "phone", "label": "手机号", "type": "input" },
+      { "name": "role", "label": "角色", "type": "select", "required": true },
+      { "name": "status", "label": "状态", "type": "select", "required": true }
+    ]
+  }
+}

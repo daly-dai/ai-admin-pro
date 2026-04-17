@@ -78,8 +78,12 @@ function validateEnums(config: RawConfig, errors: string[]): Set<string> {
   const enumNames = new Set<string>();
   if (Array.isArray(config.enums)) {
     for (const e of config.enums as RawConfig[]) {
-      if (!e.name || !Array.isArray(e.entries) || e.entries.length === 0) {
-        errors.push('enums 中每项必须有 name 和非空 entries');
+      if (!e.name || typeof e.name !== 'string') {
+        errors.push('enums 中每项必须有 name（string）');
+        break;
+      }
+      if (e.entries != null && !Array.isArray(e.entries)) {
+        errors.push(`enum "${e.name}" 的 entries 必须是数组`);
         break;
       }
       enumNames.add(e.name as string);

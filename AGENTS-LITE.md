@@ -8,16 +8,16 @@
 
 ## ⛔ 阻断性必读（违反则代码无效，必须回滚重做）
 
-| 触发条件              | 执行前必须读取                                            |
-| --------------------- | --------------------------------------------------------- |
-| 使用 Scaffold 路径    | `.ai/tools/scaffold/types.ts` + `temp/scaffold/user.json` |
-| 代码涉及 SSearchTable | `.ai/sdesign/components/SSearchTable.md`                  |
-| 代码涉及 SForm        | `.ai/sdesign/components/SForm.md`                         |
-| 代码涉及 SButton      | `.ai/sdesign/components/SButton.md`                       |
-| 代码涉及 SDetail      | `.ai/sdesign/components/SDetail.md`                       |
-| 生成/修改页面代码     | `.ai/pitfalls/index.md`                                   |
-| 写 API 层代码         | `.ai/conventions/api-conventions.md`                      |
-| 新建模块目录结构      | `.ai/core/architecture.md`                                |
+| 触发条件              | 执行前必须读取                                                                 |
+| --------------------- | ------------------------------------------------------------------------------ |
+| 使用 Scaffold 路径    | `.ai/tools/scaffold/types.ts` + `.ai/tools/scaffold/examples/crud-simple.json` |
+| 代码涉及 SSearchTable | `.ai/sdesign/components/SSearchTable.md`                                       |
+| 代码涉及 SForm        | `.ai/sdesign/components/SForm.md`                                              |
+| 代码涉及 SButton      | `.ai/sdesign/components/SButton.md`                                            |
+| 代码涉及 SDetail      | `.ai/sdesign/components/SDetail.md`                                            |
+| 生成/修改页面代码     | `.ai/pitfalls/index.md`                                                        |
+| 写 API 层代码         | `.ai/conventions/api-conventions.md`                                           |
+| 新建模块目录结构      | `.ai/core/architecture.md`                                                     |
 
 > **先读文档，再写代码。** 未读取对应文档就生成的代码视为无效。
 
@@ -53,7 +53,7 @@
 ### 步骤
 
 1. ⛔ **读 JSON Schema**：读取 `.ai/tools/scaffold/types.ts` 了解配置结构
-2. ⛔ **看真实示例**：读取 `temp/scaffold/user.json` 作为参考
+2. ⛔ **看真实示例**：读取 `.ai/tools/scaffold/examples/crud-simple.json`（简单）或 `crud-full.json`（完整）作为参考
 3. **写配置**：生成 `temp/scaffold/{module}.json`（不确定的字段 → 停下问用户）
 4. **执行生成**：`pnpm scaffold {module}`
 5. **验证**：`pnpm verify`，出错 → `pnpm verify:fix`

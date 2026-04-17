@@ -22,6 +22,20 @@
 5. **定制业务逻辑**：在生成的骨架上补充 scaffold 无法覆盖的部分
 6. **再次验证**：`pnpm verify`
 
+## 配置示例
+
+> 示例文件位于 `.ai/tools/scaffold/examples/`，覆盖从简单到复杂的典型场景。
+
+| 示例文件           | 场景   | 演示特性                                                                                                                 |
+| ------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `crud-simple.json` | `crud` | 基础 CRUD：modal 表单 + drawer 详情 + 枚举 + 搜索                                                                        |
+| `crud-full.json`   | `crud` | 完整 CRUD：apiNames 自定义 + enums(含 entries) + extraApis + watchRules + 多分组详情 + page 表单 + 条件操作按钮 + 行选择 |
+| `migration.json`   | `crud` | 迁移场景：apiNames 自定义 + enums(仅 name，无 entries)                                                                   |
+| `scene-form.json`  | `form` | 单场景：仅生成 FormModal，配合 apiNames 部分覆盖                                                                         |
+| `scene-list.json`  | `list` | 单场景：仅生成列表页，含 form/detail mode 导航提示                                                                       |
+
+生成配置时参考对应示例的结构，类型定义见 `types.ts` 中各 `XxxSceneConfig` 接口。
+
 ## 注意事项
 
 - **配置生命周期**：`temp/scaffold/` 已 gitignore，配置用完即弃，不纳入版本管理
@@ -65,3 +79,35 @@
 
 - 除 `types` 外的所有场景均支持（`crud` / `api` / `list` / `form` / `detail`）
 - 不写 `apiNames` = 完全向后兼容，行为不变
+
+## 枚举数据（enums）
+
+`enums` 数组中的 `entries` 是**可选的**。适用于下拉框数据从字典接口动态获取、PRD 只给出枚举名的场景。
+
+### 行为对照
+
+| entries 状态           | 生成结果                                                         | 适用场景                |
+| ---------------------- | ---------------------------------------------------------------- | ----------------------- |
+| 有 entries（非空数组） | 完整 MAP 常量 + keyof 类型                                       | 枚举值已知且固定        |
+| 无 entries 或空数组    | `export const XXX_MAP: Record<string, string> = {};` + TODO 注释 | 迁移项目 / 字典接口获取 |
+
+### 用法
+
+只写 `name`，省略 `entries`：
+
+```json
+{
+  "enums": [{ "name": "OrderStatus" }, { "name": "OrderType" }]
+}
+```
+
+生成的 types.ts：
+
+```ts
+/** OrderStatus 映射（TODO: 补充枚举数据或接入字典接口） */
+export const ORDER_STATUS_MAP: Record<string, string> = {};
+
+export type OrderStatus = string;
+```
+
+生成的页面代码中 MAP 引用保持不变（select options / Tag render / dictMap），UI 降级显示原始值，开发者补充 MAP 数据后即恢复正常。

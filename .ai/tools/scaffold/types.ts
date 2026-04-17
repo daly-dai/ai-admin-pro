@@ -36,8 +36,8 @@ export interface FieldDef {
 export interface EnumDef {
   /** 枚举类型名，如 'ContractStatus' */
   name: string;
-  /** 枚举条目 */
-  entries: { value: string; label: string }[];
+  /** 枚举条目（可选，不提供则生成空占位 MAP 供手动补充） */
+  entries?: { value: string; label: string }[];
 }
 
 /** 查询参数定义 */
