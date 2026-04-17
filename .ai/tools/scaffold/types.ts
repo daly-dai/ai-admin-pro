@@ -4,6 +4,20 @@
 
 // ─── 基础定义 ───
 
+/** 自定义 CRUD API 方法名（迁移场景用，写什么就生成什么） */
+export interface ApiNamesDef {
+  /** 分页列表查询，默认 'getListByGet' */
+  getList?: string;
+  /** 根据 ID 获取详情，默认 'getByIdByGet' */
+  getById?: string;
+  /** 新增，默认 'createByPost' */
+  create?: string;
+  /** 编辑，默认 'updateByPut' */
+  update?: string;
+  /** 删除，默认 'deleteByDelete' */
+  delete?: string;
+}
+
 /** 字段定义 */
 export interface FieldDef {
   /** 字段名，如 'contractNo' */
@@ -204,6 +218,7 @@ export interface FormSceneConfig {
   module: string;
   entity: string;
   label?: string;
+  apiNames?: ApiNamesDef;
   form: FormConfig;
   enums?: EnumDef[];
   fields?: FieldDef[];
@@ -215,6 +230,7 @@ export interface DetailSceneConfig {
   module: string;
   entity: string;
   label: string;
+  apiNames?: ApiNamesDef;
   detail: DetailConfig;
   enums?: EnumDef[];
 }
@@ -224,6 +240,7 @@ export interface ListSceneConfig {
   scene: 'list';
   module: string;
   entity: string;
+  apiNames?: ApiNamesDef;
   listPage: ListPageConfig;
   queryParams: QueryParamDef[];
   enums?: EnumDef[];
@@ -253,6 +270,7 @@ export interface ApiSceneConfig {
   module: string;
   entity: string;
   basePath: string;
+  apiNames?: ApiNamesDef;
   requestConfig?: RequestConfigDef;
   extraApis?: ExtraApiDef[];
 }
@@ -264,6 +282,7 @@ export interface CrudSceneConfig {
   entity: string;
   label: string;
   basePath: string;
+  apiNames?: ApiNamesDef;
   requestConfig?: RequestConfigDef;
   fields: FieldDef[];
   enums?: EnumDef[];

@@ -26,3 +26,42 @@
 
 - **配置生命周期**：`temp/scaffold/` 已 gitignore，配置用完即弃，不纳入版本管理
 - **不匹配 scaffold 时**：需求超出场景能力（如可编辑表格、拖拽排序、复杂自定义布局等），由 AI 直接手写代码
+
+## 自定义 API 方法名（apiNames）
+
+项目迁移时已有 API 函数名与 scaffold 默认名不匹配，可通过 `apiNames` 字段覆盖，写什么就生成什么。
+
+### 默认值
+
+| key       | 默认函数名       | 用途             |
+| --------- | ---------------- | ---------------- |
+| `getList` | `getListByGet`   | 分页列表查询     |
+| `getById` | `getByIdByGet`   | 根据 ID 获取详情 |
+| `create`  | `createByPost`   | 新增             |
+| `update`  | `updateByPut`    | 编辑             |
+| `delete`  | `deleteByDelete` | 删除             |
+
+### 用法
+
+在 JSON 配置中添加可选的 `apiNames` 对象，支持部分覆盖（未指定的 key 保持默认）：
+
+```json
+{
+  "scene": "crud",
+  "module": "order",
+  "entity": "Order",
+  "basePath": "/api/order",
+  "apiNames": {
+    "getList": "queryOrderPage",
+    "getById": "getOrderDetail",
+    "create": "addOrder",
+    "update": "modifyOrder",
+    "delete": "removeOrder"
+  }
+}
+```
+
+### 适用场景
+
+- 除 `types` 外的所有场景均支持（`crud` / `api` / `list` / `form` / `detail`）
+- 不写 `apiNames` = 完全向后兼容，行为不变

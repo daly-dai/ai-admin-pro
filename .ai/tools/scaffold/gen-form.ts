@@ -4,6 +4,8 @@
 
 import { collectFormEnumMaps, matchEnum } from './collectors.js';
 import { getIdType } from './normalize.js';
+import type { ResolvedApiNames } from './resolve-api-names.js';
+import { resolveApiNames } from './resolve-api-names.js';
 import type { FormFieldDef, FormSceneConfig, ScaffoldConfig } from './types.js';
 import { enumOptionsCode } from './utils.js';
 
@@ -99,7 +101,7 @@ function genWatchCode(config: FormGenConfig): {
 //  模式 A: Modal
 // ────────────────────────────────────────────
 
-function genFormModal(config: FormGenConfig): string {
+function genFormModal(config: FormGenConfig, names: ResolvedApiNames): string {
   const { entity, module, form } = config;
   const idType = getIdType(config);
 
@@ -114,7 +116,7 @@ function genFormModal(config: FormGenConfig): string {
   lines.push("import type { SFormItems } from '@dalydb/sdesign';");
   lines.push("import { SForm, SButton } from '@dalydb/sdesign';");
   lines.push(
-    `import { createByPost, getByIdByGet, updateByPut } from '@/api/${module}';`,
+    `import { ${names.create}, ${names.getById}, ${names.update} } from '@/api/${module}';`,
   );
   lines.push(`import type { ${entity}FormData } from '@/api/${module}/types';`);
 
@@ -162,7 +164,7 @@ function genFormModal(config: FormGenConfig): string {
   lines.push('');
 
   // 加载详情
-  lines.push('  useRequest(() => getByIdByGet(editId!), {');
+  lines.push(`  useRequest(() => ${names.getById}(editId!), {`);
   lines.push("    ready: open && mode === 'edit' && !!editId,");
   lines.push('    refreshDeps: [editId],');
   lines.push('    onSuccess: (data) => form.setFieldsValue(data),');
@@ -173,7 +175,7 @@ function genFormModal(config: FormGenConfig): string {
   lines.push(`  const { run: runSubmit, loading } = useRequest(`);
   lines.push(`    (values: ${entity}FormData) =>`);
   lines.push(
-    "      mode === 'create' ? createByPost(values) : updateByPut(editId!, values),",
+    `      mode === 'create' ? ${names.create}(values) : ${names.update}(editId!, values),`,
   );
   lines.push('    {');
   lines.push('      manual: true,');
@@ -252,7 +254,10 @@ function genFormModal(config: FormGenConfig): string {
 //  模式 B: Page (create.tsx + edit.tsx)
 // ────────────────────────────────────────────
 
-function genFormCreatePage(config: FormGenConfig): string {
+function genFormCreatePage(
+  config: FormGenConfig,
+  names: ResolvedApiNames,
+): string {
   const { entity, module, form } = config;
   const lines: string[] = [];
 
@@ -262,7 +267,7 @@ function genFormCreatePage(config: FormGenConfig): string {
   lines.push("import { useRequest } from 'ahooks';");
   lines.push("import type { SFormItems } from '@dalydb/sdesign';");
   lines.push("import { SForm, SButton } from '@dalydb/sdesign';");
-  lines.push(`import { createByPost } from '@/api/${module}';`);
+  lines.push(`import { ${names.create} } from '@/api/${module}';`);
   lines.push(`import type { ${entity}FormData } from '@/api/${module}/types';`);
 
   // 枚举 imports
@@ -280,7 +285,7 @@ function genFormCreatePage(config: FormGenConfig): string {
   lines.push('');
 
   lines.push(`  const { run: runCreate, loading } = useRequest(`);
-  lines.push(`    (values: ${entity}FormData) => createByPost(values),`);
+  lines.push(`    (values: ${entity}FormData) => ${names.create}(values),`);
   lines.push('    {');
   lines.push('      manual: true,');
   lines.push(
@@ -329,7 +334,10 @@ function genFormCreatePage(config: FormGenConfig): string {
   return lines.join('\n') + '\n';
 }
 
-function genFormEditPage(config: FormGenConfig): string {
+function genFormEditPage(
+  config: FormGenConfig,
+  names: ResolvedApiNames,
+): string {
   const { entity, module, form } = config;
   const lines: string[] = [];
 
@@ -339,7 +347,9 @@ function genFormEditPage(config: FormGenConfig): string {
   lines.push("import { useRequest } from 'ahooks';");
   lines.push("import type { SFormItems } from '@dalydb/sdesign';");
   lines.push("import { SForm, SButton } from '@dalydb/sdesign';");
-  lines.push(`import { getByIdByGet, updateByPut } from '@/api/${module}';`);
+  lines.push(
+    `import { ${names.getById}, ${names.update} } from '@/api/${module}';`,
+  );
   lines.push(`import type { ${entity}FormData } from '@/api/${module}/types';`);
 
   const enumImports = collectFormEnumMaps(config.form.fields, config.enums);
@@ -358,7 +368,7 @@ function genFormEditPage(config: FormGenConfig): string {
 
   // 加载详情
   lines.push('  const { loading: detailLoading } = useRequest(');
-  lines.push('    () => getByIdByGet(id!),');
+  lines.push(`    () => ${names.getById}(id!),`);
   lines.push('    {');
   lines.push('      ready: !!id,');
   lines.push('      onSuccess: (data) => form.setFieldsValue(data),');
@@ -370,7 +380,9 @@ function genFormEditPage(config: FormGenConfig): string {
   lines.push(
     `  const { run: runUpdate, loading: submitLoading } = useRequest(`,
   );
-  lines.push(`    (values: ${entity}FormData) => updateByPut(id!, values),`);
+  lines.push(
+    `    (values: ${entity}FormData) => ${names.update}(id!, values),`,
+  );
   lines.push('    {');
   lines.push('      manual: true,');
   lines.push(
@@ -427,13 +439,14 @@ export interface GenFormResult {
 
 export function genForm(config: FormGenConfig): GenFormResult {
   const { form, entity, module } = config;
+  const names = resolveApiNames(config.apiNames);
 
   if (form.mode === 'modal') {
     return {
       files: [
         {
           path: `src/pages/${module}/components/${entity}FormModal.tsx`,
-          content: genFormModal(config),
+          content: genFormModal(config, names),
         },
       ],
     };
@@ -444,11 +457,11 @@ export function genForm(config: FormGenConfig): GenFormResult {
     files: [
       {
         path: `src/pages/${module}/create.tsx`,
-        content: genFormCreatePage(config),
+        content: genFormCreatePage(config, names),
       },
       {
         path: `src/pages/${module}/edit.tsx`,
-        content: genFormEditPage(config),
+        content: genFormEditPage(config, names),
       },
     ],
   };

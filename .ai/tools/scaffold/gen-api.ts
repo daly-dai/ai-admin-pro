@@ -3,6 +3,7 @@
  */
 
 import { getIdType } from './normalize.js';
+import { resolveApiNames } from './resolve-api-names.js';
 import type { ApiSceneConfig, ScaffoldConfig } from './types.js';
 import { httpSuffix, jsdoc, lcFirst } from './utils.js';
 
@@ -14,6 +15,7 @@ export function genApi(config: ApiGenConfig): string {
   const idType = getIdType(config);
   const apiVar = `${lcFirst(entity)}Api`;
   const todoPath = basePath.replace(/^\/api\//, '/api/TODO/');
+  const names = resolveApiNames(config.apiNames);
 
   const imports: string[] = [];
   imports.push("import { createRequest } from '@/plugins/request';");
@@ -43,43 +45,45 @@ export function genApi(config: ApiGenConfig): string {
 
   // ─── 5 个标准 CRUD 方法 ───
 
-  // getListByGet
+  // getList
   lines.push(jsdoc('分页列表查询'));
   lines.push(
-    `export const getListByGet = (params?: ${entity}Query): Promise<PageData<${entity}>> =>`,
+    `export const ${names.getList} = (params?: ${entity}Query): Promise<PageData<${entity}>> =>`,
   );
   lines.push(
     `  ${apiVar}.get<PageData<${entity}>>('${todoPath}', { params });`,
   );
   lines.push('');
 
-  // getByIdByGet
+  // getById
   lines.push(jsdoc('根据 ID 获取详情'));
   lines.push(
-    `export const getByIdByGet = (id: ${idType}): Promise<${entity}> =>`,
+    `export const ${names.getById} = (id: ${idType}): Promise<${entity}> =>`,
   );
   lines.push(`  ${apiVar}.get<${entity}>(\`${todoPath}/\${id}\`);`);
   lines.push('');
 
-  // createByPost
+  // create
   lines.push(jsdoc('新增'));
   lines.push(
-    `export const createByPost = (data: ${entity}FormData): Promise<${entity}> =>`,
+    `export const ${names.create} = (data: ${entity}FormData): Promise<${entity}> =>`,
   );
   lines.push(`  ${apiVar}.post<${entity}>('${todoPath}', data);`);
   lines.push('');
 
-  // updateByPut
+  // update
   lines.push(jsdoc('编辑'));
   lines.push(
-    `export const updateByPut = (id: ${idType}, data: Partial<${entity}FormData>): Promise<${entity}> =>`,
+    `export const ${names.update} = (id: ${idType}, data: Partial<${entity}FormData>): Promise<${entity}> =>`,
   );
   lines.push(`  ${apiVar}.put<${entity}>(\`${todoPath}/\${id}\`, data);`);
   lines.push('');
 
-  // deleteByDelete
+  // delete
   lines.push(jsdoc('删除'));
-  lines.push(`export const deleteByDelete = (id: ${idType}): Promise<void> =>`);
+  lines.push(
+    `export const ${names.delete} = (id: ${idType}): Promise<void> =>`,
+  );
   lines.push(`  ${apiVar}.delete<void>(\`${todoPath}/\${id}\`);`);
 
   // ─── 非标准接口 ───

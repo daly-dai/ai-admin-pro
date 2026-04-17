@@ -22,6 +22,15 @@ class ValidationError extends Error {
 
 type RawConfig = Record<string, unknown>;
 
+const VALID_API_NAME_KEYS = new Set([
+  'getList',
+  'getById',
+  'create',
+  'update',
+  'delete',
+]);
+const JS_IDENT_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
 // ─── 通用校验 ───
 
 function validateCommon(config: RawConfig, errors: string[]): void {
@@ -32,6 +41,36 @@ function validateCommon(config: RawConfig, errors: string[]): void {
     errors.push('entity 必填且为 string');
   } else if (!/^[A-Z][a-zA-Z0-9]*$/.test(config.entity as string)) {
     errors.push('entity 必须是 PascalCase，如 "Contract"');
+  }
+}
+
+function validateApiNames(config: RawConfig, errors: string[]): void {
+  if (config.apiNames == null) return;
+  if (typeof config.apiNames !== 'object' || Array.isArray(config.apiNames)) {
+    errors.push('apiNames 必须是对象');
+    return;
+  }
+  const apiNames = config.apiNames as RawConfig;
+  const seen = new Set<string>();
+  for (const [key, value] of Object.entries(apiNames)) {
+    if (!VALID_API_NAME_KEYS.has(key)) {
+      errors.push(
+        `apiNames 不支持 key "${key}"，允许: ${[...VALID_API_NAME_KEYS].join(', ')}`,
+      );
+      continue;
+    }
+    if (typeof value !== 'string' || value.length === 0) {
+      errors.push(`apiNames.${key} 必须是非空字符串`);
+      continue;
+    }
+    if (!JS_IDENT_RE.test(value)) {
+      errors.push(`apiNames.${key} 的值 "${value}" 不是合法的 JS 标识符`);
+      continue;
+    }
+    if (seen.has(value)) {
+      errors.push(`apiNames 中存在重复值 "${value}"`);
+    }
+    seen.add(value);
   }
 }
 
@@ -75,6 +114,8 @@ function validateQueryParams(
   errors: string[],
   enumNames: Set<string>,
 ): void {
+  const hasEnumsDefined =
+    Array.isArray(config.enums) && config.enums.length > 0;
   if (!Array.isArray(config.queryParams)) {
     errors.push('queryParams 必须是数组');
   } else {
@@ -84,9 +125,15 @@ function validateQueryParams(
         break;
       }
       if (q.enumName && !enumNames.has(q.enumName as string)) {
-        errors.push(
-          `queryParam "${q.name}" 引用的枚举 "${q.enumName}" 不在 enums 中`,
-        );
+        if (hasEnumsDefined) {
+          errors.push(
+            `queryParam "${q.name}" 引用的枚举 "${q.enumName}" 不在 enums 中`,
+          );
+        } else {
+          console.warn(
+            `[scaffold:validate] queryParam "${q.name}" 引用枚举 "${q.enumName}"，enums 未定义（迁移场景请确保已有代码中存在）`,
+          );
+        }
       }
     }
   }
@@ -98,6 +145,8 @@ function validateListPage(
   fieldNames: Set<string>,
   enumNames: Set<string>,
 ): void {
+  const hasEnumsDefined =
+    Array.isArray(config.enums) && config.enums.length > 0;
   const listPage = config.listPage as RawConfig | undefined;
   if (!listPage || typeof listPage !== 'object') {
     errors.push('listPage 必填');
@@ -117,9 +166,15 @@ function validateListPage(
           errors.push(`listPage.columns 中 "${col.dataIndex}" 不在 fields 中`);
         }
         if (col.enumName && !enumNames.has(col.enumName as string)) {
-          errors.push(
-            `column "${col.dataIndex}" 引用的枚举 "${col.enumName}" 不在 enums 中`,
-          );
+          if (hasEnumsDefined) {
+            errors.push(
+              `column "${col.dataIndex}" 引用的枚举 "${col.enumName}" 不在 enums 中`,
+            );
+          } else {
+            console.warn(
+              `[scaffold:validate] column "${col.dataIndex}" 引用枚举 "${col.enumName}"，enums 未定义（迁移场景请确保已有代码中存在）`,
+            );
+          }
         }
       }
     }
@@ -159,6 +214,7 @@ function validateDetail(config: RawConfig, errors: string[]): void {
 function validateFormScene(config: RawConfig, errors: string[]): void {
   validateForm(config, errors);
   validateEnums(config, errors);
+  validateApiNames(config, errors);
 }
 
 function validateDetailScene(config: RawConfig, errors: string[]): void {
@@ -167,6 +223,7 @@ function validateDetailScene(config: RawConfig, errors: string[]): void {
   }
   validateDetail(config, errors);
   validateEnums(config, errors);
+  validateApiNames(config, errors);
 }
 
 function validateListScene(config: RawConfig, errors: string[]): void {
@@ -174,6 +231,7 @@ function validateListScene(config: RawConfig, errors: string[]): void {
   validateQueryParams(config, errors, enumNames);
   // list 场景没有 fields，传空 Set 跳过 dataIndex 交叉检查
   validateListPage(config, errors, new Set(), enumNames);
+  validateApiNames(config, errors);
 }
 
 function validateTypesScene(config: RawConfig, errors: string[]): void {
@@ -188,6 +246,7 @@ function validateApiScene(config: RawConfig, errors: string[]): void {
   if (!config.basePath || typeof config.basePath !== 'string') {
     errors.push('api 场景: basePath 必填');
   }
+  validateApiNames(config, errors);
 }
 
 function validateCrudScene(config: RawConfig, errors: string[]): void {
@@ -207,6 +266,7 @@ function validateCrudScene(config: RawConfig, errors: string[]): void {
     validateForm(config, errors);
     validateDetail(config, errors);
   }
+  validateApiNames(config, errors);
 }
 
 // ─── 入口 ───

@@ -4,6 +4,8 @@
 
 import { collectDetailEnumMaps } from './collectors.js';
 import { getIdType } from './normalize.js';
+import type { ResolvedApiNames } from './resolve-api-names.js';
+import { resolveApiNames } from './resolve-api-names.js';
 import type { DetailSceneConfig, ScaffoldConfig } from './types.js';
 import { toUpperSnake } from './utils.js';
 
@@ -45,7 +47,10 @@ function genDetailGroupItems(config: DetailGenConfig): string {
 //  模式 A: Drawer
 // ────────────────────────────────────────────
 
-function genDetailDrawer(config: DetailGenConfig): string {
+function genDetailDrawer(
+  config: DetailGenConfig,
+  names: ResolvedApiNames,
+): string {
   const { entity, module, detail } = config;
   const idType = getIdType(config);
   const lines: string[] = [];
@@ -56,7 +61,7 @@ function genDetailDrawer(config: DetailGenConfig): string {
   lines.push("import { Drawer, Spin } from 'antd';");
   lines.push("import { useRequest } from 'ahooks';");
   lines.push("import { SDetail, SButton } from '@dalydb/sdesign';");
-  lines.push(`import { getByIdByGet } from '@/api/${module}';`);
+  lines.push(`import { ${names.getById} } from '@/api/${module}';`);
 
   const enumImports = collectDetailEnumMaps(config.detail.groups);
   if (enumImports.size > 0) {
@@ -85,7 +90,7 @@ function genDetailDrawer(config: DetailGenConfig): string {
   lines.push('');
 
   lines.push('  const { data, loading } = useRequest(');
-  lines.push('    () => getByIdByGet(detailId!),');
+  lines.push(`    () => ${names.getById}(detailId!),`);
   lines.push('    { ready: open && !!detailId, refreshDeps: [detailId] },');
   lines.push('  );');
   lines.push('');
@@ -123,7 +128,10 @@ function genDetailDrawer(config: DetailGenConfig): string {
 //  模式 B: Page (detail.tsx)
 // ────────────────────────────────────────────
 
-function genDetailPage(config: DetailGenConfig): string {
+function genDetailPage(
+  config: DetailGenConfig,
+  names: ResolvedApiNames,
+): string {
   const { entity, module } = config;
   const lines: string[] = [];
 
@@ -132,7 +140,7 @@ function genDetailPage(config: DetailGenConfig): string {
   lines.push("import { useNavigate, useParams } from 'react-router-dom';");
   lines.push("import { useRequest } from 'ahooks';");
   lines.push("import { SDetail, SButton } from '@dalydb/sdesign';");
-  lines.push(`import { getByIdByGet } from '@/api/${module}';`);
+  lines.push(`import { ${names.getById} } from '@/api/${module}';`);
 
   const enumImports = collectDetailEnumMaps(config.detail.groups);
   if (enumImports.size > 0) {
@@ -148,7 +156,7 @@ function genDetailPage(config: DetailGenConfig): string {
   lines.push('');
 
   lines.push('  const { data, loading } = useRequest(');
-  lines.push('    () => getByIdByGet(id!),');
+  lines.push(`    () => ${names.getById}(id!),`);
   lines.push('    { ready: !!id },');
   lines.push('  );');
   lines.push('');
@@ -186,13 +194,14 @@ export interface GenDetailResult {
 
 export function genDetail(config: DetailGenConfig): GenDetailResult {
   const { detail, entity, module } = config;
+  const names = resolveApiNames(config.apiNames);
 
   if (detail.mode === 'drawer') {
     return {
       files: [
         {
           path: `src/pages/${module}/components/${entity}DetailDrawer.tsx`,
-          content: genDetailDrawer(config),
+          content: genDetailDrawer(config, names),
         },
       ],
     };
@@ -202,7 +211,7 @@ export function genDetail(config: DetailGenConfig): GenDetailResult {
     files: [
       {
         path: `src/pages/${module}/detail.tsx`,
-        content: genDetailPage(config),
+        content: genDetailPage(config, names),
       },
     ],
   };

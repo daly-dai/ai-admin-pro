@@ -4,6 +4,7 @@
 
 import { collectListEnumMaps } from './collectors.js';
 import { getIdType } from './normalize.js';
+import { resolveApiNames } from './resolve-api-names.js';
 import type { ListSceneConfig, ScaffoldConfig } from './types.js';
 import { enumOptionsCode, httpSuffix, toUpperSnake } from './utils.js';
 
@@ -19,6 +20,7 @@ function handlerMatchesApi(handler: string, apiName: string): boolean {
 export function genListPage(config: ListGenConfig): string {
   const { entity, module, listPage } = config;
   const idType = getIdType(config);
+  const names = resolveApiNames(config.apiNames);
   const formMode = 'form' in config && config.form ? config.form.mode : 'page';
   const detailMode =
     'detail' in config && config.detail ? config.detail.mode : 'page';
@@ -34,7 +36,7 @@ export function genListPage(config: ListGenConfig): string {
     'SearchTableRef',
   ]);
   const sdesignImports = new Set(['SButton', 'SSearchTable']);
-  const apiImports = new Set(['getListByGet', 'deleteByDelete']);
+  const apiImports = new Set([names.getList, names.delete]);
   const typeFileImports = new Set<string>([entity]);
 
   // 收集枚举 MAP imports
@@ -140,7 +142,7 @@ export function genListPage(config: ListGenConfig): string {
 
   // ─── useRequest hooks ───
   // 删除
-  lines.push('  const { run: runDelete } = useRequest(deleteByDelete, {');
+  lines.push(`  const { run: runDelete } = useRequest(${names.delete}, {`);
   lines.push('    manual: true,');
   lines.push(
     "    onSuccess: () => { message.success('删除成功'); tableRef.current?.refresh(); },",
@@ -386,7 +388,7 @@ export function genListPage(config: ListGenConfig): string {
   lines.push('      <SSearchTable');
   lines.push('        ref={tableRef}');
   lines.push(`        headTitle={{ children: '${listPage.title}' }}`);
-  lines.push('        requestFn={getListByGet}');
+  lines.push(`        requestFn={${names.getList}}`);
   lines.push(
     `        formProps={{ items: searchItems, columns: ${listPage.searchColumns || 3} }}`,
   );
