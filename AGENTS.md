@@ -33,43 +33,19 @@ PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适
                      PRD 变更 → 回到受影响的最早阶段
 ```
 
-| 阶段 | 名称     | 触发信号                                | 做什么                                                       | ⚠️ 进入后必须 读取                               | 🔒 输出锁（仅允许写这些路径）                                               | ✅ 必须产出                                                              |
-| ---- | -------- | --------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------ | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| ①    | 画 Demo  | PRD/需求 + "画页面/出骨架/demo"         | 规范化PRD → Task拆解 → 生成demo页面+占位API                  | `modes/demo.md` + **`compact/manual-{类型}.md`** | `src/api/{module}/` + `src/pages/{module}/` + `specs/{feature}/`            | 占位API + 页面文件；多页面时加 spec.md + progress.md                     |
-| ②    | 接口合并 | 用户提供 Swagger/接口文档（部分或全部） | **条件分支**：有PRD→完整合并+feature-spec；无PRD→仅生成API层 | `modes/api-merge.md`                             | 分支A: `src/api/{module}/` + `specs/{feature}/`；分支B: `src/api/{module}/` | 分支A: **feature-spec.md（阻断性——未产出则阶段未完成）**；分支B: API代码 |
-| ③    | 改造适配 | feature-spec就绪 + "改造/对齐规格"      | 根据feature-spec改造已有demo页面                             | `modes/demo-refine.md` + 已有 feature-spec       | `src/api/{module}/` + `src/pages/{module}/`（仅修改，禁止新建文件）         | 变更清单 → 用户确认 → 执行修改                                           |
-| ④    | 接口对接 | 真实接口就绪 + "对接/联调/替换mock"     | 占位URL→真实URL，删除TODO注释                                | `modes/api-connect.md`                           | `src/api/{module}/` + 用户确认的页面文件                                    | diff对比 → 确认 → 替换                                                   |
-| ⑤    | 迭代修复 | "改一下/加字段/修复/调整"               | 最小范围修改                                                 | `modes/incremental.md`                           | 仅用户指定的目标文件及其直接关联的类型文件                                  | 最小范围改动                                                             |
+| 阶段 | 名称     | 触发信号                                | 做什么                                                       | ⚠️ 进入后必须 读取                         | 🔒 输出锁（仅允许写这些路径）                                               | ✅ 必须产出                                                              |
+| ---- | -------- | --------------------------------------- | ------------------------------------------------------------ | ------------------------------------------ | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| ①    | 画 Demo  | PRD/需求 + "画页面/出骨架/demo"         | 规范化PRD → Task拆解 → 生成demo页面+占位API                  | `modes/demo.md`                            | `src/api/{module}/` + `src/pages/{module}/` + `specs/{feature}/`            | 占位API + 页面文件；多页面时加 spec.md + progress.md                     |
+| ②    | 接口合并 | 用户提供 Swagger/接口文档（部分或全部） | **条件分支**：有PRD→完整合并+feature-spec；无PRD→仅生成API层 | `modes/api-merge.md`                       | 分支A: `src/api/{module}/` + `specs/{feature}/`；分支B: `src/api/{module}/` | 分支A: **feature-spec.md（阻断性——未产出则阶段未完成）**；分支B: API代码 |
+| ③    | 改造适配 | feature-spec就绪 + "改造/对齐规格"      | 根据feature-spec改造已有demo页面                             | `modes/demo-refine.md` + 已有 feature-spec | `src/api/{module}/` + `src/pages/{module}/`（仅修改，禁止新建文件）         | 变更清单 → 用户确认 → 执行修改                                           |
+| ④    | 接口对接 | 真实接口就绪 + "对接/联调/替换mock"     | 占位URL→真实URL，删除TODO注释                                | `modes/api-connect.md`                     | `src/api/{module}/` + 用户确认的页面文件                                    | diff对比 → 确认 → 替换                                                   |
+| ⑤    | 迭代修复 | "改一下/加字段/修复/调整"               | 最小范围修改                                                 | `modes/incremental.md`                     | 仅用户指定的目标文件及其直接关联的类型文件                                  | 最小范围改动                                                             |
 
-### 工具能力：Scaffold 场景化生成（阶段判断前优先匹配）
+### 工具能力：Scaffold 脚本生成（可选，人工使用为主）
 
-> 需求匹配下表任一场景时，**优先使用 scaffold**，不进入阶段判断。
-
-| 需求特征                  | scene  | 生成内容                   |
-| ------------------------- | ------ | -------------------------- |
-| 新增弹框表单 / 独立表单页 | form   | FormModal 或 Create+Edit   |
-| 新增详情抽屉 / 详情页     | detail | DetailDrawer 或 DetailPage |
-| 新增列表页                | list   | index.tsx (SSearchTable)   |
-| 只需类型定义              | types  | types.ts                   |
-| 只需 API 层               | api    | api/index.ts               |
-| 完整 CRUD（新模块）       | crud   | 全部 5-6 个文件            |
-
-**步骤**：生成 `temp/scaffold/{module}.json`（含 `"scene"` 字段，参考 `.ai/tools/scaffold/types.ts`）→ `pnpm scaffold {module}` → `pnpm verify`
-
-**不匹配时**：进入下方阶段判断，走对应阶段流程。
-
-### 工具能力：Compact 指令（默认路径 — scaffold 不匹配时首选）
-
-> scaffold 不匹配时，**默认使用 compact** 单文件指令替代多文件读取。不要分别读取 template + sdesign + pitfalls。
-
-| 页面类型  | compact 文件                   |
-| --------- | ------------------------------ |
-| CRUD 列表 | `.ai/compact/manual-crud.md`   |
-| 独立表单  | `.ai/compact/manual-form.md`   |
-| 详情页    | `.ai/compact/manual-detail.md` |
-
-compact 文件自包含模板+组件 Props+规则+验证清单，读 1 个文件即可生成代码。
-`pnpm compact:gen` 从源文件自动重新生成（修改 template/sdesign/pitfalls 后需执行）。
+> Scaffold 是 JSON 配置驱动的代码生成脚本，适合**开发者手动**快速起步。**AI 不主动使用 scaffold**，除非用户明确要求。
+>
+> 详见 `.ai/tools/scaffold/usage.md`。命令：`pnpm scaffold {module}`
 
 ### 工具能力：跨会话 Task Prompt（多页面分步生成）
 
@@ -112,7 +88,7 @@ compact 文件自包含模板+组件 Props+规则+验证清单，读 1 个文件
 
 ### 作用域
 
-> **新代码**（①② / scaffold）严格遵守硬约束。**修改已有代码**（③④⑤）以已有代码风格为准，新增片段沿用同文件风格。发现不符规范时告知用户，不自行重构。
+> **新代码**（①②）严格遵守硬约束。**修改已有代码**（③④⑤）以已有代码风格为准，新增片段沿用同文件风格。发现不符规范时告知用户，不自行重构。
 
 ### 组件使用
 
@@ -162,22 +138,20 @@ git hooks: commit → lint-staged | push → type-check
 
 ### 范围限定原则
 
-> AI 输出范围必须严格匹配用户请求边界。未提及的不生成。**量化**: ≤200 词响应 / ≤5 新文件 / ≤5 修改文件
+> AI 输出范围必须严格匹配用户请求边界。未提及的不生成。**量化**: ≤10 新文件 / ≤10 修改文件（超出时先列清单确认）
 
-### 上下文节约原则
+### 上下文管理原则
 
-- 每次只读取当前阶段必需的文档（见阶段表「进入后必须读取」列），禁止预读后续阶段文档
+- 优先读取当前阶段文档（见阶段表「进入后必须读取」列），可按需预读相邻阶段文档以辅助规划
 - 读取 .ai/ 文档后提取关键规则，不要在后续响应中全文复述原文
 - 生成代码时直接写代码，不要先把组件文档复述一遍
-- 优先使用 compact 文件（1 个文件）而非分别读取 template + sdesign + pitfalls（3-5 个文件）
-- compact 和 template 二选一，读了 compact 就不要再读 template（内容 90% 重复）
 
 ### 引用深度规则
 
-- 任何 .ai/ 文件的引用深度不超过 **1 层**（A 引用 B，B 不再引用 C）
-- 如果确实需要多层信息，由 `pnpm compact:gen` 预合并为 compact 文件
-- mode 文件可以引用 compact 文件或 template 文件，但**不能同时引用两者**
-- AI 读取文件时遇到引用链（文件 A 说"详见文件 B"，文件 B 又说"详见文件 C"），在第 2 层停止，不继续追踪
+- **不设硬性层数上限**，沿引用链按需读取直到获得足够信息
+- 同一会话内已读过的文件不重复读取
+- 遇到循环引用（A→B→A）时停止
+- 当单次任务累计读取文件 > 15 个时，暂停并告知用户当前已读文件清单，确认是否继续
 
 ### 风险操作确认
 
@@ -195,11 +169,59 @@ git hooks: commit → lint-staged | push → type-check
 
 > 原则：暂停确认的代价很低，超出范围的修改代价非常高。类型报错处理 → `.ai/conventions/verification.md`
 
+### 上下文生命周期管理
+
+长任务（Task ≥ 3 或涉及多页面）执行过程中：
+
+| 时机                 | 行为                                                             |
+| -------------------- | ---------------------------------------------------------------- |
+| 每个 Task 完成时     | 更新 `specs/{feature}/progress.md`，记录已完成项和下一步         |
+| 上下文接近容量上限时 | 主动告知用户，建议分会话并提供 `pnpm task:prompt {feature}` 衔接 |
+| 会话中断恢复时       | 先读 progress.md 恢复状态，再继续未完成的 Task                   |
+
+> 目标：即使会话被截断，下一个会话也能通过 progress.md + task:prompt 无损衔接。
+
+### 渐进式自主权
+
+在标准模式下，AI 可根据执行情况动态调整确认频率：
+
+| 条件                                             | 自主权变化                       |
+| ------------------------------------------------ | -------------------------------- |
+| 连续 2 个 Task 的 `pnpm verify` 通过且无用户纠正 | 后续 Task 自动提升至全自主模式   |
+| 用户纠正了写法或指出错误                         | 立即回退至标准模式，后续每步确认 |
+| 切换到新模块/新阶段                              | 重置为标准模式                   |
+
+> 保守模式和全自主模式不受此规则影响（用户显式指定优先）。
+
 ---
 
 ## 三、通用验证规则
 
 > 验证阶段仅用于检查修复，禁止创建新文件。生成页面代码前必须 读取 `.ai/pitfalls/index.md` 对照错题集。
+
+### Level 1：自动化验证
+
+```bash
+pnpm verify  # tsc + eslint + prettier
+```
+
+有错误 → 按优先级修复（tsc > eslint > prettier）→ 再次 verify → 最多 3 轮。仅处理当前输出锁范围内文件的错误。
+
+### Level 2：AI 自检清单
+
+Level 1 通过后逐条检查：
+
+- [ ] 业务页面使用 sdesign 组件（SSearchTable/SForm/SButton/SDetail），未使用不存在的 sdesign 组件
+- [ ] 无 any 类型，未直接 import axios，类型导入用 `import type`
+- [ ] API 方法名带 HTTP 后缀（getListByGet/createByPost 等）
+- [ ] SForm 字段联动用 `SForm.useWatch` + 动态 items 条件展开（禁止 `type: 'dependency'`）
+- [ ] 确认弹窗用 antd `Modal.confirm`（禁止 SConfirm）
+- [ ] Modal 用条件渲染 `{open && <Modal/>}`，封装在子组件内
+- [ ] 所有 API 调用通过 useRequest 包装（SSearchTable.requestFn 除外）
+- [ ] 写操作 useRequest 配置了 onSuccess（提示 + 刷新/跳转）
+- [ ] types.ts 类型完整（Entity + EntityQuery + EntityFormData）
+
+> 详细验证流程（三级体系、失败处理） → `.ai/conventions/verification.md`
 
 ## 四、项目结构
 
