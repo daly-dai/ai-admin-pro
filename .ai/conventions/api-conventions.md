@@ -76,7 +76,7 @@ types:
 
 ## 硬约束
 
-> 通用硬约束（no any / no axios / import type / @/ 路径）→ `AGENTS.md` 第二节。以下为 API 层特有约束：
+> 通用硬约束（no any / no axios / import type / src/ 路径）→ `AGENTS.md` 第二节。以下为 API 层特有约束：
 
 - **方法名必须添加 HTTP 方法后缀**（`getListByGet` 等）
 - 所有方法需要泛型注解（返回类型由泛型推导）

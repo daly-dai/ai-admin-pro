@@ -117,15 +117,15 @@ const formItems: SFormItems[] = [
 
 > 可直接用: Modal / Modal.confirm / Tag / message / Card / Spin / InputNumber
 
-| 规则       | 正确写法                                            | Why                            |
-| ---------- | --------------------------------------------------- | ------------------------------ |
-| HTTP 请求  | `import { createRequest } from '@/plugins/request'` | 统一拦截/鉴权/错误处理         |
-| 类型安全   | `Record<string, unknown>`                           | any 绕过类型检查，隐患累积     |
-| 类型导入   | `import type { User } from './types'`               | 树摇优化，运行时零残留         |
-| 路径别名   | `import { X } from '@/components/X'`                | 重构安全，路径不因移动断裂     |
-| 状态管理   | `import { create } from 'zustand'`                  | 轻量零 boilerplate，immer 友好 |
-| API 命名   | `getListByGet()` / `createByPost()`                 | 一眼识别 HTTP 方法             |
-| 未使用参数 | `(_, record) => ...`                                | ESLint no-unused-vars          |
+| 规则       | 正确写法                                              | Why                            |
+| ---------- | ----------------------------------------------------- | ------------------------------ |
+| HTTP 请求  | `import { createRequest } from 'src/plugins/request'` | 统一拦截/鉴权/错误处理         |
+| 类型安全   | `Record<string, unknown>`                             | any 绕过类型检查，隐患累积     |
+| 类型导入   | `import type { User } from './types'`                 | 树摇优化，运行时零残留         |
+| 路径别名   | `import { X } from 'src/components/X'`                | 重构安全，路径不因移动断裂     |
+| 状态管理   | `import { create } from 'zustand'`                    | 轻量零 boilerplate，immer 友好 |
+| API 命名   | `getListByGet()` / `createByPost()`                   | 一眼识别 HTTP 方法             |
+| 未使用参数 | `(_, record) => ...`                                  | ESLint no-unused-vars          |
 
 > 保底类型: `Record<string, unknown>`，优先推导 `Partial<Entity>`。
 
@@ -153,7 +153,7 @@ const formItems: SFormItems[] = [
 - [ ] API 方法名带 HTTP 后缀（getListByGet/createByPost 等）
 - [ ] SForm 字段联动用 `SForm.useWatch` + 动态 items 条件展开（禁止 `type: 'dependency'`）
 - [ ] 确认弹窗用 antd `Modal.confirm`（禁止 SConfirm）
-- [ ] Modal 用条件渲染 `{open && <Modal/>}`，封装在子组件内
+- [ ] Modal/Drawer 使用 `createModal`/`createDrawer` 工厂函数（`src/components/ModalContainer`、`src/components/DrawerContainer`），禁止手动管理 open 状态
 - [ ] 所有 API 调用通过 useRequest 包装（SSearchTable.requestFn 除外）
 - [ ] 写操作 useRequest 配置了 onSuccess（提示 + 刷新/跳转）
 - [ ] types.ts 类型完整（Entity + EntityQuery + EntityFormData）
@@ -161,3 +161,228 @@ const formItems: SFormItems[] = [
 ---
 
 > `pnpm verify` 通过后完成。详细信息 → 读取对应源文件。
+
+## 6. 安全模式：填空式生成（兜底方案）
+
+> **适用场景**：多次生成偏离预期、弱模型不稳定、或希望快速产出可运行骨架时使用。
+> **原理**：将"理解规范 → 组装代码"降级为"识别 `@FILL` → 文本替换"，让模型只做填空题。
+
+### 使用方法
+
+1. **复制下方"填空模板"** 到目标 `.tsx` 文件中（替换原有内容）。
+2. **对 AI 发出指令**（建议选中整个文件后输入）：
+   > "请根据以下需求，**只修改**代码中所有 `@FILL` 标记的内容，**严禁修改任何其他已存在的代码**。需求：新增页面标题为'创建商品'，编辑页面标题为'编辑商品'，API 新增函数名 `createGoodsByPost`，编辑函数名 `updateGoodsByPut`，详情函数名 `getGoodsByIdByGet`，表单字段包括商品名称(name)、价格(price)、库存(stock)、描述(description)。"
+
+### 填空模板 — create.tsx
+
+> 适用"独立页"模式（字段 > 8 或含复杂控件）。字段 ≤ 8 优先用下方 Modal 模板。
+
+```tsx
+// ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
+import { SForm, SButton } from '@dalydb/sdesign';
+import type { SFormItems } from '@dalydb/sdesign';
+import { message, Card } from 'antd';
+import { useRequest } from 'ahooks';
+import { useNavigate } from 'react-router-dom';
+// @FILL: 导入 API 函数，例如 import { createByPost } from 'src/api/{module}';
+// @FILL: 导入类型，例如 import type { XxxFormData } from 'src/api/{module}/types';
+
+export default () => {
+  const [form] = SForm.useForm();
+  const navigate = useNavigate();
+
+  // 提交
+  const { run: handleSubmit, loading } = useRequest(
+    // @FILL: 替换为新增 API，例如 (values: XxxFormData) => createByPost(values)
+    (values: Record<string, unknown>) => Promise.resolve(values),
+    {
+      manual: true,
+      onSuccess: () => {
+        message.success('创建成功');
+        navigate(-1);
+      },
+    },
+  );
+
+  const formItems: SFormItems[] = [
+    // @FILL: 表单项配置
+    // 示例: { label: '名称', name: 'name', type: 'input', required: true },
+    // 可选 type: input | inputNumber | select | datePicker | textarea | radio | switch 等 21 种
+  ];
+
+  return (
+    <Card title="@FILL:页面标题">
+      <SForm
+        form={form}
+        items={formItems}
+        columns={2}
+        onFinish={handleSubmit}
+        loading={loading}
+      />
+      <div style={{ textAlign: 'center', marginTop: 24 }}>
+        <SButton actionType="back" onClick={() => navigate(-1)} />
+        <SButton
+          actionType="submit"
+          style={{ marginLeft: 16 }}
+          onClick={() => form.submit()}
+          loading={loading}
+        />
+      </div>
+    </Card>
+  );
+};
+```
+
+### 填空模板 — edit.tsx
+
+> 适用"独立页"模式。字段 ≤ 8 优先用下方 Modal 模板。
+
+```tsx
+// ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
+import { SForm, SButton } from '@dalydb/sdesign';
+import type { SFormItems } from '@dalydb/sdesign';
+import { message, Card, Spin } from 'antd';
+import { useRequest } from 'ahooks';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+// @FILL: 导入 API 函数，例如 import { getByIdByGet, updateByPut } from 'src/api/{module}';
+// @FILL: 导入类型，例如 import type { XxxFormData } from 'src/api/{module}/types';
+
+export default () => {
+  const [form] = SForm.useForm();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+
+  // 加载详情
+  const { loading: detailLoading } = useRequest(
+    // @FILL: 替换为详情 API，例如 () => getByIdByGet(id!)
+    () => Promise.resolve({} as Record<string, unknown>),
+    {
+      ready: !!id,
+      onSuccess: (data) => {
+        form.setFieldsValue(data);
+      },
+    },
+  );
+
+  // 提交
+  const { run: handleSubmit, loading } = useRequest(
+    // @FILL: 替换为更新 API，例如 (values: XxxFormData) => updateByPut({ ...values, id: id! })
+    (values: Record<string, unknown>) => Promise.resolve(values),
+    {
+      manual: true,
+      onSuccess: () => {
+        message.success('编辑成功');
+        navigate(-1);
+      },
+    },
+  );
+
+  const formItems: SFormItems[] = [
+    // @FILL: 表单项配置（与 create.tsx 保持一致）
+    // 示例: { label: '名称', name: 'name', type: 'input', required: true },
+  ];
+
+  return (
+    <Spin spinning={detailLoading}>
+      <Card title="@FILL:页面标题">
+        <SForm
+          form={form}
+          items={formItems}
+          columns={2}
+          onFinish={handleSubmit}
+          loading={loading}
+        />
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <SButton actionType="back" onClick={() => navigate(-1)} />
+          <SButton
+            actionType="submit"
+            style={{ marginLeft: 16 }}
+            onClick={() => form.submit()}
+            loading={loading}
+          />
+        </div>
+      </Card>
+    </Spin>
+  );
+};
+```
+
+### 填空模板 — {Entity}FormModal.tsx（createModal 弹窗表单）
+
+> 适用"Modal"模式（字段 ≤ 8，无复杂联动）。父组件通过 `ref.current.open(params)` 打开。
+
+```tsx
+// ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
+import { SForm } from '@dalydb/sdesign';
+import type { SFormItems } from '@dalydb/sdesign';
+import { Modal, message } from 'antd';
+import { useRequest } from 'ahooks';
+import { createModal } from '@/components/ModalContainer';
+import type { ModalChildProps } from '@/components/ModalContainer';
+// @FILL: 导入 API 函数，例如 import { createByPost, updateByPut, getByIdByGet } from '@/api/{module}';
+// @FILL: 导入类型，例如 import type { XxxFormData } from '@/api/{module}/types';
+
+// @FILL: 定义泛型参数类型，例如 type FormParams = { mode: 'create' | 'edit'; id?: string };
+type FormParams = { mode: 'create' | 'edit'; id?: string };
+
+const FormContent = ({
+  params,
+  onClose,
+  onSuccess,
+}: ModalChildProps<FormParams>) => {
+  const [form] = SForm.useForm();
+  const isEdit = params.mode === 'edit';
+
+  // 编辑时加载详情
+  useRequest(
+    // @FILL: 替换为详情 API，例如 () => getByIdByGet(params.id!)
+    () => Promise.resolve({} as Record<string, unknown>),
+    {
+      ready: isEdit && !!params.id,
+      onSuccess: (data) => {
+        form.setFieldsValue(data);
+      },
+    },
+  );
+
+  // 提交
+  const { run: handleSubmit, loading } = useRequest(
+    // @FILL: 替换为新增/编辑 API，例如:
+    // (values: XxxFormData) => isEdit ? updateByPut({ ...values, id: params.id! }) : createByPost(values)
+    (values: Record<string, unknown>) => Promise.resolve(values),
+    {
+      manual: true,
+      onSuccess: () => {
+        message.success(isEdit ? '编辑成功' : '创建成功');
+        onSuccess();
+      },
+    },
+  );
+
+  const formItems: SFormItems[] = [
+    // @FILL: 表单项配置
+    // 示例: { label: '名称', name: 'name', type: 'input', required: true },
+  ];
+
+  return (
+    <Modal
+      open
+      title={isEdit ? '@FILL:编辑标题' : '@FILL:新增标题'}
+      onCancel={onClose}
+      onOk={() => form.submit()}
+      confirmLoading={loading}
+    >
+      <SForm
+        form={form}
+        items={formItems}
+        columns={1}
+        onFinish={handleSubmit}
+      />
+    </Modal>
+  );
+};
+
+// @FILL: 修改导出名称，例如 export default createModal<FormParams>(FormContent);
+export default createModal<FormParams>(FormContent);
+```

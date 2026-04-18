@@ -4,7 +4,7 @@
 
 | 错误签名                                         | 分类      | 修复方法                                        |
 | ------------------------------------------------ | --------- | ----------------------------------------------- |
-| `TS2307: Cannot find module '@/api/{xxx}'`       | 缺文件    | 检查 src/api/{module}/index.ts 是否存在且有导出 |
+| `TS2307: Cannot find module 'src/api/{xxx}'`     | 缺文件    | 检查 src/api/{module}/index.ts 是否存在且有导出 |
 | `TS2322: Type 'any' is not assignable`           | 类型违规  | 改 Record<string, unknown> 或从 Entity 推导     |
 | `TS2345: Argument of type 'string'...type 'Key'` | antd 类型 | dataIndex 加 `as const` 或用 `keyof Entity`     |
 | `TS2339: Property 'xxx' does not exist on type`  | 类型缺失  | 检查 types.ts 的 Entity 是否含该字段            |

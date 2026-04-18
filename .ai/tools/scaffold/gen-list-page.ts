@@ -87,19 +87,19 @@ export function genListPage(config: ListGenConfig): string {
     `import { ${[...sdesignImports].join(', ')} } from '@dalydb/sdesign';`,
   );
   lines.push(
-    `import { ${[...apiImports].join(', ')} } from '@/api/${module}';`,
+    `import { ${[...apiImports].join(', ')} } from 'src/api/${module}';`,
   );
 
   // 类型 + 枚举 MAP 从 types 导入
   const typesImportParts: string[] = [];
   if (typeFileImports.size > 0) {
     typesImportParts.push(
-      `import type { ${[...typeFileImports].join(', ')} } from '@/api/${module}/types';`,
+      `import type { ${[...typeFileImports].join(', ')} } from 'src/api/${module}/types';`,
     );
   }
   if (enumMapImports.size > 0) {
     typesImportParts.push(
-      `import { ${[...enumMapImports].join(', ')} } from '@/api/${module}/types';`,
+      `import { ${[...enumMapImports].join(', ')} } from 'src/api/${module}/types';`,
     );
   }
   lines.push(...typesImportParts);

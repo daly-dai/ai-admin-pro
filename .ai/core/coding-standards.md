@@ -63,14 +63,14 @@ export type { Product, ProductStatus } from './types';
 ### 组件结构（按顺序）
 
 ```typescript
-// 1. 导入（React → 第三方 → @/ 绝对路径 → ./ 相对路径 → 样式）
+// 1. 导入（React → 第三方 → src/ 绝对路径 → ./ 相对路径 → 样式）
 import React, { useRef } from 'react';
 import { message } from 'antd';
 import { useRequest } from 'ahooks';
 import type { SColumnsType, SFormItems, SearchTableRef } from '@dalydb/sdesign';
 import { SButton, SSearchTable } from '@dalydb/sdesign';
-import { deleteByDelete, getListByGet } from '@/api/[module]';
-import type { [Entity] } from '@/api/[module]/types';
+import { deleteByDelete, getListByGet } from 'src/api/[module]';
+import type { [Entity] } from 'src/api/[module]/types';
 import './index.css';
 
 // 2. 组件声明
@@ -111,8 +111,8 @@ BEM 命名，避免全局污染：`.product-card`（正确）vs `.card`（错误
 ## API 层规范
 
 ```typescript
-import { createRequest } from '@/plugins/request';
-import type { PageData } from '@/types';
+import { createRequest } from 'src/plugins/request';
+import type { PageData } from 'src/types';
 import type { Product, ProductFormData, ProductQuery } from './types';
 
 const productApi = createRequest();

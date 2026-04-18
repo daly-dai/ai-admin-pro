@@ -89,15 +89,15 @@ const { data: detail, loading } = useRequest(() => getByIdByGet(id!), { ready: !
 
 > 可直接用: Modal / Modal.confirm / Tag / message / Card / Spin / InputNumber
 
-| 规则       | 正确写法                                            | Why                            |
-| ---------- | --------------------------------------------------- | ------------------------------ |
-| HTTP 请求  | `import { createRequest } from '@/plugins/request'` | 统一拦截/鉴权/错误处理         |
-| 类型安全   | `Record<string, unknown>`                           | any 绕过类型检查，隐患累积     |
-| 类型导入   | `import type { User } from './types'`               | 树摇优化，运行时零残留         |
-| 路径别名   | `import { X } from '@/components/X'`                | 重构安全，路径不因移动断裂     |
-| 状态管理   | `import { create } from 'zustand'`                  | 轻量零 boilerplate，immer 友好 |
-| API 命名   | `getListByGet()` / `createByPost()`                 | 一眼识别 HTTP 方法             |
-| 未使用参数 | `(_, record) => ...`                                | ESLint no-unused-vars          |
+| 规则       | 正确写法                                              | Why                            |
+| ---------- | ----------------------------------------------------- | ------------------------------ |
+| HTTP 请求  | `import { createRequest } from 'src/plugins/request'` | 统一拦截/鉴权/错误处理         |
+| 类型安全   | `Record<string, unknown>`                             | any 绕过类型检查，隐患累积     |
+| 类型导入   | `import type { User } from './types'`                 | 树摇优化，运行时零残留         |
+| 路径别名   | `import { X } from 'src/components/X'`                | 重构安全，路径不因移动断裂     |
+| 状态管理   | `import { create } from 'zustand'`                    | 轻量零 boilerplate，immer 友好 |
+| API 命名   | `getListByGet()` / `createByPost()`                   | 一眼识别 HTTP 方法             |
+| 未使用参数 | `(_, record) => ...`                                  | ESLint no-unused-vars          |
 
 > 保底类型: `Record<string, unknown>`，优先推导 `Partial<Entity>`。
 
@@ -123,7 +123,7 @@ const { data: detail, loading } = useRequest(() => getByIdByGet(id!), { ready: !
 - [ ] API 方法名带 HTTP 后缀（getListByGet/createByPost 等）
 - [ ] SForm 字段联动用 `SForm.useWatch` + 动态 items 条件展开（禁止 `type: 'dependency'`）
 - [ ] 确认弹窗用 antd `Modal.confirm`（禁止 SConfirm）
-- [ ] Modal 用条件渲染 `{open && <Modal/>}`，封装在子组件内
+- [ ] Modal/Drawer 使用 `createModal`/`createDrawer` 工厂函数（`src/components/ModalContainer`、`src/components/DrawerContainer`），禁止手动管理 open 状态
 - [ ] 所有 API 调用通过 useRequest 包装（SSearchTable.requestFn 除外）
 - [ ] 写操作 useRequest 配置了 onSuccess（提示 + 刷新/跳转）
 - [ ] types.ts 类型完整（Entity + EntityQuery + EntityFormData）
@@ -131,3 +131,107 @@ const { data: detail, loading } = useRequest(() => getByIdByGet(id!), { ready: !
 ---
 
 > `pnpm verify` 通过后完成。详细信息 → 读取对应源文件。
+
+## 6. 安全模式：填空式生成（兜底方案）
+
+> **适用场景**：多次生成偏离预期、弱模型不稳定、或希望快速产出可运行骨架时使用。
+> **原理**：将"理解规范 → 组装代码"降级为"识别 `@FILL` → 文本替换"，让模型只做填空题。
+
+### 使用方法
+
+1. **复制下方"填空模板"** 到目标 `.tsx` 文件中（替换原有内容）。
+2. **对 AI 发出指令**（建议选中整个文件后输入）：
+   > "请根据以下需求，**只修改**代码中所有 `@FILL` 标记的内容，**严禁修改任何其他已存在的代码**。需求：页面标题为'商品详情'，API 详情函数名 `getGoodsByIdByGet`，详情字段包括商品名称(name)、价格(price)、库存(stock)、创建时间(createTime)、描述(description)。"
+
+### 填空模板 — detail.tsx（独立页）
+
+> 适用"独立页面"模式（字段多、需独立路由）。列表页快速预览优先用下方 Drawer 模板。
+
+```tsx
+// ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
+import { SDetail, SButton } from '@dalydb/sdesign';
+import type { SDetailItem } from '@dalydb/sdesign';
+import { Card, Spin } from 'antd';
+import { useRequest } from 'ahooks';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+// @FILL: 导入 API 函数，例如 import { getByIdByGet } from 'src/api/{module}';
+
+export default () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+
+  // 加载详情
+  const { data: detail, loading } = useRequest(
+    // @FILL: 替换为详情 API，例如 () => getByIdByGet(id!)
+    () => Promise.resolve({} as Record<string, unknown>),
+    {
+      ready: !!id,
+    },
+  );
+
+  const detailItems: SDetailItem[] = [
+    // @FILL: 详情项配置
+    // 示例: { label: '名称', name: 'name' },
+    // 可选 type: 'text'(默认) | 'dict' | 'file' | 'img' | 'rangeTime' | 'checkbox'
+    // 字典映射: { label: '状态', name: 'status', type: 'dict', dictMap: { 1: '启用', 0: '禁用' } }
+    // 自定义渲染: { label: '金额', name: 'amount', render: (value) => `¥${value}` }
+  ];
+
+  return (
+    <Spin spinning={loading}>
+      <Card
+        title="@FILL:页面标题"
+        extra={<SButton actionType="back" onClick={() => navigate(-1)} />}
+      >
+        <SDetail dataSource={detail} items={detailItems} column={2} />
+      </Card>
+    </Spin>
+  );
+};
+```
+
+### 填空模板 — {Entity}DetailDrawer.tsx（createDrawer 详情抽屉）
+
+> 适用"Drawer"模式（列表页快速预览）。父组件通过 `ref.current.open(params)` 打开。
+
+```tsx
+// ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
+import { SDetail } from '@dalydb/sdesign';
+import type { SDetailItem } from '@dalydb/sdesign';
+import { Drawer, Spin } from 'antd';
+import { useRequest } from 'ahooks';
+import { createDrawer } from '@/components/DrawerContainer';
+import type { DrawerChildProps } from '@/components/DrawerContainer';
+// @FILL: 导入 API 函数，例如 import { getByIdByGet } from '@/api/{module}';
+
+// @FILL: 定义泛型参数类型，例如 type DetailParams = { id: string };
+type DetailParams = { id: string };
+
+const DetailContent = ({ params, onClose }: DrawerChildProps<DetailParams>) => {
+  // 加载详情
+  const { data: detail, loading } = useRequest(
+    // @FILL: 替换为详情 API，例如 () => getByIdByGet(params.id)
+    () => Promise.resolve({} as Record<string, unknown>),
+  );
+
+  const detailItems: SDetailItem[] = [
+    // @FILL: 详情项配置
+    // 示例: { label: '名称', name: 'name' },
+    // 可选 type: 'text'(默认) | 'dict' | 'file' | 'img' | 'rangeTime' | 'checkbox'
+    // 字典映射: { label: '状态', name: 'status', type: 'dict', dictMap: { 1: '启用', 0: '禁用' } }
+    // 自定义渲染: { label: '金额', name: 'amount', render: (value) => `¥${value}` }
+  ];
+
+  return (
+    <Drawer open title="@FILL:抽屉标题" width={600} onClose={onClose}>
+      <Spin spinning={loading}>
+        <SDetail dataSource={detail} items={detailItems} column={1} />
+      </Spin>
+    </Drawer>
+  );
+};
+
+// @FILL: 修改导出名称，例如 export default createDrawer<DetailParams>(DetailContent);
+export default createDrawer<DetailParams>(DetailContent);
+```

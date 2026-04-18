@@ -12,7 +12,7 @@ src/api/{module}/index.ts  — API 实现
 ## 多后端服务配置
 
 ```typescript
-import { createRequest } from '@/plugins/request';
+import { createRequest } from 'src/plugins/request';
 
 export const {module}Api = createRequest({
   prefix: '/api/{module}',    // URL 前缀
@@ -48,9 +48,9 @@ export interface {Entity}FormData {
 ### index.ts
 
 ```typescript
-import { createRequest } from '@/plugins/request';
+import { createRequest } from 'src/plugins/request';
 import type { {Entity}, {Entity}Query, {Entity}FormData } from './types';
-import type { PageData } from '@/types';
+import type { PageData } from 'src/types';
 
 export const {module}Api = createRequest({ prefix: '/{module}', ... });
 

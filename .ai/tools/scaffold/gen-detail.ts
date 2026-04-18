@@ -61,12 +61,12 @@ function genDetailDrawer(
   lines.push("import { Drawer, Spin } from 'antd';");
   lines.push("import { useRequest } from 'ahooks';");
   lines.push("import { SDetail, SButton } from '@dalydb/sdesign';");
-  lines.push(`import { ${names.getById} } from '@/api/${module}';`);
+  lines.push(`import { ${names.getById} } from 'src/api/${module}';`);
 
   const enumImports = collectDetailEnumMaps(config.detail.groups);
   if (enumImports.size > 0) {
     lines.push(
-      `import { ${[...enumImports].join(', ')} } from '@/api/${module}/types';`,
+      `import { ${[...enumImports].join(', ')} } from 'src/api/${module}/types';`,
     );
   }
 
@@ -140,12 +140,12 @@ function genDetailPage(
   lines.push("import { useNavigate, useParams } from 'react-router-dom';");
   lines.push("import { useRequest } from 'ahooks';");
   lines.push("import { SDetail, SButton } from '@dalydb/sdesign';");
-  lines.push(`import { ${names.getById} } from '@/api/${module}';`);
+  lines.push(`import { ${names.getById} } from 'src/api/${module}';`);
 
   const enumImports = collectDetailEnumMaps(config.detail.groups);
   if (enumImports.size > 0) {
     lines.push(
-      `import { ${[...enumImports].join(', ')} } from '@/api/${module}/types';`,
+      `import { ${[...enumImports].join(', ')} } from 'src/api/${module}/types';`,
     );
   }
 

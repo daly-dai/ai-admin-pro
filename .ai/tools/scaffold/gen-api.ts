@@ -18,8 +18,8 @@ export function genApi(config: ApiGenConfig): string {
   const names = resolveApiNames(config.apiNames);
 
   const imports: string[] = [];
-  imports.push("import { createRequest } from '@/plugins/request';");
-  imports.push("import type { PageData } from '@/types';");
+  imports.push("import { createRequest } from 'src/plugins/request';");
+  imports.push("import type { PageData } from 'src/types';");
 
   // 构建类型导入列表
   const typeImports: string[] = [entity, `${entity}FormData`, `${entity}Query`];

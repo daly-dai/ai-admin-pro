@@ -110,15 +110,15 @@ PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适
 
 ### 导入规则
 
-| 规则       | 正确写法                                            | Why                            |
-| ---------- | --------------------------------------------------- | ------------------------------ |
-| HTTP 请求  | `import { createRequest } from '@/plugins/request'` | 统一拦截/鉴权/错误处理         |
-| 类型安全   | `Record<string, unknown>`                           | any 绕过类型检查，隐患累积     |
-| 类型导入   | `import type { User } from './types'`               | 树摇优化，运行时零残留         |
-| 路径别名   | `import { X } from '@/components/X'`                | 重构安全，路径不因移动断裂     |
-| 状态管理   | `import { create } from 'zustand'`                  | 轻量零 boilerplate，immer 友好 |
-| API 命名   | `getListByGet()` / `createByPost()`                 | 一眼识别 HTTP 方法             |
-| 未使用参数 | `(_, record) => ...`                                | ESLint no-unused-vars          |
+| 规则       | 正确写法                                              | Why                            |
+| ---------- | ----------------------------------------------------- | ------------------------------ |
+| HTTP 请求  | `import { createRequest } from 'src/plugins/request'` | 统一拦截/鉴权/错误处理         |
+| 类型安全   | `Record<string, unknown>`                             | any 绕过类型检查，隐患累积     |
+| 类型导入   | `import type { User } from './types'`                 | 树摇优化，运行时零残留         |
+| 路径别名   | `import { X } from 'src/components/X'`                | 重构安全，路径不因移动断裂     |
+| 状态管理   | `import { create } from 'zustand'`                    | 轻量零 boilerplate，immer 友好 |
+| API 命名   | `getListByGet()` / `createByPost()`                   | 一眼识别 HTTP 方法             |
+| 未使用参数 | `(_, record) => ...`                                  | ESLint no-unused-vars          |
 
 > **保底类型**: `Record<string, unknown>`，优先从已有实体推导（`Partial<Entity>`）。API 命名 SSOT → `.ai/conventions/api-conventions.md`
 
@@ -216,7 +216,7 @@ Level 1 通过后逐条检查：
 - [ ] API 方法名带 HTTP 后缀（getListByGet/createByPost 等）
 - [ ] SForm 字段联动用 `SForm.useWatch` + 动态 items 条件展开（禁止 `type: 'dependency'`）
 - [ ] 确认弹窗用 antd `Modal.confirm`（禁止 SConfirm）
-- [ ] Modal 用条件渲染 `{open && <Modal/>}`，封装在子组件内
+- [ ] Modal/Drawer 使用 `createModal`/`createDrawer` 工厂函数（`src/components/ModalContainer`、`src/components/DrawerContainer`），禁止手动管理 open 状态
 - [ ] 所有 API 调用通过 useRequest 包装（SSearchTable.requestFn 除外）
 - [ ] 写操作 useRequest 配置了 onSuccess（提示 + 刷新/跳转）
 - [ ] types.ts 类型完整（Entity + EntityQuery + EntityFormData）

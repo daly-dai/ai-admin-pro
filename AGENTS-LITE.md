@@ -107,17 +107,17 @@
 
 ### 禁止模式
 
-| 禁止                                 | 正确做法                                                        |
-| ------------------------------------ | --------------------------------------------------------------- |
-| `any` 类型                           | `Record<string, unknown>` 或具体 Entity 类型                    |
-| `import axios`                       | `import { createRequest } from '@/plugins/request'`             |
-| `type: 'dependency'` (SForm)         | `SForm.useWatch(fieldName, form)` + 条件展开 items              |
-| `SConfirm`                           | `Modal.confirm()`                                               |
-| 父组件管理 Modal/Drawer 的 open 状态 | 子组件内管理 + useImperativeHandle 暴露 ref                     |
-| 未使用参数不加前缀                   | `(_, record) => ...`                                            |
-| API 方法名无 HTTP 后缀               | `getListByGet`、`createByPost`、`updateByPut`、`deleteByDelete` |
-| 跨模块用 `../`                       | `@/` 路径别名                                                   |
-| `import { X }` 导入纯类型            | `import type { X }`                                             |
+| 禁止                                 | 正确做法                                                                                                          |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `any` 类型                           | `Record<string, unknown>` 或具体 Entity 类型                                                                      |
+| `import axios`                       | `import { createRequest } from 'src/plugins/request'`                                                             |
+| `type: 'dependency'` (SForm)         | `SForm.useWatch(fieldName, form)` + 条件展开 items                                                                |
+| `SConfirm`                           | `Modal.confirm()`                                                                                                 |
+| 父组件管理 Modal/Drawer 的 open 状态 | 使用 `createModal`（`src/components/ModalContainer`）/ `createDrawer`（`src/components/DrawerContainer`）工厂函数 |
+| 未使用参数不加前缀                   | `(_, record) => ...`                                                                                              |
+| API 方法名无 HTTP 后缀               | `getListByGet`、`createByPost`、`updateByPut`、`deleteByDelete`                                                   |
+| 跨模块用 `../`                       | `src/` 路径别名                                                                                                   |
+| `import { X }` 导入纯类型            | `import type { X }`                                                                                               |
 
 ---
 
@@ -128,7 +128,7 @@
 | 错误信息                                        | 修复方法                                           |
 | ----------------------------------------------- | -------------------------------------------------- |
 | `no-unused-vars: 'xxx'`                         | 加 `_` 前缀：`_xxx`                                |
-| `Cannot find module '@/api/xxx'`                | 检查 `src/api/{module}/index.ts` 是否存在且 export |
+| `Cannot find module 'src/api/xxx'`              | 检查 `src/api/{module}/index.ts` 是否存在且 export |
 | `Type 'any' is not assignable`                  | 替换为具体类型或 `Record<string, unknown>`         |
 | `no-restricted-imports ... 'Table' from 'antd'` | 换为 `STable` from `@dalydb/sdesign`               |
 | `no-restricted-imports ... 'Form' from 'antd'`  | 换为 `SForm` from `@dalydb/sdesign`                |

@@ -116,15 +116,17 @@ function genFormModal(config: FormGenConfig, names: ResolvedApiNames): string {
   lines.push("import type { SFormItems } from '@dalydb/sdesign';");
   lines.push("import { SForm, SButton } from '@dalydb/sdesign';");
   lines.push(
-    `import { ${names.create}, ${names.getById}, ${names.update} } from '@/api/${module}';`,
+    `import { ${names.create}, ${names.getById}, ${names.update} } from 'src/api/${module}';`,
   );
-  lines.push(`import type { ${entity}FormData } from '@/api/${module}/types';`);
+  lines.push(
+    `import type { ${entity}FormData } from 'src/api/${module}/types';`,
+  );
 
   // 枚举 MAP imports
   const enumImports = collectFormEnumMaps(form.fields, config.enums);
   if (enumImports.size > 0) {
     lines.push(
-      `import { ${[...enumImports].join(', ')} } from '@/api/${module}/types';`,
+      `import { ${[...enumImports].join(', ')} } from 'src/api/${module}/types';`,
     );
   }
 
@@ -267,14 +269,16 @@ function genFormCreatePage(
   lines.push("import { useRequest } from 'ahooks';");
   lines.push("import type { SFormItems } from '@dalydb/sdesign';");
   lines.push("import { SForm, SButton } from '@dalydb/sdesign';");
-  lines.push(`import { ${names.create} } from '@/api/${module}';`);
-  lines.push(`import type { ${entity}FormData } from '@/api/${module}/types';`);
+  lines.push(`import { ${names.create} } from 'src/api/${module}';`);
+  lines.push(
+    `import type { ${entity}FormData } from 'src/api/${module}/types';`,
+  );
 
   // 枚举 imports
   const enumImports = collectFormEnumMaps(config.form.fields, config.enums);
   if (enumImports.size > 0) {
     lines.push(
-      `import { ${[...enumImports].join(', ')} } from '@/api/${module}/types';`,
+      `import { ${[...enumImports].join(', ')} } from 'src/api/${module}/types';`,
     );
   }
 
@@ -348,14 +352,16 @@ function genFormEditPage(
   lines.push("import type { SFormItems } from '@dalydb/sdesign';");
   lines.push("import { SForm, SButton } from '@dalydb/sdesign';");
   lines.push(
-    `import { ${names.getById}, ${names.update} } from '@/api/${module}';`,
+    `import { ${names.getById}, ${names.update} } from 'src/api/${module}';`,
   );
-  lines.push(`import type { ${entity}FormData } from '@/api/${module}/types';`);
+  lines.push(
+    `import type { ${entity}FormData } from 'src/api/${module}/types';`,
+  );
 
   const enumImports = collectFormEnumMaps(config.form.fields, config.enums);
   if (enumImports.size > 0) {
     lines.push(
-      `import { ${[...enumImports].join(', ')} } from '@/api/${module}/types';`,
+      `import { ${[...enumImports].join(', ')} } from 'src/api/${module}/types';`,
     );
   }
 

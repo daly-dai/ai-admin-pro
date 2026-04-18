@@ -105,7 +105,7 @@ export function genTypes(config: TypesGenConfig): string {
   // ─── 组装完整文件 ───
   const imports: string[] = [];
   if (hasQuery) {
-    imports.push("import type { PageQuery } from '@/types';");
+    imports.push("import type { PageQuery } from 'src/types';");
   }
 
   const importBlock = imports.length > 0 ? imports.join('\n') + '\n\n' : '';
