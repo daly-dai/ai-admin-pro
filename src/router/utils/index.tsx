@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react';
 import { Spin } from 'antd';
+import React, { Suspense } from 'react';
 
 export const lazyLoad = (Component: React.LazyExoticComponent<React.FC>) => (
   <Suspense

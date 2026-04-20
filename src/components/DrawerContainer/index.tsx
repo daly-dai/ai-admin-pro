@@ -23,6 +23,11 @@ export interface DrawerChildProps<
 > {
   params: P;
   onClose: () => void;
+  onSuccess?: () => void;
+}
+
+interface WrapperProps {
+  onSuccess?: () => void;
 }
 
 // ─── Factory ─────────────────────────────────────────────
@@ -53,10 +58,10 @@ export function createDrawer<
 >(
   Content: ComponentType<DrawerChildProps<P>>,
 ): ForwardRefExoticComponent<
-  PropsWithoutRef<Record<string, never>> & RefAttributes<DrawerContainerRef<P>>
+  PropsWithoutRef<WrapperProps> & RefAttributes<DrawerContainerRef<P>>
 > {
-  const Wrapper = forwardRef<DrawerContainerRef<P>, Record<string, never>>(
-    (_props, ref) => {
+  const Wrapper = forwardRef<DrawerContainerRef<P>, WrapperProps>(
+    (props, ref) => {
       const [open, setOpen] = useState(false);
       const [params, setParams] = useState<P>({} as P);
 
@@ -68,7 +73,14 @@ export function createDrawer<
       }));
 
       return open ? (
-        <Content params={params} onClose={() => setOpen(false)} />
+        <Content
+          params={params}
+          onClose={() => setOpen(false)}
+          onSuccess={() => {
+            setOpen(false);
+            props.onSuccess?.();
+          }}
+        />
       ) : null;
     },
   );

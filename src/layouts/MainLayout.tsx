@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   BellOutlined,
   HomeOutlined,
@@ -19,6 +18,7 @@ import {
   Result,
   theme,
 } from 'antd';
+import React from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { useAppStore, useUserStore } from '@/stores';

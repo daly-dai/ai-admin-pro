@@ -105,4 +105,22 @@ export default tseslint.config(
       // ],
     },
   },
+
+  // 页面组件命名规范：必须使用 const XxxPage = () => {} 形式
+  {
+    files: ['src/pages/**/*.tsx'],
+    ignores: [
+      'src/pages/login/**',
+      'src/pages/error/**',
+      'src/pages/register/**',
+    ],
+    rules: {
+      // 禁止直接导出函数声明，强制使用 const + 箭头函数
+      'func-style': [
+        'error',
+        'expression',
+        { allowArrowFunctions: true },
+      ],
+    },
+  },
 );

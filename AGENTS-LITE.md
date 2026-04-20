@@ -6,60 +6,21 @@
 
 ---
 
-## ⛔ 阻断性必读（违反则代码无效，必须回滚重做）
-
-| 触发条件              | 执行前必须读取                           |
-| --------------------- | ---------------------------------------- |
-| 代码涉及 SSearchTable | `.ai/sdesign/components/SSearchTable.md` |
-| 代码涉及 SForm        | `.ai/sdesign/components/SForm.md`        |
-| 代码涉及 SButton      | `.ai/sdesign/components/SButton.md`      |
-| 代码涉及 SDetail      | `.ai/sdesign/components/SDetail.md`      |
-| 生成/修改页面代码     | `.ai/pitfalls/index.md`                  |
-| 写 API 层代码         | `.ai/conventions/api-conventions.md`     |
-| 新建模块目录结构      | `.ai/core/architecture.md`               |
-
-> **先读文档，再写代码。** 未读取对应文档就生成的代码视为无效。
-
----
-
 ## 0. 工作模式选择（收到需求后第一步）
 
-| 需求类型                                 | 工作模式     | 跳转      |
-| ---------------------------------------- | ------------ | --------- |
-| 新建模块 / 新建页面 / 新增完整功能       | **Compact**  | → 第 1 节 |
-| 给已有模块加表单 / 详情 / 列表           | **Compact**  | → 第 1 节 |
-| 只需类型定义 / 只需 API 层               | **Compact**  | → 第 1 节 |
-| 改字段 / 加列 / 改文案 / 修 bug / 小调整 | **修改路径** | → 第 2 节 |
-| 不确定                                   | 问用户       | —         |
+| 需求类型                                 | 工作模式             | 处理方式                                                 |
+| ---------------------------------------- | -------------------- | -------------------------------------------------------- |
+| 新建模块 / 新建页面 / 新增完整功能       | **sdesign-gen-page** | 由全局注册的 `sdesign-gen-page` Skill 处理，此处不再重复 |
+| 给已有模块加表单 / 详情 / 列表           | **sdesign-gen-page** | 同上                                                     |
+| 只需类型定义 / 只需 API 层               | **sdesign-gen-page** | 同上                                                     |
+| 改字段 / 加列 / 改文案 / 修 bug / 小调整 | **修改路径**         | → 第 1 节                                                |
+| 不确定                                   | 问用户               | —                                                        |
 
-> **默认使用 Compact**。Scaffold（`pnpm scaffold {module}`）是 JSON 配置驱动的代码生成脚本，适合开发者手动使用，AI 不主动使用。详见 `.ai/tools/scaffold/usage.md`。
-
----
-
-## 1. Compact 路径（新建模块/页面）
-
-### 场景选择
-
-| 页面类型      | 读取一个 compact 文件          |
-| ------------- | ------------------------------ |
-| 列表页 / CRUD | `.ai/compact/manual-crud.md`   |
-| 表单页        | `.ai/compact/manual-form.md`   |
-| 详情页        | `.ai/compact/manual-detail.md` |
-
-> compact 文件自包含模板 + 组件 Props + 规则 + 验证清单。读 1 个文件即可生成代码，不要分别读取 template + sdesign + pitfalls。
-
-### 步骤
-
-1. ⛔ **读 compact 文件**：根据页面类型读取上表中对应的 compact 文件
-2. ⛔ **读组件文档**：涉及 SSearchTable / SForm / SButton / SDetail → 读 `.ai/sdesign/components/{组件名}.md`
-3. ⛔ **读错题集**：读 `.ai/pitfalls/index.md`
-4. **生成代码**：按 compact 文件中的模板和规则生成
-5. **验证**：`pnpm verify`，出错 → `pnpm verify:fix`
-6. **报告**：列出生成的文件清单
+> Scaffold（`pnpm scaffold {module}`）是 JSON 配置驱动的代码生成脚本，适合开发者手动使用，AI 不主动使用。
 
 ---
 
-## 2. 修改路径（改已有代码）
+## 1. 修改路径（改已有代码）
 
 ### 步骤
 
@@ -68,7 +29,7 @@
 3. ⛔ **读组件文档**：涉及 SSearchTable / SForm / SButton / SDetail → 读 `.ai/sdesign/components/{组件名}.md`
 4. ⛔ **读错题集**：生成/修改页面代码前 → 读 `.ai/pitfalls/index.md`
 5. **匹配模板**：从下方 T1-T8 找匹配项执行；无匹配 → 读对应 compact 文件参考代码模式
-6. **验证**：`pnpm verify`，出错查第 4 节；修一轮还失败 → 停止问用户
+6. **验证**：`pnpm verify`，出错查第 3 节；修一轮还失败 → 停止问用户
 
 ### T1-T8 快速模板
 
@@ -92,7 +53,7 @@
 
 ---
 
-## 3. 硬约束
+## 2. 硬约束
 
 ### 组件替换（必须遵守）
 
@@ -121,7 +82,7 @@
 
 ---
 
-## 4. 常见报错修复
+## 3. 常见报错修复
 
 `pnpm verify` 报错时对照修复。只修本次改动引入的错误，存量错误不管。
 
@@ -137,7 +98,7 @@
 
 ---
 
-## 5. 硬停规则
+## 4. 硬停规则
 
 遇到以下任一情况 → **停止，问用户确认**：
 
