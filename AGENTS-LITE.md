@@ -86,15 +86,16 @@
 
 `pnpm verify` 报错时对照修复。只修本次改动引入的错误，存量错误不管。
 
-| 错误信息                                        | 修复方法                                           |
-| ----------------------------------------------- | -------------------------------------------------- |
-| `no-unused-vars: 'xxx'`                         | 加 `_` 前缀：`_xxx`                                |
-| `Cannot find module 'src/api/xxx'`              | 检查 `src/api/{module}/index.ts` 是否存在且 export |
-| `Type 'any' is not assignable`                  | 替换为具体类型或 `Record<string, unknown>`         |
-| `no-restricted-imports ... 'Table' from 'antd'` | 换为 `STable` from `@dalydb/sdesign`               |
-| `no-restricted-imports ... 'Form' from 'antd'`  | 换为 `SForm` from `@dalydb/sdesign`                |
-| Prettier / 格式报错                             | `pnpm verify:fix`                                  |
-| 修一轮后仍有错误                                | **停止，问用户**                                   |
+| 错误信息                                        | 修复方法                                              |
+| ----------------------------------------------- | ----------------------------------------------------- |
+| `no-unused-vars: 'xxx'`                         | 加 `_` 前缀：`_xxx`                                   |
+| `Cannot find module 'src/api/xxx'`              | 检查 `src/api/{module}/index.ts` 是否存在且 export    |
+| `Type 'any' is not assignable`                  | 替换为具体类型或 `Record<string, unknown>`            |
+| `no-restricted-imports ... 'Table' from 'antd'` | 换为 `STable` from `@dalydb/sdesign`                  |
+| `no-restricted-imports ... 'Form' from 'antd'`  | 换为 `SForm` from `@dalydb/sdesign`                   |
+| Prettier / 格式报错                             | `pnpm verify:fix`                                     |
+| 修一轮后仍有错误                                | **停止，问用户**                                      |
+| `Type 'string' is not assignable to type...`    | 加显式类型注解，如 `const columns: SColumn[] = [...]` |
 
 ---
 

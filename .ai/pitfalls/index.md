@@ -11,6 +11,7 @@
 | P003 | 所有页面              | **回调函数未使用的参数加 `_` 前缀**。如 `render: (_, record) => ...`、`render: (_text, _record, index) => ...`。禁止用 `void`、`eslint-disable` 绕过                                                                                                         | 加 `_` 前缀                          | [详情](./unused-params-in-render.md)    |
 | P004 | 含字段联动的表单页    | **禁止 `type: 'dependency'`**。字段联动统一使用 `SForm.useWatch(fieldName, form)` 获取响应式值，然后在 items 数组中用 `...(value === 'x' ? [item] : [])` 条件展开。禁止 `depNames` / `render`                                                                | `SForm.useWatch` + 条件展开 items    | —                                       |
 | P005 | 含确认弹窗的页面      | **优先使用 `Modal.confirm` 而非 SConfirm**。确认弹窗推荐 antd `Modal.confirm({ title, content, onOk })`，命令式调用更简洁                                                                                                                                    | `Modal.confirm()` 替代               | —                                       |
+| P006 | SSearchTable 列配置   | **避免使用 `as const` 处理字面量类型**。弱模型应使用显式类型注解 `const columns: SColumn[] = [...]` 替代 `{ fixed: 'right' as const }`，更直观且类型安全                                                                                                     | `const columns: SColumn[] = [...]`   | —                                       |
 
 ## 使用方式
 
