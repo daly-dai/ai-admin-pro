@@ -14,9 +14,20 @@ description: 'Generates admin pages (CRUD list, detail, form) using @dalydb/sdes
 
 1. AI 读取本文件后，先通过 **§1 路由表** 匹配页面类型
 2. 按 **§2 固定步骤表** 中对应的步骤逐步执行，**不可跳步**
-3. 每步标注了需要读取的文件，**按指示读取**（模板在 `references/`，组件文档在 `.ai/sdesign/components/`）
+3. 每步标注了需要读取的文件，**按指示读取**（注意区分两类路径，见下方路径约定）
 4. 生成代码时遵守 **§3-§4** 的硬约束和 API 约定
 5. 完成后按 **§5-§6** 自检和验证
+
+### ⚠️ 路径约定（必读）
+
+本 Skill 引用两类文件，**解析基准不同**：
+
+| 路径前缀                            | 解析基准                                     | 说明                        |
+| ----------------------------------- | -------------------------------------------- | --------------------------- |
+| `references/`                       | **Skill 安装目录**（即本 SKILL.md 所在目录） | Skill 自带的代码模板文件    |
+| `{project}/.ai/sdesign/components/` | **项目根目录**（即当前工作目录 / cwd）       | 项目内的 sdesign 组件库文档 |
+
+> **关键规则**：当文档中出现 `.ai/sdesign/components/xxx.md` 时，**必须从项目根目录解析**（如 `{cwd}/.ai/sdesign/components/xxx.md`），而不是从 Skill 安装目录解析。Skill 可能被全局安装到用户目录（如 `~/.qoder/skills/`），组件文档不在那里。
 
 ### 🔒 输出锁（贯穿全流程，不可违反）
 
@@ -32,11 +43,11 @@ description: 'Generates admin pages (CRUD list, detail, form) using @dalydb/sdes
 
 根据用户意图匹配页面类型，确定读取哪些文件：
 
-| 用户意图关键词                           | 页面类型    | 读取的模板文件（`references/`）          | 读取的组件文档（`.ai/sdesign/components/`）                  | 输出锁                                                             |
-| ---------------------------------------- | ----------- | ---------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------ |
-| 列表 / CRUD / 管理 / 搜索表格 / 增删改查 | CRUD 列表页 | `crud-template.md` + `api-template.md`   | `SSearchTable.md` + `SForm.md` + `SButton.md` + `SDetail.md` | `src/api/{module}/` + `src/pages/{module}/` + `specs/{feature}/`   |
-| 详情 / 查看 / detail                     | 详情页      | `detail-template.md` + `api-template.md` | `SDetail.md` + `SButton.md`                                  | `src/api/{module}/` + `src/pages/{module}/detail.tsx`              |
-| 表单 / 新增 / 编辑 / form                | 表单页      | `form-template.md` + `api-template.md`   | `SForm.md` + `SButton.md`                                    | `src/api/{module}/` + `src/pages/{module}/create.tsx` + `edit.tsx` |
+| 用户意图关键词                           | 页面类型    | 读取的模板文件（基于 Skill 目录 `references/`） | 读取的组件文档（基于**项目根目录** `.ai/sdesign/components/`） | 输出锁                                                             |
+| ---------------------------------------- | ----------- | ----------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------ |
+| 列表 / CRUD / 管理 / 搜索表格 / 增删改查 | CRUD 列表页 | `crud-template.md` + `api-template.md`          | `SSearchTable.md` + `SForm.md` + `SButton.md` + `SDetail.md`   | `src/api/{module}/` + `src/pages/{module}/` + `specs/{feature}/`   |
+| 详情 / 查看 / detail                     | 详情页      | `detail-template.md` + `api-template.md`        | `SDetail.md` + `SButton.md`                                    | `src/api/{module}/` + `src/pages/{module}/detail.tsx`              |
+| 表单 / 新增 / 编辑 / form                | 表单页      | `form-template.md` + `api-template.md`          | `SForm.md` + `SButton.md`                                      | `src/api/{module}/` + `src/pages/{module}/create.tsx` + `edit.tsx` |
 
 > 模糊时默认 CRUD 列表页，在步骤 1 中向用户确认。
 
@@ -46,46 +57,46 @@ description: 'Generates admin pages (CRUD list, detail, form) using @dalydb/sdes
 
 ### CRUD 列表页（10 步）
 
-| #   | 动作                                                                                                                           | 读取                                                                                | 产出                             |
-| --- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- | -------------------------------- |
-| 1   | **收集需求信息** — 确认模块名、实体名、字段列表、交互模式（Modal/独立页/Drawer）                                               | —                                                                                   | 需求清单                         |
-| 2   | **读取组件 API** — 掌握 Props 和用法                                                                                           | `.ai/sdesign/components/SSearchTable.md` + `SForm.md` + `SButton.md` + `SDetail.md` | 组件知识                         |
-| 3   | **读取代码模板** — 掌握代码骨架和填空模板                                                                                      | `references/crud-template.md` + `references/api-template.md`                        | 模板知识                         |
-| 4   | **生成 types.ts** — 按 api-template.md 填空模板生成 Entity + EntityQuery + EntityFormData                                      | `references/api-template.md`「填空模板：types.ts」                                  | `src/api/{module}/types.ts`      |
-| 5   | **生成 api/index.ts** — 按 api-template.md 填空模板生成 createRequest + CRUD 方法                                              | `references/api-template.md`「填空模板：api/index.ts」+ §4 命名规则                 | `src/api/{module}/index.ts`      |
-| 6   | **生成 index.tsx** — SSearchTable 列表页                                                                                       | 模板 + 组件 API                                                                     | `src/pages/{module}/index.tsx`   |
-| 7   | **生成弹层组件** — FormModal（createModal）和/或 DetailDrawer（createDrawer）                                                  | 模板「弹层封装原则」                                                                | `src/pages/{module}/components/` |
-| 8   | **自检** — 逐条检查 §5 错题集 + §6 验证清单                                                                                    | 本文件 §5 + §6                                                                      | 修复问题                         |
-| 9   | **运行验证** — `pnpm verify`，有错误按 tsc > eslint > prettier 优先级修复，**只修输出锁范围内文件**，范围外报错跳过，最多 3 轮 | —                                                                                   | 验证通过                         |
-| 10  | **报告** — 输出生成的文件清单                                                                                                  | —                                                                                   | 文件清单                         |
+| #   | 动作                                                                                                                           | 读取                                                                                                 | 产出                             |
+| --- | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | -------------------------------- |
+| 1   | **收集需求信息** — 确认模块名、实体名、字段列表、交互模式（Modal/独立页/Drawer）                                               | —                                                                                                    | 需求清单                         |
+| 2   | **读取组件 API** — 掌握 Props 和用法                                                                                           | **[项目根目录]** `.ai/sdesign/components/SSearchTable.md` + `SForm.md` + `SButton.md` + `SDetail.md` | 组件知识                         |
+| 3   | **读取代码模板** — 掌握代码骨架和填空模板                                                                                      | **[Skill目录]** `references/crud-template.md` + `references/api-template.md`                         | 模板知识                         |
+| 4   | **生成 types.ts** — 按 api-template.md 填空模板生成 Entity + EntityQuery + EntityFormData                                      | `references/api-template.md`「填空模板：types.ts」                                                   | `src/api/{module}/types.ts`      |
+| 5   | **生成 api/index.ts** — 按 api-template.md 填空模板生成 createRequest + CRUD 方法                                              | `references/api-template.md`「填空模板：api/index.ts」+ §4 命名规则                                  | `src/api/{module}/index.ts`      |
+| 6   | **生成 index.tsx** — SSearchTable 列表页                                                                                       | 模板 + 组件 API                                                                                      | `src/pages/{module}/index.tsx`   |
+| 7   | **生成弹层组件** — FormModal（createModal）和/或 DetailDrawer（createDrawer）                                                  | 模板「弹层封装原则」                                                                                 | `src/pages/{module}/components/` |
+| 8   | **自检** — 逐条检查 §5 错题集 + §6 验证清单                                                                                    | 本文件 §5 + §6                                                                                       | 修复问题                         |
+| 9   | **运行验证** — `pnpm verify`，有错误按 tsc > eslint > prettier 优先级修复，**只修输出锁范围内文件**，范围外报错跳过，最多 3 轮 | —                                                                                                    | 验证通过                         |
+| 10  | **报告** — 输出生成的文件清单                                                                                                  | —                                                                                                    | 文件清单                         |
 
 ### 详情页（8 步）
 
-| #   | 动作                                                                              | 读取                                                           | 产出                                             |
-| --- | --------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------ |
-| 1   | **收集需求信息** — 确认模块名、实体名、字段列表、模式（独立页/Drawer）            | —                                                              | 需求清单                                         |
-| 2   | **读取组件 API**                                                                  | `.ai/sdesign/components/SDetail.md` + `SButton.md`             | 组件知识                                         |
-| 3   | **读取代码模板**                                                                  | `references/detail-template.md` + `references/api-template.md` | 模板知识                                         |
-| 4   | **生成/更新 types.ts** — 按 api-template.md 填空模板补充 Entity 类型              | `references/api-template.md`「填空模板：types.ts」             | `src/api/{module}/types.ts`                      |
-| 5   | **生成/更新 api/index.ts** — 按 api-template.md 补充 getByIdByGet 方法            | `references/api-template.md`「按需裁剪」表                     | `src/api/{module}/index.ts`                      |
-| 6   | **生成详情页** — detail.tsx（独立页）或 DetailDrawer（createDrawer）              | 模板 + 组件 API                                                | `src/pages/{module}/detail.tsx` 或 `components/` |
-| 7   | **自检** — 逐条检查 §5 + §6                                                       | 本文件 §5 + §6                                                 | 修复问题                                         |
-| 8   | **运行验证** — `pnpm verify`，**只修输出锁范围内文件**，范围外报错跳过，最多 3 轮 | —                                                              | 验证通过                                         |
+| #   | 动作                                                                              | 读取                                                                           | 产出                                             |
+| --- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------ |
+| 1   | **收集需求信息** — 确认模块名、实体名、字段列表、模式（独立页/Drawer）            | —                                                                              | 需求清单                                         |
+| 2   | **读取组件 API**                                                                  | **[项目根目录]** `.ai/sdesign/components/SDetail.md` + `SButton.md`            | 组件知识                                         |
+| 3   | **读取代码模板**                                                                  | **[Skill目录]** `references/detail-template.md` + `references/api-template.md` | 模板知识                                         |
+| 4   | **生成/更新 types.ts** — 按 api-template.md 填空模板补充 Entity 类型              | `references/api-template.md`「填空模板：types.ts」                             | `src/api/{module}/types.ts`                      |
+| 5   | **生成/更新 api/index.ts** — 按 api-template.md 补充 getByIdByGet 方法            | `references/api-template.md`「按需裁剪」表                                     | `src/api/{module}/index.ts`                      |
+| 6   | **生成详情页** — detail.tsx（独立页）或 DetailDrawer（createDrawer）              | 模板 + 组件 API                                                                | `src/pages/{module}/detail.tsx` 或 `components/` |
+| 7   | **自检** — 逐条检查 §5 + §6                                                       | 本文件 §5 + §6                                                                 | 修复问题                                         |
+| 8   | **运行验证** — `pnpm verify`，**只修输出锁范围内文件**，范围外报错跳过，最多 3 轮 | —                                                                              | 验证通过                                         |
 
 ### 表单页（10 步）
 
-| #   | 动作                                                                                           | 读取                                                         | 产出                                             |
-| --- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------ |
-| 1   | **收集需求信息** — 确认模块名、实体名、字段列表、模式（Modal/独立页）、是否分组、是否有联动    | —                                                            | 需求清单                                         |
-| 2   | **读取组件 API**                                                                               | `.ai/sdesign/components/SForm.md` + `SButton.md`             | 组件知识                                         |
-| 3   | **读取代码模板**                                                                               | `references/form-template.md` + `references/api-template.md` | 模板知识                                         |
-| 4   | **生成/更新 types.ts** — 按 api-template.md 填空模板生成 Entity + EntityFormData               | `references/api-template.md`「填空模板：types.ts」           | `src/api/{module}/types.ts`                      |
-| 5   | **生成/更新 api/index.ts** — 按 api-template.md 生成 createByPost + updateByPut + getByIdByGet | `references/api-template.md`「按需裁剪」表                   | `src/api/{module}/index.ts`                      |
-| 6   | **生成 create.tsx**（独立页模式）或 FormModal（Modal 模式）                                    | 模板 + 组件 API                                              | `src/pages/{module}/create.tsx` 或 `components/` |
-| 7   | **生成 edit.tsx**（独立页模式，Modal 模式跳过此步）                                            | 模板 + 组件 API                                              | `src/pages/{module}/edit.tsx`                    |
-| 8   | **处理联动**（如有）— 使用 `SForm.useWatch` + 条件展开 items                                   | 模板「字段联动」示例                                         | 联动逻辑                                         |
-| 9   | **自检** — 逐条检查 §5 + §6（特别注意 P004 联动规则）                                          | 本文件 §5 + §6                                               | 修复问题                                         |
-| 10  | **运行验证** — `pnpm verify`，**只修输出锁范围内文件**，范围外报错跳过，最多 3 轮              | —                                                            | 验证通过                                         |
+| #   | 动作                                                                                           | 读取                                                                         | 产出                                             |
+| --- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------ |
+| 1   | **收集需求信息** — 确认模块名、实体名、字段列表、模式（Modal/独立页）、是否分组、是否有联动    | —                                                                            | 需求清单                                         |
+| 2   | **读取组件 API**                                                                               | **[项目根目录]** `.ai/sdesign/components/SForm.md` + `SButton.md`            | 组件知识                                         |
+| 3   | **读取代码模板**                                                                               | **[Skill目录]** `references/form-template.md` + `references/api-template.md` | 模板知识                                         |
+| 4   | **生成/更新 types.ts** — 按 api-template.md 填空模板生成 Entity + EntityFormData               | `references/api-template.md`「填空模板：types.ts」                           | `src/api/{module}/types.ts`                      |
+| 5   | **生成/更新 api/index.ts** — 按 api-template.md 生成 createByPost + updateByPut + getByIdByGet | `references/api-template.md`「按需裁剪」表                                   | `src/api/{module}/index.ts`                      |
+| 6   | **生成 create.tsx**（独立页模式）或 FormModal（Modal 模式）                                    | 模板 + 组件 API                                                              | `src/pages/{module}/create.tsx` 或 `components/` |
+| 7   | **生成 edit.tsx**（独立页模式，Modal 模式跳过此步）                                            | 模板 + 组件 API                                                              | `src/pages/{module}/edit.tsx`                    |
+| 8   | **处理联动**（如有）— 使用 `SForm.useWatch` + 条件展开 items                                   | 模板「字段联动」示例                                                         | 联动逻辑                                         |
+| 9   | **自检** — 逐条检查 §5 + §6（特别注意 P004 联动规则）                                          | 本文件 §5 + §6                                                               | 修复问题                                         |
+| 10  | **运行验证** — `pnpm verify`，**只修输出锁范围内文件**，范围外报错跳过，最多 3 轮              | —                                                                            | 验证通过                                         |
 
 ---
 
