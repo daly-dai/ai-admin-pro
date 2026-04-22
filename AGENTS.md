@@ -41,11 +41,11 @@ PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适
 | ④    | 接口对接 | 真实接口就绪 + "对接/联调/替换mock"     | 占位URL→真实URL，删除TODO注释                                | `modes/api-connect.md`                     | `src/api/{module}/` + 用户确认的页面文件                                    | diff对比 → 确认 → 替换                                                   |
 | ⑤    | 迭代修复 | "改一下/加字段/修复/调整"               | 最小范围修改                                                 | `modes/incremental.md`                     | 仅用户指定的目标文件及其直接关联的类型文件                                  | 最小范围改动                                                             |
 
-### 工具能力：Scaffold 脚本生成（可选，人工使用为主）
+### 人工工具：Scaffold（⛔ AI 不使用）
 
-> Scaffold 是 JSON 配置驱动的代码生成脚本，适合**开发者手动**快速起步。**AI 不主动使用 scaffold**，除非用户明确要求。
+> Scaffold 是人工开发者的快速起步工具。**AI 的代码生成由 sdesign-gen-page Skill 或阶段流程处理，不使用 scaffold。**
 >
-> 详见 `.ai/tools/scaffold/usage.md`。命令：`pnpm scaffold {module}`
+> 命令：`pnpm scaffold {module}`
 
 ### 工具能力：跨会话 Task Prompt（多页面分步生成）
 

@@ -46,11 +46,13 @@
 ├── pitfalls/                    # 错题集（已知错误模式）
 │   ├── index.md                 # 错题索引
 │   └── *.md                     # 各错误模式详情
+├── examples/                    # 黄金范例（可直接复制运行的完整代码，弱模型优先加载）
+│   └── editable-table.md       # 可编辑表格范例（受控模式 + SForm 嵌入）
 ├── sdesign/                     # @dalydb/sdesign 组件库文档（自动同步，已 gitignore）
 │   ├── README.md                # 组件索引
 │   └── components/              # 各组件详细文档（SForm.md, SSearchTable.md 等）
 └── tools/                       # 工具脚本
-    ├── scaffold/                # Scaffold CLI — 场景化代码生成（pnpm scaffold <module>）
+    ├── scaffold/                # Scaffold CLI — 人工工具，AI 不使用（pnpm scaffold <module>）
     ├── gen-compact.ts           # Compact 指令生成（pnpm compact:gen）
     ├── gen-task-prompt.ts       # 跨会话 Task Prompt 生成（pnpm task:prompt <feature>）
     └── sync-sdesign-docs.ts    # 组件库文档同步（pnpm sync-ai-docs，postinstall 自动执行）
