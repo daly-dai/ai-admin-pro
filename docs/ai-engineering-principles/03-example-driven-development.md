@@ -99,14 +99,14 @@ arXiv 2024 年底的 Cursor Rules 实证研究发现：
 
 ### 1. 黄金范例（Golden Example）
 
-每种页面类型维护一个"黄金范例"——一个完整、可运行、包含最佳实践的代码文件。
+每种页面类型维护一个代码模板——一个完整、可运行、包含最佳实践的代码文件。
 
 ```
-.ai/examples/
-  crud-list.tsx          # CRUD 列表页的黄金范例
-  crud-form-modal.tsx    # 表单弹窗的黄金范例
-  crud-detail.tsx        # 详情页的黄金范例
-  editable-table.tsx     # 可编辑表格的黄金范例
+.ai/templates/
+  crud-page.md             # CRUD 列表页模板（含弹层封装原则）
+  form-page.md             # 表单页模板
+  detail-page.md           # 详情页模板
+  editable-table.md        # 可编辑表格模板
 ```
 
 **黄金范例的要求：**

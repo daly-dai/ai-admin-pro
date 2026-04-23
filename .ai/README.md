@@ -6,6 +6,7 @@
 
 ```
 1. AGENTS.md → 唯一入口，判断阶段（① 画 Demo / ② 接口合并 / ③ 改造适配 / ④ 接口对接 / ⑤ 迭代修复）
+1.5 .ai/project-brief.md → 认知底座（首次会话读取，记忆覆盖后可跳过）
 2. modes/{mode}.md → 按匹配的模式读取对应流程文件，获取详细步骤和输出锁
 3. 按模式步骤按需读取 templates/ / conventions/ 等文件
 ```
@@ -16,7 +17,8 @@
 
 ```
 .ai/
-├── core/                        # 核心规范
+├── project-brief.md             # 项目认知速览（~68 行，浓缩 tech-stack/architecture/coding-standards/api-conventions）
+├── core/                        # 核心规范（速览已覆盖 80%，详细模板按需读取）
 │   ├── architecture.md          # 架构规范、项目结构
 │   ├── coding-standards.md      # 代码规范（TypeScript/React/API 质量标准）
 │   ├── lifecycle-advanced.md    # 生命周期补充（非线性跳转、弹性退出、Task 拆解）
@@ -58,6 +60,7 @@
     ├── sync-sdesign-docs.ts     # 组件库文档同步（pnpm sync-ai-docs，postinstall 自动执行）
     ├── verify-wrapper.ts        # verify 增强包装器（pnpm verify，自动追加错误到 raw.jsonl）
     ├── pitfall-scan.ts          # 错误模式聚合器（pnpm pitfall:scan，生成 pitfall 草稿）
+    ├── distill-check.ts          # 蒸馏漂移检测（pnpm distill:check，AGENTS→LITE 知识漂移）
     └── verify-scope.ts          # 输出锁范围检查（pnpm verify:scope，跨模块软告警）
 ```
 
@@ -81,5 +84,6 @@
 pnpm verify        # 全量验证（tsc + eslint + prettier），错误自动追加到 error-log/raw.jsonl
 pnpm verify:fix    # 自动修复
 pnpm verify:scope  # 跨模块修改范围检查（软告警）
+pnpm distill:check # 检测 AGENTS→LITE 知识漂移，输出报告
 pnpm pitfall:scan  # 聚合高频错误，生成 pitfall 草稿到 error-log/pending/
 ```

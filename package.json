@@ -6,6 +6,7 @@
   "scripts": {
     "build": "rsbuild build",
     "dev": "rsbuild dev",
+    "distill:check": "tsx .ai/tools/distill-check.ts",
     "postinstall": "pnpm sync-ai-docs",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",

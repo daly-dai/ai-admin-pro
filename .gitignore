@@ -4,6 +4,7 @@ node_modules
 .pnp.js
 
 .ai/sdesign/
+.ai/error-log/raw.jsonl
 .qoder/repowiki/
 
 # Build
@@ -43,6 +44,3 @@ lerna-debug.log*
 .cache
 .temp
 .eslintcache
-
-# Scaffold temp configs
-temp/
