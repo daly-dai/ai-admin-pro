@@ -236,8 +236,8 @@ import { SForm } from '@dalydb/sdesign';
 import type { SFormItems } from '@dalydb/sdesign';
 import { Modal, message } from 'antd';
 import { useRequest } from 'ahooks';
-import { createModal } from 'src/components/ModalContainer';
-import type { ModalChildProps } from 'src/components/ModalContainer';
+import { createModal } from '@dalydb/sdesign';
+import type { ModalChildProps } from '@dalydb/sdesign';
 // @FILL: 导入 API 函数，例如 import { createByPost, updateByPut, getByIdByGet } from 'src/api/{module}';
 // @FILL: 导入类型，例如 import type { XxxFormData } from 'src/api/{module}/types';
 

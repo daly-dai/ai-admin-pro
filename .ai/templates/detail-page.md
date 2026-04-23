@@ -30,7 +30,7 @@
 ## 交互模式
 
 - **独立页面**：字段多、需要独立路由
-- **Drawer**：在列表页快速预览，使用 `createDrawer`（`src/components/DrawerContainer`）封装 `{Entity}DetailDrawer`
+- **Drawer**：在列表页快速预览，使用 `createDrawer`（`@dalydb/sdesign`）封装 `{Entity}DetailDrawer`
 
 > 弹层封装原则同 Modal（createDrawer 与 createModal 用法一致）→ 详见 `crud-page.md`「弹层封装原则」
 

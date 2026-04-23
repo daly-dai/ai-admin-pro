@@ -50,7 +50,7 @@
 
 ### 下一步
 
-- Task N+1: 简述 — 参照哪个 compact/template 文件
+- Task N+1: 简述 — 参照哪个 template 文件
 - 关键决策: [需要在下个 Session 保持的决策，如交互模式选择]
 
 ### 不可丢失的上下文

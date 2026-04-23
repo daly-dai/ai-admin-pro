@@ -42,8 +42,8 @@ src/pages/{module}/components/ — 页面私有组件（FormModal/DetailDrawer �
 
 ```tsx
 // {Entity}FormModal.tsx — 使用 createModal 工厂
-import { createModal } from 'src/components/ModalContainer';
-import type { ModalChildProps } from 'src/components/ModalContainer';
+import { createModal } from '@dalydb/sdesign';
+import type { ModalChildProps } from '@dalydb/sdesign';
 
 type Params = { mode: 'create' | 'edit'; id?: string };
 
@@ -71,7 +71,7 @@ const UserFormModal = createModal<Params>(({ params, onClose, onSuccess }) => {
 export default UserFormModal;
 
 // 列表页通过 ref 触发（用法不变）
-import type { ModalContainerRef } from 'src/components/ModalContainer';
+import type { ModalContainerRef } from '@dalydb/sdesign';
 
 const formRef = useRef<ModalContainerRef<Params>>(null);
 <SButton actionType="create" onClick={() => formRef.current?.open({ mode: 'create' })} />
@@ -188,7 +188,7 @@ import { SSearchTable, SButton } from '@dalydb/sdesign';
 import { message, Modal } from 'antd';
 import { useRequest } from 'ahooks';
 import { useRef } from 'react';
-import type { ModalContainerRef } from 'src/components/ModalContainer';
+import type { ModalContainerRef } from '@dalydb/sdesign';
 // @FILL: 导入 API 函数，例如 import { getListByGet, deleteByDelete } from 'src/api/{module}';
 // @FILL: 导入类型，例如 import type { XxxQuery } from 'src/api/{module}/types';
 // @FILL: 导入 FormModal 组件，例如 import XxxFormModal from './components/XxxFormModal';

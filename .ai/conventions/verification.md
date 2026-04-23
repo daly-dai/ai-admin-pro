@@ -52,7 +52,7 @@ Level 1 通过后逐条检查：
 - [ ] API 方法名带 HTTP 后缀（getListByGet/createByPost 等）
 - [ ] SForm 字段联动用 `SForm.useWatch` + 动态 items 条件展开（禁止 `type: 'dependency'`）
 - [ ] 确认弹窗用 antd `Modal.confirm`（禁止 SConfirm）
-- [ ] Modal/Drawer 使用 `createModal`/`createDrawer` 工厂函数（`src/components/ModalContainer`、`src/components/DrawerContainer`），禁止手动管理 open 状态
+- [ ] Modal/Drawer 使用 `createModal`/`createDrawer` 工厂函数（`@dalydb/sdesign`），禁止手动管理 open 状态
 - [ ] 所有 API 调用通过 useRequest 包装（SSearchTable.requestFn 除外）
 - [ ] 写操作 useRequest 配置了 onSuccess（提示 + 刷新/跳转）
 - [ ] types.ts 类型完整（Entity + EntityQuery + EntityFormData）

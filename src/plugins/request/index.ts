@@ -187,8 +187,8 @@ function createRequestMethods(instance: AxiosInstance) {
 
 // ==================== 默认实例（向后兼容） ====================
 
-const defaultInstance = createAxiosInstance(defaultConfig);
+const axiosInstance = createAxiosInstance(defaultConfig);
 
-export const request = createRequestMethods(defaultInstance);
+export const request = createRequestMethods(axiosInstance);
 
-export default defaultInstance;
+export default axiosInstance;

@@ -122,8 +122,8 @@ import { SDetail } from '@dalydb/sdesign';
 import type { SDetailItem } from '@dalydb/sdesign';
 import { Drawer, Spin } from 'antd';
 import { useRequest } from 'ahooks';
-import { createDrawer } from 'src/components/DrawerContainer';
-import type { DrawerChildProps } from 'src/components/DrawerContainer';
+import { createDrawer } from '@dalydb/sdesign';
+import type { DrawerChildProps } from '@dalydb/sdesign';
 // @FILL: 导入 API 函数，例如 import { getByIdByGet } from 'src/api/{module}';
 
 // @FILL: 定义泛型参数类型，例如 type DetailParams = { id: string };

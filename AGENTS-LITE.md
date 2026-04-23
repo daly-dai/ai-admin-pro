@@ -37,7 +37,7 @@
 2. **读类型文件**：涉及新字段 → 同时读 `src/api/{module}/types.ts`
 3. ⛔ **读组件文档**：涉及 SSearchTable / SForm / SButton / SDetail → 读 `.ai/sdesign/components/{组件名}.md`
 4. ⛔ **读错题集**：生成/修改页面代码前 → 读 `.ai/pitfalls/index.md`
-5. **匹配模板**：从下方 T1-T8 找匹配项执行；无匹配 → 先查 `.ai/templates/` 有无类似模板仿造；仍无 → 读对应 compact 文件兜底参考
+5. **匹配模板**：从下方 T1-T8 找匹配项执行；无匹配 → 查 `.ai/templates/` 有无类似模板仿造；仍无 → 问用户
 6. **验证**：`pnpm verify`（错误自动记录到 `.ai/error-log/raw.jsonl`），出错查第 3 节；修一轮还失败 → 停止问用户
 
 ### T1-T8 快速模板
@@ -77,17 +77,17 @@
 
 ### 禁止模式
 
-| 禁止                                 | 正确做法                                                                                                          |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| `any` 类型                           | `Record<string, unknown>` 或具体 Entity 类型                                                                      |
-| `import axios`                       | `import { createRequest } from 'src/plugins/request'`                                                             |
-| `type: 'dependency'` (SForm)         | `SForm.useWatch(fieldName, form)` + 条件展开 items                                                                |
-| `SConfirm`                           | `Modal.confirm()`                                                                                                 |
-| 父组件管理 Modal/Drawer 的 open 状态 | 使用 `createModal`（`src/components/ModalContainer`）/ `createDrawer`（`src/components/DrawerContainer`）工厂函数 |
-| 未使用参数不加前缀                   | `(_, record) => ...`                                                                                              |
-| API 方法名无 HTTP 后缀               | `getListByGet`、`createByPost`、`updateByPut`、`deleteByDelete`                                                   |
-| 跨模块用 `../`                       | `src/` 路径别名                                                                                                   |
-| `import { X }` 导入纯类型            | `import type { X }`                                                                                               |
+| 禁止                                 | 正确做法                                                         |
+| ------------------------------------ | ---------------------------------------------------------------- |
+| `any` 类型                           | `Record<string, unknown>` 或具体 Entity 类型                     |
+| `import axios`                       | `import { createRequest } from 'src/plugins/request'`            |
+| `type: 'dependency'` (SForm)         | `SForm.useWatch(fieldName, form)` + 条件展开 items               |
+| `SConfirm`                           | `Modal.confirm()`                                                |
+| 父组件管理 Modal/Drawer 的 open 状态 | 使用 `createModal` / `createDrawer`（`@dalydb/sdesign`）工厂函数 |
+| 未使用参数不加前缀                   | `(_, record) => ...`                                             |
+| API 方法名无 HTTP 后缀               | `getListByGet`、`createByPost`、`updateByPut`、`deleteByDelete`  |
+| 跨模块用 `../`                       | `src/` 路径别名                                                  |
+| `import { X }` 导入纯类型            | `import type { X }`                                              |
 
 ---
 

@@ -50,8 +50,8 @@ const {Entity}FormModal = forwardRef<Ref, Props>((props, ref) => {
 
 ```tsx
 // {Entity}FormModal.tsx
-import { createModal } from 'src/components/ModalContainer';
-import type { ModalContainerRef } from 'src/components/ModalContainer';
+import { createModal } from '@dalydb/sdesign';
+import type { ModalContainerRef } from '@dalydb/sdesign';
 
 type Params = { mode: 'create' | 'edit'; id?: string };
 
@@ -86,7 +86,7 @@ const formRef = useRef<ModalContainerRef<Params>>(null);
 <{Entity}FormModal ref={formRef} onSuccess={() => tableRef.current?.refresh()} />
 ```
 
-Drawer 同理，使用 `createDrawer`（`src/components/DrawerContainer`）。
+Drawer 同理，使用 `createDrawer`（`@dalydb/sdesign`）。
 
 ## 原因
 
@@ -97,6 +97,5 @@ Drawer 同理，使用 `createDrawer`（`src/components/DrawerContainer`）。
 
 ## 相关规范
 
-- `src/components/ModalContainer/index.tsx` — createModal 工厂函数
-- `src/components/DrawerContainer/index.tsx` — createDrawer 工厂函数
-- `.ai/compact/manual-crud.md`「弹层封装原则」
+- `@dalydb/sdesign` — createModal / createDrawer 工厂函数
+- `.ai/templates/crud-page.md`「弹层封装原则」

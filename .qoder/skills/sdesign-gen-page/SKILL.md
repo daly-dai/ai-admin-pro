@@ -188,13 +188,13 @@ description: 'Generates admin pages (CRUD list, detail, form) using @dalydb/sdes
 
 > 生成代码时必须对照检查。每条标注了适用的页面类型。
 
-| 编号 | 适用范围    | 核心规则                                                                                                                                                                                        | 快速修复                                                                         |
-| ---- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| P001 | CRUD + 表单 | **禁止在列表页管理弹层 open 状态，禁止手动 forwardRef**。使用 `createModal`（`src/components/ModalContainer`）或 `createDrawer`（`src/components/DrawerContainer`）工厂函数，Content 关闭即卸载 | 用 `createModal`/`createDrawer` 包装                                             |
-| P002 | 表单        | **SForm `type: 'table'` 和 STable 不支持行内编辑**。可编辑表格使用 `EditableProTable`（`@ant-design/pro-components`）                                                                           | 替换为 EditableProTable \| **模板**：`{project}/.ai/templates/editable-table.md` |
-| P003 | 全部        | **回调函数未使用的参数加 `_` 前缀**。如 `render: (_, record) => ...`。禁止用 `void`、`eslint-disable` 绕过                                                                                      | 加 `_` 前缀                                                                      |
-| P004 | 表单        | **禁止 `type: 'dependency'`**。字段联动统一使用 `SForm.useWatch(fieldName, form)` + `...(value === 'x' ? [item] : [])` 条件展开                                                                 | `SForm.useWatch` + 条件展开 items                                                |
-| P005 | CRUD        | **禁止 SConfirm 组件**。确认弹窗统一使用 antd `Modal.confirm({ title, content, onOk })`                                                                                                         | `Modal.confirm()`                                                                |
+| 编号 | 适用范围    | 核心规则                                                                                                                                       | 快速修复                                                                         |
+| ---- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| P001 | CRUD + 表单 | **禁止在列表页管理弹层 open 状态，禁止手动 forwardRef**。使用 `createModal` 或 `createDrawer`（`@dalydb/sdesign`）工厂函数，Content 关闭即卸载 | 用 `createModal`/`createDrawer` 包装                                             |
+| P002 | 表单        | **SForm `type: 'table'` 和 STable 不支持行内编辑**。可编辑表格使用 `EditableProTable`（`@ant-design/pro-components`）                          | 替换为 EditableProTable \| **模板**：`{project}/.ai/templates/editable-table.md` |
+| P003 | 全部        | **回调函数未使用的参数加 `_` 前缀**。如 `render: (_, record) => ...`。禁止用 `void`、`eslint-disable` 绕过                                     | 加 `_` 前缀                                                                      |
+| P004 | 表单        | **禁止 `type: 'dependency'`**。字段联动统一使用 `SForm.useWatch(fieldName, form)` + `...(value === 'x' ? [item] : [])` 条件展开                | `SForm.useWatch` + 条件展开 items                                                |
+| P005 | CRUD        | **禁止 SConfirm 组件**。确认弹窗统一使用 antd `Modal.confirm({ title, content, onOk })`                                                        | `Modal.confirm()`                                                                |
 
 ---
 

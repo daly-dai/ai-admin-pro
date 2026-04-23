@@ -54,7 +54,6 @@
 │   ├── README.md                # 组件索引
 │   └── components/              # 各组件详细文档（SForm.md, SSearchTable.md 等）
 └── tools/                       # 工具脚本
-    ├── gen-compact.ts           # Compact 指令生成（pnpm compact:gen）
     ├── gen-task-prompt.ts       # 跨会话 Task Prompt 生成（pnpm task:prompt <feature>）
     ├── sync-sdesign-docs.ts     # 组件库文档同步（pnpm sync-ai-docs，postinstall 自动执行）
     ├── verify-wrapper.ts        # verify 增强包装器（pnpm verify，自动追加错误到 raw.jsonl）
