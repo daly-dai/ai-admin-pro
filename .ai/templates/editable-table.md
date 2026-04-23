@@ -1,6 +1,7 @@
-# EditableProTable 可编辑表格 — 黄金范例
+# 可编辑表格页代码模板
 
 > 适用场景：需要行内编辑、动态增删行的表格。普通只读表格仍用 SSearchTable / STable。
+> 组件来源：`EditableProTable` from `@ant-design/pro-components`。完整 API 见根目录 `EditableProTable-API.md`。
 
 ## 范例一：受控模式完整页面
 

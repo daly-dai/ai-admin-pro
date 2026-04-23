@@ -11,16 +11,18 @@
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "mock": "node mock/server.cjs",
+    "pitfall:scan": "tsx .ai/tools/pitfall-scan.ts",
     "prepare": "husky",
     "prettier": "prettier -c --write . --cache",
     "prettier-import-sort": "npm run prettier -- --plugin=@ianvs/prettier-plugin-sort-imports",
     "preview": "rsbuild preview",
-    "scaffold": "tsx .ai/tools/scaffold/index.ts",
     "sync-ai-docs": "tsx .ai/tools/sync-sdesign-docs.ts",
     "task:prompt": "tsx .ai/tools/gen-task-prompt.ts",
     "type-check": "tsc --noEmit",
-    "verify": "tsc --noEmit && eslint src/ && prettier --check src/",
-    "verify:fix": "eslint src/ --fix && prettier --write src/"
+    "verify": "tsx .ai/tools/verify-wrapper.ts",
+    "verify:fix": "eslint src/ --fix && prettier --write src/",
+    "verify:raw": "tsc --noEmit && eslint src/ && prettier --check src/",
+    "verify:scope": "tsx .ai/tools/verify-scope.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

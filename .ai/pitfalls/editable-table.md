@@ -57,4 +57,4 @@ import { EditableProTable } from '@ant-design/pro-components';
 
 ## 完整范例
 
-→ `.ai/examples/editable-table.md`（受控模式完整页面 + SForm 嵌入 + 做/不做速查）
+→ `.ai/templates/editable-table.md`（受控模式完整页面 + SForm 嵌入 + 做/不做速查）

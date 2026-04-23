@@ -30,9 +30,9 @@
 ## 交互模式
 
 - **独立页面**：字段多、需要独立路由
-- **Drawer**：在列表页快速预览，创建 `{Entity}DetailDrawer` 容器组件，封装 open/close 状态
+- **Drawer**：在列表页快速预览，使用 `createDrawer`（`src/components/DrawerContainer`）封装 `{Entity}DetailDrawer`
 
-> 弹层封装原则同 Modal → 详见 `crud-page.md`「弹层封装原则」
+> 弹层封装原则同 Modal（createDrawer 与 createModal 用法一致）→ 详见 `crud-page.md`「弹层封装原则」
 
 ## 快速示例
 
@@ -46,9 +46,11 @@
   { groupTitle: '金额信息', items: [...] },
 ]} />
 
-// 数据加载
+// 数据加载（SDetail 无 loading 属性，用 Spin 包裹）
 const { data: detail, loading } = useRequest(() => getByIdByGet(id!), { ready: !!id });
-<SDetail dataSource={detail} items={items} loading={loading} />
+<Spin spinning={loading}>
+  <SDetail dataSource={detail} items={items} column={2} />
+</Spin>
 ```
 
 > 完整 Props → `.ai/sdesign/components/SDetail.md`

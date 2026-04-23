@@ -41,12 +41,6 @@ PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适
 | ④    | 接口对接 | 真实接口就绪 + "对接/联调/替换mock"     | 占位URL→真实URL，删除TODO注释                                | `modes/api-connect.md`                     | `src/api/{module}/` + 用户确认的页面文件                                    | diff对比 → 确认 → 替换                                                   |
 | ⑤    | 迭代修复 | "改一下/加字段/修复/调整"               | 最小范围修改                                                 | `modes/incremental.md`                     | 仅用户指定的目标文件及其直接关联的类型文件                                  | 最小范围改动                                                             |
 
-### 人工工具：Scaffold（⛔ AI 不使用）
-
-> Scaffold 是人工开发者的快速起步工具。**AI 的代码生成由 sdesign-gen-page Skill 或阶段流程处理，不使用 scaffold。**
->
-> 命令：`pnpm scaffold {module}`
-
 ### 工具能力：跨会话 Task Prompt（多页面分步生成）
 
 > Task ≥ 3 且上下文有限时，Session 1 完成规划+API，后续 Session 用脚本生成 prompt。
@@ -133,7 +127,7 @@ PRD 到达 → ① 画 Demo → ② 接口合并（可多轮）→ ③ 改造适
 
 ### 验证
 
-`pnpm verify`（tsc+eslint+prettier） | `pnpm verify:fix`（自动修复） | `pnpm lint` | `pnpm type-check`
+`pnpm verify`（tsc+eslint+prettier，自动追加错误到 `.ai/error-log/raw.jsonl`） | `pnpm verify:fix`（自动修复） | `pnpm verify:scope`（跨模块修改告警） | `pnpm lint` | `pnpm type-check`
 git hooks: commit → lint-staged | push → type-check
 
 ### 范围限定原则
@@ -202,10 +196,12 @@ git hooks: commit → lint-staged | push → type-check
 ### Level 1：自动化验证
 
 ```bash
-pnpm verify  # tsc + eslint + prettier
+pnpm verify  # tsc + eslint + prettier（错误自动追加到 .ai/error-log/raw.jsonl）
 ```
 
 有错误 → 按优先级修复（tsc > eslint > prettier）→ 再次 verify → 最多 3 轮。仅处理当前输出锁范围内文件的错误。
+
+> 跨模块修改时执行 `pnpm verify:scope` 检查范围（软告警，不阻断）。
 
 ### Level 2：AI 自检清单
 

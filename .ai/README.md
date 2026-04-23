@@ -36,6 +36,7 @@
 │   ├── crud-page.md             # CRUD 页面模板（含交互模式选择 + 弹层封装原则）
 │   ├── form-page.md             # 表单页面模板
 │   ├── detail-page.md           # 详情页面模板
+│   ├── editable-table.md       # 可编辑表格模板（EditableProTable 受控模式 + SForm 嵌入）
 │   └── feature-spec.md          # 功能规格书输出模板
 ├── specs/                       # 需求规格
 │   ├── template.md              # 需求拆解模板
@@ -46,16 +47,19 @@
 ├── pitfalls/                    # 错题集（已知错误模式）
 │   ├── index.md                 # 错题索引
 │   └── *.md                     # 各错误模式详情
-├── examples/                    # 黄金范例（可直接复制运行的完整代码，弱模型优先加载）
-│   └── editable-table.md       # 可编辑表格范例（受控模式 + SForm 嵌入）
+├── error-log/                   # 错误飞轮日志（O2）
+│   ├── raw.jsonl                # verify 自动追加的原始错误日志（gitignore）
+│   └── pending/                 # pitfall:scan 生成的草稿（待人工审批）
 ├── sdesign/                     # @dalydb/sdesign 组件库文档（自动同步，已 gitignore）
 │   ├── README.md                # 组件索引
 │   └── components/              # 各组件详细文档（SForm.md, SSearchTable.md 等）
 └── tools/                       # 工具脚本
-    ├── scaffold/                # Scaffold CLI — 人工工具，AI 不使用（pnpm scaffold <module>）
     ├── gen-compact.ts           # Compact 指令生成（pnpm compact:gen）
     ├── gen-task-prompt.ts       # 跨会话 Task Prompt 生成（pnpm task:prompt <feature>）
-    └── sync-sdesign-docs.ts    # 组件库文档同步（pnpm sync-ai-docs，postinstall 自动执行）
+    ├── sync-sdesign-docs.ts     # 组件库文档同步（pnpm sync-ai-docs，postinstall 自动执行）
+    ├── verify-wrapper.ts        # verify 增强包装器（pnpm verify，自动追加错误到 raw.jsonl）
+    ├── pitfall-scan.ts          # 错误模式聚合器（pnpm pitfall:scan，生成 pitfall 草稿）
+    └── verify-scope.ts          # 输出锁范围检查（pnpm verify:scope，跨模块软告警）
 ```
 
 ## 开发流程
@@ -75,6 +79,8 @@
 ## 硬约束验证
 
 ```bash
-pnpm verify        # 全量验证（tsc + eslint + prettier）
+pnpm verify        # 全量验证（tsc + eslint + prettier），错误自动追加到 error-log/raw.jsonl
 pnpm verify:fix    # 自动修复
+pnpm verify:scope  # 跨模块修改范围检查（软告警）
+pnpm pitfall:scan  # 聚合高频错误，生成 pitfall 草稿到 error-log/pending/
 ```
