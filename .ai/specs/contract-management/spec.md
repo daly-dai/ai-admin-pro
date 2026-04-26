@@ -69,7 +69,7 @@
 **完成标准**:
 
 - [ ] SSearchTable 渲染正常，展示合同列表
-- [ ] 搜索区域包含所有指定字段，类型正确（input、select、SDatePickerRange）
+- [ ] 搜索区域包含所有指定字段，类型正确（input、select、datePickerRange）
 - [ ] 表格列显示正确，金额使用千分位格式，状态使用 Tag 映射
 - [ ] 操作列按钮根据合同状态条件显示
 - [ ] 新增按钮跳转到新增页

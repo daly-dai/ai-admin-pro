@@ -1,299 +1,236 @@
-# AI Frontend 开发体系
+# AI Admin Pro
 
-> 让AI更懂你的架构，根据架构实现你预期的代码。
+> **让 AI 理解你的架构，按架构产出预期代码。** 不是代码生成器，是一套 AI 工程化体系——定义规则、约束行为、自动纠错、知识沉淀。
 
-## 核心设计理念
+---
 
-1. **AI配置集中化** - 所有AI相关配置放在 `.ai/` 目录，与 `src/` 同级
-2. **上下文驱动** - AI通过读取配置理解项目，而非硬编码
-3. **增量沉淀** - 每次开发都在完善AI对项目的理解
-4. **对话即开发** - 直接与AI对话生成代码，无需脚本
+## 架构全景
+
+```
+                        ┌──────────────────┐
+                        │    用户请求        │
+                        └────────┬─────────┘
+                                 │
+           ┌─────────────────────┼─────────────────────┐
+           │                     │                     │
+           ▼                     ▼                     ▼
+   ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+   │  AGENTS.md   │    │AGENTS-LITE.md│    │  直接修改     │
+   │  强模型入口   │    │  弱模型入口   │    │  迭代修复     │
+   └──────┬───────┘    └──────┬───────┘    └──────────────┘
+          │                   │
+          ▼                   ▼
+   ┌──────────────┐    ┌──────────────┐
+   │  modes/       │    │ sdesign-gen- │
+   │  5 阶段文件   │    │ page Skill   │
+   └──────┬───────┘    └──────┬───────┘
+          │                   │
+          └─────────┬─────────┘
+                    │
+                    ▼
+   ┌─────────────────────────────────────┐
+   │          .ai/ 知识供给层              │
+   │                                     │
+   │  sdesign/components/  ← 组件 API    │
+   │  pitfalls/            ← 错题集      │
+   │  templates/           ← 页面模板    │
+   │  conventions/         ← 开发约定    │
+   │  core/                ← 核心规范    │
+   │  specs/               ← 需求规格    │
+   └────────────────┬────────────────────┘
+                    │
+      ┌─────────────┼─────────────┐
+      │             │             │
+      ▼             ▼             ▼
+┌──────────┐ ┌──────────┐ ┌──────────┐
+│ 蒸馏管道  │ │ 纠错飞轮  │ │ 三级验证  │
+│ 知识同步  │ │ 错误沉淀  │ │ 质量保障  │
+└──────────┘ └──────────┘ └──────────┘
+```
+
+---
+
+## 核心子系统
+
+### 双入口架构
+
+| 入口               | 适用场景                    | 设计理念                           |
+| :----------------- | :-------------------------- | :--------------------------------- |
+| **AGENTS.md**      | 强模型（Claude 4/GPT-4 等） | 阶段判断 → mode 文件 → 逐步执行    |
+| **AGENTS-LITE.md** | 弱模型（公司内部部署模型）  | 路由到 Skill → 填空模板 → 硬停规则 |
+
+### 五阶段生命周期
+
+```
+① 画 Demo  →  ② 接口合并  →  ③ 改造适配  →  ④ 接口对接  →  ⑤ 迭代修复
+     ↑              ↑              ↑              ↑              │
+     └──────────────┴──────────────┴──────────────┴──────────────┘
+                          需求变更 → 回到受影响最早阶段
+```
+
+### Skill 执行引擎
+
+弱模型入口通过 `sdesign-gen-page` Skill 生成代码，核心设计：
+
+- **路由表**：关键词匹配 → 页面类型 → 无决策直达
+- **固定步骤表**：每步明确读什么、产出什么（CRUD 10步、详情 8步、表单 10步）
+- **@FILL 填空模板**：降级为「识别占位符 → 文本替换」，消除推理负担
+- **输出锁**：仅允许写入指定路径范围
+- **自包含 bundle**：模板内联组件 Props、错题集、约束规则
+
+### 管道蒸馏
+
+```
+源文件（AGENTS.md / .ai/ 文件）  ──git变更检测──▶  目标文件（AGENTS-LITE.md）
+                                distill:check
+                                19组追踪矩阵（G01-G19）
+```
+
+### 纠错飞轮
+
+```
+pnpm verify 失败  →  错误追加 raw.jsonl  →  pitfall:scan 聚合（≥3次）
+→  pending/ 草稿  →  人工审批  →  pitfalls/ 规则生效  →  下次生成自动规避
+```
+
+---
+
+## 技术栈
+
+| 类别     | 技术                         | 说明                                                       |
+| :------- | :--------------------------- | :--------------------------------------------------------- |
+| 构建工具 | Rsbuild                      | 基于 Rspack 的高性能构建                                   |
+| 框架     | React 18 + TypeScript 5      | 严格类型约束                                               |
+| 组件库   | **@dalydb/sdesign** + antd 5 | sdesign 封装常用模式（SSearchTable/SForm/SButton/SDetail） |
+| 状态管理 | Zustand + immer              | 轻量零样板代码                                             |
+| 路由     | React Router 6               | SPA 路由                                                   |
+| HTTP     | 自定义 createRequest         | 统一拦截/鉴权/错误处理                                     |
+| Hooks    | ahooks                       | useRequest 等                                              |
+
+---
+
+## 工程原则
+
+| 原则           | 含义                                    |
+| :------------- | :-------------------------------------- |
+| **弱模型优先** | 在约束最大的环境验证设计，自然向上兼容  |
+| **漏斗法则**   | 黄金范例 > 错题速查 > 规则集 > 全量文档 |
+| **范例驱动**   | 让模型「抄」而非「理解」                |
+
+---
+
+## 演进方向：宏内核 → 微内核
+
+> 当前处于从「宏内核」向「微内核」的**判断与规划阶段**，尚未开始拆解。
+
+```
+当前（宏内核）                          目标（微内核）
+─────────────                          ─────────────
+
+sdesign-gen-page Skill                 Skill 集群（按协议组装）
+├── 硬约束（内嵌 §3）       ──拆解──▶  coding-standards Skill
+├── API 约定（内嵌 §4）     ──拆解──▶  api-conventions Skill
+├── 错题集（内嵌 §5）       ──拆解──▶  pitfalls Skill
+├── 验证清单（内嵌 §6）     ──拆解──▶  verification Skill
+└── 页面生成（内嵌 §1+§2）  ──保留──▶  sdesign-gen-page Skill
+                                          @require: 上述 Skill
+
+知识增长：个人沉积                    知识增长：知识复利 Skill
+                                      （代码提交 → 识别模式 → 自动生成 Skill）
+```
+
+详见 [`architecture-evolution.md`](./architecture-evolution.md) 阶段 G 和 [`docs/ai-architecture-overview.md`](./docs/ai-architecture-overview.md) 第十四节。
+
+---
+
+## 快速开始
+
+```bash
+# 安装依赖
+pnpm install
+
+# 启动开发服务器
+pnpm dev
+
+# 代码验证（tsc + eslint + prettier）
+pnpm verify
+
+# 自动修复
+pnpm verify:fix
+
+# 蒸馏漂移检测
+pnpm distill:check
+
+# 错题聚合扫描
+pnpm pitfall:scan
+```
+
+---
 
 ## 目录结构
 
 ```
-my-project/
-├── .ai/                      # AI配置目录（核心）
-│   ├── README.md             # AI配置说明
-│   ├── QUICK-INDEX.md        # 快速索引
-│   ├── core/                 # 核心规范（AI必读）
-│   │   ├── architecture.md   # 架构规范
-│   │   ├── coding-standards.md # 代码规范
-│   │   └── tech-stack.md     # 技术栈定义
-│   ├── conventions/          # 开发规范
-│   │   ├── api-conventions.md # API约定
-│   │   └── incremental-development.md # 增量开发规范
-│   ├── templates/            # AI对话模板
-│   │   ├── README.md         # 模板说明
-│   │   ├── api-module.md     # 生成API模块
-│   │   ├── crud-page.md      # 生成CRUD页面
-│   │   ├── custom-hook.md    # 生成自定义Hook
-│   │   ├── data-visualization.md # 生成数据可视化页面
-│   │   ├── detail-page.md    # 生成详情页
-│   │   ├── form-designer.md  # 生成表单设计器/动态表单
-│   │   └── workflow-page.md  # 生成工作流/审批页面
-│   ├── context/              # 项目上下文
-│   │   ├── existing-apis.md   # 已有API列表
-│   │   ├── existing-components.md # 已有组件列表
-│   │   └── existing-pages.md  # 已有页面列表
-│   └── tools/                # 工具脚本
-│       └── update-context.js # 自动化更新项目上下文脚本
-├── scripts/                  # 脚本目录
-│   └── update-context.cjs    # 自动化更新项目上下文脚本
-├── src/                      # 项目源代码
-│   ├── api/                  # API层
-│   ├── components/           # 组件层
-│   ├── hooks/                # 自定义Hooks
-│   ├── pages/                # 页面层
-│   ├── router/               # 路由配置
-│   ├── stores/               # 状态管理
-│   ├── styles/               # 全局样式
-│   ├── types/                # 全局类型
-│   └── utils/                # 工具函数
-├── mock/                     # Mock数据
+ai-admin-pro/
+├── AGENTS.md                    # 强模型入口（244 行）
+├── AGENTS-LITE.md               # 弱模型入口（~120 行）
+├── .ai/                         # AI 配置中心（人工维护，唯一可信源）
+│   ├── core/                    # 核心规范
+│   ├── conventions/             # 开发约定
+│   ├── modes/                   # 五阶段文件
+│   ├── templates/               # 页面模板
+│   ├── pitfalls/                # 错题集（P001-P006+）
+│   ├── sdesign/                 # 组件库文档（自动同步）
+│   ├── specs/                   # 功能规格书
+│   ├── tools/                   # 工具脚本
+│   ├── project-brief.md         # 项目认知底座
+│   └── distill-tracker.md       # 蒸馏追踪矩阵
+├── .qoder/skills/sdesign-gen-page/  # Skill 编译产物（脚本自动生成）
+│   ├── SKILL.md                     # 路由表 + 固定步骤表
+│   └── references/                  # 自包含 bundle 模板
+├── docs/                        # 架构文档
+│   ├── ai-architecture-overview.md  # 认知全景（14 节）
+│   └── ai-engineering-principles/   # 三原则详解
+├── architecture-evolution.md    # 架构演进史（阶段 A→G）
+├── src/                         # 源码
+│   ├── api/                     # API 层
+│   ├── pages/                   # 页面
+│   ├── components/              # 组件
+│   ├── stores/                  # Zustand 状态
+│   ├── router/                  # 路由
+│   ├── types/                   # 全局类型
+│   └── plugins/                 # 请求封装等
 └── package.json
 ```
 
-## 快速开始
-
-### 1. 创建新项目
-
-```bash
-# 复制模板
-cp -r ai-frontend-system/src my-project
-cd my-project
-
-# 复制AI配置
-cp -r ai-frontend-system/.ai my-project
-
-# 安装依赖
-npm install
-
-# 启动开发
-npm run dev
-```
-
-### 2. 与AI对话生成代码
-
-将 `.ai/` 目录添加到你的AI助手的上下文中，然后直接对话：
-
-**示例1: 生成CRUD页面**
-
-```
-请根据以下接口定义，生成商品管理的CRUD页面：
-
-模块: product
-基础路径: /api/products
-
-接口:
-1. GET /api/products - 获取列表
-   参数: page, pageSize, keyword, categoryId
-   响应: { list: Product[], total: number }
-
-2. GET /api/products/:id - 获取详情
-   响应: Product
-
-3. POST /api/products - 创建
-   参数: name, price, stock, categoryId, description
-   响应: Product
-
-4. PUT /api/products/:id - 更新
-   参数: name, price, stock, categoryId, description
-   响应: Product
-
-5. DELETE /api/products/:id - 删除
-
-类型:
-Product {
-  id: string
-  name: string
-  price: number
-  stock: number
-  categoryId: string
-  description: string
-  status: 'on_sale' | 'off_sale'
-  createTime: string
-}
-```
-
-AI会自动：
-
-1. 读取 `.ai/core/architecture.md` 了解技术栈
-2. 读取 `.ai/core/coding-standards.md` 了解代码规范
-3. 读取 `.ai/conventions/api-conventions.md` 了解API约定
-4. 生成符合规范的代码
-
-### 3. 自动化更新项目上下文
-
-使用提供的脚本自动扫描项目并更新 `.ai/context/` 目录：
-
-```bash
-pnpm update-context
-```
-
-该脚本会自动：
-
-- 扫描 `src/api/` 目录，更新 `existing-apis.md`
-- 扫描 `src/components/` 目录，更新 `existing-components.md`
-- 扫描 `src/pages/` 目录，更新 `existing-pages.md`
-
-**手动更新（可选）：**
-
-```markdown
-# .ai/context/existing-apis.md
-
-## 商品模块 (api/product/)
-
-- getList - 获取商品列表
-- getById - 获取商品详情
-- create - 创建商品
-- update - 更新商品
-- delete - 删除商品
-```
-
-## 技术栈
-
-| 类别     | 技术                            | 版本              |
-| -------- | ------------------------------- | ----------------- |
-| 构建工具 | RSBuild                         | ^1.7.0            |
-| 框架     | React                           | ^18.3.0           |
-| 语言     | TypeScript                      | ^5.5.0            |
-| UI库     | Ant Design                      | ^5.20.0           |
-| 高级组件 | ProComponents                   | ^2.8.0            |
-| 状态管理 | Zustand + immer                 | ^5.0.11           |
-| 路由     | React Router                    | ^6.26.0           |
-| HTTP     | Axios                           | ^1.7.0            |
-| Hooks    | ahooks                          | ^3.8.0            |
-| 图表     | Chart.js + react-chartjs-2      | ^4.4.0 / ^5.2.0   |
-| 图标     | Lucide React + Ant Design Icons | ^0.400.0 / ^5.4.0 |
-
-## AI配置说明
-
-### core/architecture.md
-
-定义项目的技术栈、目录结构、核心约定。AI必须遵循这些规范生成代码。
-
-### core/coding-standards.md
-
-定义代码规范，包括：
-
-- TypeScript规范
-- React组件规范
-- API层规范
-- 状态管理规范
-- 导入导出规范
-
-### core/tech-stack.md
-
-定义项目的技术栈，包括：
-
-- 核心技术
-- 依赖版本
-- 推荐库
-
-### conventions/api-conventions.md
-
-定义AI如何根据后端接口定义生成前端代码，包括：
-
-- 接口定义格式
-- 类型定义生成规则
-- API实现生成规则
-- 页面组件生成规则
-
-### conventions/incremental-development.md
-
-定义增量开发规范，包括：
-
-- 动态发现策略（Glob/Grep 替代静态清单）
-- 增量迭代工作流（新增模块、修改页面、复用组件）
-- 代码组织约定（模块目录、组件层级、类型策略）
-- 硬约束保障（工具链自动拦截 + 自修复循环）
-
-## 核心Hooks
-
-### useRequest (ahooks)
-
-```tsx
-import { userApi } from '@api/user';
-import { useRequest } from 'ahooks';
-
-const { data, loading, run } = useRequest(userApi.getList, {
-  manual: true,
-});
-
-// 使用
-run({ page: 1 });
-```
-
-### Zustand状态管理
-
-```tsx
-import { useUserStore } from '@stores';
-
-const { userInfo, login } = useUserStore();
-```
-
-## 最佳实践
-
-### 1. 新项目启动
-
-1. 复制 `src/` 和 `.ai/` 到新项目
-2. 更新 `package.json` 中的项目名称
-3. 根据业务需求修改 `.ai/architecture.md`
-4. 开始开发
-
-### 2. 新增功能
-
-1. 与AI对话描述需求
-2. AI生成代码
-3. 人工审查和调整
-4. 更新 `.ai/context/` 目录
-
-### 3. 代码审查
-
-1. 检查是否符合架构规范
-2. 检查类型定义是否完整
-3. 检查错误处理是否完善
-4. 检查是否有重复代码
-
-### 4. 持续优化
-
-1. 定期更新 `.ai/` 目录中的规则
-2. 沉淀最佳实践到文档
-3. 更新项目上下文
-4. 分享经验给团队
-
-## 常见问题
-
-### Q: 如何让AI理解我的项目？
-
-A: 确保 `.ai/` 目录在你的AI助手的上下文中。AI会自动读取这些配置文件。
-
-### Q: 生成的代码不符合预期怎么办？
-
-A: 调整 `.ai/` 目录中的规则文件，让AI更准确地理解你的需求。
-
-### Q: 如何支持增量开发？
-
-A: 每次新增功能后，更新 `.ai/context/` 目录，帮助AI理解项目现状。
-
-### Q: 团队协作时如何同步AI配置？
-
-A: 将 `.ai/` 目录提交到版本控制，团队成员共享相同的AI配置。
-
-## 示例
-
-### 示例1: 生成用户管理CRUD
-
-见 `.ai/templates/crud-page.md`
-
-### 示例2: 生成API模块
-
-见 `.ai/templates/api-module.md`
-
-## 贡献
-
-欢迎提交Issue和PR，共同完善这套AI驱动的前端开发体系！
+---
+
+## 文档索引
+
+| 想了解什么        | 读哪个                                                                               |
+| :---------------- | :----------------------------------------------------------------------------------- |
+| AI 入口和工作方式 | [`AGENTS.md`](./AGENTS.md)（强模型）/ [`AGENTS-LITE.md`](./AGENTS-LITE.md)（弱模型） |
+| 完整演进历史      | [`architecture-evolution.md`](./architecture-evolution.md)                           |
+| 全子系统认知地图  | [`docs/ai-architecture-overview.md`](./docs/ai-architecture-overview.md)             |
+| 设计哲学          | [`docs/ai-engineering-principles/`](./docs/ai-engineering-principles/)               |
+| 如何生成代码      | `.qoder/skills/sdesign-gen-page/SKILL.md`                                            |
+| 组件使用文档      | `.ai/sdesign/components/`                                                            |
+| 错题集            | `.ai/pitfalls/index.md`                                                              |
+
+---
+
+## 关键数据
+
+| 指标           | 数值                                                         |
+| :------------- | :----------------------------------------------------------- |
+| 总提交数       | 74 次                                                        |
+| 核心提示词修改 | 36 次                                                        |
+| 净删除 AI 文档 | ~50,000 行                                                   |
+| 废弃完整方案   | 4 套（repowiki / 迁移分析 / V1-V3 生命周期 / JSON scaffold） |
+| 当前 AGENTS.md | 244 行（从峰值 305 行收敛）                                  |
+| 错题沉淀       | P001-P006                                                    |
+| 蒸馏追踪组     | 19 组（G01-G19）                                             |
+
+---
 
 ## 许可证
 

@@ -21,14 +21,17 @@
 | `fieldProps` | 传递给底层控件的 props（options, maxLength 等）     |
 | `colProps`   | 栅格布局（`{ span: 12 }`）                          |
 
-## 21 种控件类型
+## 20 种控件类型（+ 3 个已废弃别名）
 
 ```
 input | inputNumber | password | textarea | select | slider |
 radio | radioGroup | switch | treeSelect | upload |
-datePicker | SDatePicker | datePickerRange | SDatePickerRange |
+datePicker | datePickerRange |
 timePicker | timePickerRange | checkbox | checkGroup |
-cascader | SCascader | table
+cascader | table | dependency
+
+已废弃别名（仍可用，建议迁移为 camelCase）:
+SDatePicker → datePicker | SDatePickerRange → datePickerRange | SCascader → cascader
 ```
 
 > 联动规则见 `pitfalls/index.md` P004。

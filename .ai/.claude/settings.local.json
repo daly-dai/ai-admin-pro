@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm update *)",
+      "Bash(npx tsx *)",
+      "Bash(node -e \"const s = require\\('@dalydb/sdesign'\\); const keys = Object.keys\\(s\\); console.log\\(keys.filter\\(k => k.startsWith\\('S'\\) || k.startsWith\\('c'\\)\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(pnpm add *)",
+      "Bash(npx tsc *)",
+      "Bash(pnpm type-check *)",
+      "Bash(pnpm lint *)",
+      "Bash(pnpm install *)",
+      "Bash(mkdir -p \"C:/Users/25082/.claude/skills\")",
+      "Bash(cp -r \"E:/work-space/daly-agent-skills/baby-product-advisor\" \"C:/Users/25082/.claude/skills/\")"
+    ]
+  }
+}

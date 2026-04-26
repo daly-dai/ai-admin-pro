@@ -252,7 +252,7 @@
 <!--
   控件类型参考（对应 SForm items 的 type）：
   input / textarea / inputNumber / select / treeSelect /
-  datePicker / dateRange / switch / radio / checkbox /
+  datePicker / datePickerRange / switch / radio / checkbox /
   upload / richText / cascader
 -->
 

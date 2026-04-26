@@ -139,9 +139,12 @@ const { run: handleUpdate } = useRequest((values) => updateByPut(id!, values), {
 ```
 input | inputNumber | password | textarea | select | slider |
 radio | radioGroup | switch | treeSelect | upload |
-datePicker | SDatePicker | datePickerRange | SDatePickerRange |
+datePicker | datePickerRange |
 timePicker | timePickerRange | checkbox | checkGroup |
-cascader | SCascader | table
+cascader | table
+
+已废弃别名（仍可用，建议迁移为 camelCase）:
+SDatePicker → datePicker | SDatePickerRange → datePickerRange | SCascader → cascader
 ```
 
 ## 确认弹窗
