@@ -9,20 +9,9 @@ import { RouterProvider } from 'react-router-dom';
 import 'dayjs/locale/zh-cn';
 
 import { router } from '@/router';
+import { useDictStore } from '@/stores';
 
 import '@/styles/global.css';
-
-/**
- * 全局字典配置
- * 后续业务字典在此扩展，例如：
- * - status: 通用状态字典
- * - userType: 用户类型字典
- * - 其他业务字典...
- */
-const globalDict: Record<string, Record<string, string>> = {
-  // 示例：通用状态字典
-  // status: { 1: '启用', 0: '禁用' },
-};
 
 /**
  * 文件上传地址配置
@@ -32,6 +21,11 @@ const globalDict: Record<string, Record<string, string>> = {
 
 // 设置dayjs语言
 dayjs.locale('zh-cn');
+
+const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const dictMapData = useDictStore((s) => s.dictMapData);
+  return <SConfigProvider globalDict={dictMapData}>{children}</SConfigProvider>;
+};
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -44,9 +38,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         },
       }}
     >
-      <SConfigProvider globalDict={globalDict}>
+      <AppProvider>
         <RouterProvider router={router} />
-      </SConfigProvider>
+      </AppProvider>
     </ConfigProvider>
   </React.StrictMode>,
 );

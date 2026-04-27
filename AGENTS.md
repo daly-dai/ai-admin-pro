@@ -228,6 +228,7 @@ Level 1 通过后逐条检查：
 - [ ] 所有 API 调用通过 useRequest 包装（SSearchTable.requestFn 除外）
 - [ ] 写操作 useRequest 配置了 onSuccess（提示 + 刷新/跳转）
 - [ ] types.ts 类型完整（Entity + EntityQuery + EntityFormData）
+- [ ] **枚举列/下拉/回显不硬编码 options**，STable 列通过 `dictKey` 指定字典编码，SForm 下拉通过 `fieldProps: { dictKey }` 指定，手动场景从 `useDictStore.dictMapData` 取值（见 `.ai/conventions/dict-conventions.md`）
 
 > 详细验证流程（三级体系、失败处理） → `.ai/conventions/verification.md`
 

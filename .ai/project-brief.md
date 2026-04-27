@@ -100,4 +100,5 @@ useRequest 模式：列表 → SSearchTable.requestFn 直传 | 写操作 → `ma
 | 组件详细 API     | `sdesign/components/{Name}.md`                                  |
 | 验证三级体系     | `conventions/verification.md`                                   |
 | 纠错沉淀         | `conventions/correction-workflow.md`                            |
+| 字典使用         | `conventions/dict-conventions.md`                               |
 | 项目完整目录树   | `core/architecture.md`                                          |

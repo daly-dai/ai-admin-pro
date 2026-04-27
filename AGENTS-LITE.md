@@ -59,6 +59,7 @@
 - T5 如有新类型 → 同时执行 T6
 - T6 根据用途判断加到哪个接口：查询 → Query，表单 → FormData，展示 → Entity
 - 如需了解控件类型/Props → 读对应的 `.ai/sdesign/components/{组件名}.md`
+- **T1-T4 涉及枚举字段** → 不写 valueEnum/render/options，通过 `dictKey` 显式指定字典编码（详见 §2 字典使用）
 
 ---
 
@@ -77,17 +78,44 @@
 
 ### 禁止模式
 
-| 禁止                                 | 正确做法                                                         |
-| ------------------------------------ | ---------------------------------------------------------------- |
-| `any` 类型                           | `Record<string, unknown>` 或具体 Entity 类型                     |
-| `import axios`                       | `import { createRequest } from 'src/plugins/request'`            |
-| `type: 'dependency'` (SForm)         | `SForm.useWatch(fieldName, form)` + 条件展开 items               |
-| `SConfirm`                           | `Modal.confirm()`                                                |
-| 父组件管理 Modal/Drawer 的 open 状态 | 使用 `createModal` / `createDrawer`（`@dalydb/sdesign`）工厂函数 |
-| 未使用参数不加前缀                   | `(_, record) => ...`                                             |
-| API 方法名无 HTTP 后缀               | `getListByGet`、`createByPost`、`updateByPut`、`deleteByDelete`  |
-| 跨模块用 `../`                       | `src/` 路径别名                                                  |
-| `import { X }` 导入纯类型            | `import type { X }`                                              |
+| 禁止                                 | 正确做法                                                                          |
+| ------------------------------------ | --------------------------------------------------------------------------------- |
+| `any` 类型                           | `Record<string, unknown>` 或具体 Entity 类型                                      |
+| `import axios`                       | `import { createRequest } from 'src/plugins/request'`                             |
+| `type: 'dependency'` (SForm)         | `SForm.useWatch(fieldName, form)` + 条件展开 items                                |
+| `SConfirm`                           | `Modal.confirm()`                                                                 |
+| 父组件管理 Modal/Drawer 的 open 状态 | 使用 `createModal` / `createDrawer`（`@dalydb/sdesign`）工厂函数                  |
+| 未使用参数不加前缀                   | `(_, record) => ...`                                                              |
+| API 方法名无 HTTP 后缀               | `getListByGet`、`createByPost`、`updateByPut`、`deleteByDelete`                   |
+| 跨模块用 `../`                       | `src/` 路径别名                                                                   |
+| `import { X }` 导入纯类型            | `import type { X }`                                                               |
+| 硬编码枚举/options                   | 字典从 `useDictStore.dictMapData` 获取，sdesign 组件通过 SConfigProvider 自动消费 |
+
+### 字典使用
+
+> 字典已通过 SConfigProvider 全局注入，sdesign 组件通过 `dictKey` 属性消费。**不需要自己在组件里发请求或写死映射。**
+
+**SSearchTable 枚举列** — 显式设置 `dictKey` 指定字典编码：
+
+```tsx
+{ title: '状态', dataIndex: 'status', dictKey: 'statusCode' }
+// → STable 通过 dictKey 从 globalDict['statusCode'] 查值回显
+```
+
+**SForm / SForm.Search 下拉框** — 通过 `fieldProps.dictKey` 指定字典编码：
+
+```tsx
+{ name: 'status', label: '状态', type: 'select', fieldProps: { dictKey: 'statusCode' } }
+// → SSelect 通过 dictKey 从 globalDict['statusCode'] 取 options
+```
+
+**手动取值**（非 sdesign 场景）：
+
+```tsx
+const dictMapData = useDictStore((state) => state.dictMapData);
+// 展示值：dictMapData?.['statusCode']?.[record.status] ?? '-'
+// 取全部：dictMapData?.['statusCode'] → { '1': '启用', '0': '禁用' }
+```
 
 ---
 
@@ -95,16 +123,17 @@
 
 `pnpm verify` 报错时对照修复。**⛔ 只修输出锁范围内文件的错误，范围外报错一律跳过不修。**
 
-| 错误信息                                        | 修复方法                                              |
-| ----------------------------------------------- | ----------------------------------------------------- |
-| `no-unused-vars: 'xxx'`                         | 加 `_` 前缀：`_xxx`                                   |
-| `Cannot find module 'src/api/xxx'`              | 检查 `src/api/{module}/index.ts` 是否存在且 export    |
-| `Type 'any' is not assignable`                  | 替换为具体类型或 `Record<string, unknown>`            |
-| `no-restricted-imports ... 'Table' from 'antd'` | 换为 `STable` from `@dalydb/sdesign`                  |
-| `no-restricted-imports ... 'Form' from 'antd'`  | 换为 `SForm` from `@dalydb/sdesign`                   |
-| Prettier / 格式报错                             | `pnpm verify:fix`                                     |
-| 修一轮后仍有错误                                | **停止，问用户**                                      |
-| `Type 'string' is not assignable to type...`    | 加显式类型注解，如 `const columns: SColumn[] = [...]` |
+| 错误信息                                              | 修复方法                                                                             |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `no-unused-vars: 'xxx'`                               | 加 `_` 前缀：`_xxx`                                                                  |
+| `Cannot find module 'src/api/xxx'`                    | 检查 `src/api/{module}/index.ts` 是否存在且 export                                   |
+| `Type 'any' is not assignable`                        | 替换为具体类型或 `Record<string, unknown>`                                           |
+| `no-restricted-imports ... 'Table' from 'antd'`       | 换为 `STable` from `@dalydb/sdesign`                                                 |
+| `no-restricted-imports ... 'Form' from 'antd'`        | 换为 `SForm` from `@dalydb/sdesign`                                                  |
+| Prettier / 格式报错                                   | `pnpm verify:fix`                                                                    |
+| 修一轮后仍有错误                                      | **停止，问用户**                                                                     |
+| `Type 'string' is not assignable to type...`          | 加显式类型注解，如 `const columns: SColumnsType<Entity> = [...]`                     |
+| `'pageNum' does not exist in type 'PaginationFields'` | 改为 `current`。`PaginationFields` 只有 `current`/`pageSize`/`total`/`list` 四个 key |
 
 ---
 

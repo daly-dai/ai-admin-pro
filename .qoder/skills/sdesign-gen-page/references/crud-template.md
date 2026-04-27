@@ -186,14 +186,18 @@ const handleDelete = (id: string) => {
 
 ```tsx
 // ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
-import type { SSearchTableRef } from '@dalydb/sdesign';
+import type {
+  SSearchTableRef,
+  SColumnsType,
+  SFormItems,
+} from '@dalydb/sdesign';
 import { SSearchTable, SButton } from '@dalydb/sdesign';
 import { message, Modal } from 'antd';
 import { useRequest } from 'ahooks';
 import { useRef } from 'react';
 import type { ModalContainerRef } from '@dalydb/sdesign';
 // @FILL: 导入 API 函数，例如 import { getListByGet, deleteByDelete } from 'src/api/{module}';
-// @FILL: 导入类型，例如 import type { XxxQuery } from 'src/api/{module}/types';
+// @FILL: 导入类型，例如 import type { Xxx, XxxQuery } from 'src/api/{module}/types';
 // @FILL: 导入 FormModal 组件，例如 import XxxFormModal from './components/XxxFormModal';
 
 export default () => {
@@ -213,10 +217,12 @@ export default () => {
     },
   );
 
-  const columns = [
+  // @FILL: 将泛型 Record<string, unknown> 替换为实际实体类型，例如 SColumnsType<Product>
+  const columns: SColumnsType<Record<string, unknown>> = [
     // @FILL: 表格列配置
     // 示例: { title: '名称', dataIndex: 'name' },
     // 支持 render: 'datetime' | 'date' | 'ellipsis'
+    // 支持 fixed: 'left' | 'right'（有类型注解后无需 as const）
     {
       title: '操作',
       dataIndex: 'action',
@@ -247,7 +253,7 @@ export default () => {
     },
   ];
 
-  const searchItems = [
+  const searchItems: SFormItems[] = [
     // @FILL: 搜索项配置
     // 格式: { label: '名称', name: 'name', type: 'input' }
     // 可选 type: input | select | datePicker | datePickerRange
