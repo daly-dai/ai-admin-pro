@@ -8,14 +8,14 @@
 
 ## 0. 工作模式选择（收到需求后第一步）
 
-| 需求类型                                 | 工作模式             | 处理方式                                                   |
-| ---------------------------------------- | -------------------- | ---------------------------------------------------------- |
-| 新建模块 / 新建页面 / 新增完整功能       | **sdesign-gen-page** | 由全局注册的 `sdesign-gen-page` Skill 处理，此处不再重复   |
-| 给已有模块加表单 / 详情 / 列表           | **sdesign-gen-page** | 同上                                                       |
-| 只需类型定义 / 只需 API 层               | **sdesign-gen-page** | 同上                                                       |
-| 改字段 / 加列 / 改文案 / 修 bug / 小调整 | **修改路径**         | → 第 1 节                                                  |
-| 非标场景（无 Skill 覆盖的复杂页面）      | **模板参考**         | 先查 `.ai/templates/` 有无类似模板 → 有则仿造 → 无则问用户 |
-| 不确定                                   | 问用户               | —                                                          |
+| 需求类型                                 | 工作模式             | 处理方式                                                                                                    |
+| ---------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------- |
+| 新建模块 / 新建页面 / 新增完整功能       | **sdesign-gen-page** | Skill 默认使用填空模板（模板注释已内嵌组件 API 约束，无需额外读组件文档）。仅模板无法覆盖时报错才按需读文档 |
+| 给已有模块加表单 / 详情 / 列表           | **sdesign-gen-page** | 同上                                                                                                        |
+| 只需类型定义 / 只需 API 层               | **sdesign-gen-page** | 同上                                                                                                        |
+| 改字段 / 加列 / 改文案 / 修 bug / 小调整 | **修改路径**         | → 第 1 节                                                                                                   |
+| 非标场景（无 Skill 覆盖的复杂页面）      | **模板参考**         | 先查 `.ai/templates/` 有无类似模板 → 有则仿造 → 无则问用户                                                  |
+| 不确定                                   | 问用户               | —                                                                                                           |
 
 ### 🔒 输出锁（只允许写这些文件，其余禁止修改）
 
@@ -78,18 +78,19 @@
 
 ### 禁止模式
 
-| 禁止                                 | 正确做法                                                                          |
-| ------------------------------------ | --------------------------------------------------------------------------------- |
-| `any` 类型                           | `Record<string, unknown>` 或具体 Entity 类型                                      |
-| `import axios`                       | `import { createRequest } from 'src/plugins/request'`                             |
-| `type: 'dependency'` (SForm)         | `SForm.useWatch(fieldName, form)` + 条件展开 items                                |
-| `SConfirm`                           | `Modal.confirm()`                                                                 |
-| 父组件管理 Modal/Drawer 的 open 状态 | 使用 `createModal` / `createDrawer`（`@dalydb/sdesign`）工厂函数                  |
-| 未使用参数不加前缀                   | `(_, record) => ...`                                                              |
-| API 方法名无 HTTP 后缀               | `getListByGet`、`createByPost`、`updateByPut`、`deleteByDelete`                   |
-| 跨模块用 `../`                       | `src/` 路径别名                                                                   |
-| `import { X }` 导入纯类型            | `import type { X }`                                                               |
-| 硬编码枚举/options                   | 字典从 `useDictStore.dictMapData` 获取，sdesign 组件通过 SConfigProvider 自动消费 |
+| 禁止                                 | 正确做法                                                                                                                      |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| `any` 类型                           | `Record<string, unknown>` 或具体 Entity 类型                                                                                  |
+| `import axios`                       | `import { createRequest } from 'src/plugins/request'`                                                                         |
+| `type: 'dependency'` (SForm)         | `SForm.useWatch(fieldName, form)` + 条件展开 items                                                                            |
+| `SConfirm`                           | `Modal.confirm()`                                                                                                             |
+| 父组件管理 Modal/Drawer 的 open 状态 | 使用 `createModal` / `createDrawer`（`@dalydb/sdesign`）工厂函数                                                              |
+| 未使用参数不加前缀                   | `(_, record) => ...`                                                                                                          |
+| API 方法名无 HTTP 后缀               | `getListByGet`、`createByPost`、`updateByPut`、`deleteByDelete`                                                               |
+| 跨模块用 `../`                       | `src/` 路径别名                                                                                                               |
+| `import { X }` 导入纯类型            | `import type { X }`                                                                                                           |
+| 硬编码枚举/options                   | 字典从 `useDictStore.dictMapData` 获取，sdesign 组件通过 SConfigProvider 自动消费                                             |
+| 旧代码的常量在新页面中不存在就"修复" | 新组件可能已内置旧常量（分页/loading/配置等）。`Cannot find name` 报错 → 先判断新组件是否需要，不需要则删引用，不确定则问用户 |
 
 ### 字典使用
 
@@ -121,19 +122,26 @@ const dictMapData = useDictStore((state) => state.dictMapData);
 
 ## 3. 常见报错修复
 
-`pnpm verify` 报错时对照修复。**⛔ 只修输出锁范围内文件的错误，范围外报错一律跳过不修。**
+`pnpm verify` 报错时按以下流程修复。**⛔ 只修输出锁范围内文件的错误，范围外报错一律跳过不修。**
 
-| 错误信息                                              | 修复方法                                                                             |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `no-unused-vars: 'xxx'`                               | 加 `_` 前缀：`_xxx`                                                                  |
-| `Cannot find module 'src/api/xxx'`                    | 检查 `src/api/{module}/index.ts` 是否存在且 export                                   |
-| `Type 'any' is not assignable`                        | 替换为具体类型或 `Record<string, unknown>`                                           |
-| `no-restricted-imports ... 'Table' from 'antd'`       | 换为 `STable` from `@dalydb/sdesign`                                                 |
-| `no-restricted-imports ... 'Form' from 'antd'`        | 换为 `SForm` from `@dalydb/sdesign`                                                  |
-| Prettier / 格式报错                                   | `pnpm verify:fix`                                                                    |
-| 修一轮后仍有错误                                      | **停止，问用户**                                                                     |
-| `Type 'string' is not assignable to type...`          | 加显式类型注解，如 `const columns: SColumnsType<Entity> = [...]`                     |
-| `'pageNum' does not exist in type 'PaginationFields'` | 改为 `current`。`PaginationFields` 只有 `current`/`pageSize`/`total`/`list` 四个 key |
+> ⛔ **修复流程（每一步不可跳过）：**
+>
+> 1. **查表匹配**：在此表逐条匹配错误签名，匹配到 → 执行对应修复方法
+> 2. **未匹配 → 查路由表**：读 `.ai/pitfalls/verify-errors.md` 底部「未匹配时的组件文档路由」表，按报错关键词定位要读的文件 → 读取 → 按文档正确 API 修复
+> 3. **禁止行为**：不看表不读文档直接改代码、同一错误反复试不同写法超过 2 次
+
+| 错误信息                                              | 修复方法                                                                                                         |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `no-unused-vars: 'xxx'`                               | 加 `_` 前缀：`_xxx`                                                                                              |
+| `Cannot find module 'src/api/xxx'`                    | 检查 `src/api/{module}/index.ts` 是否存在且 export                                                               |
+| `Type 'any' is not assignable`                        | 替换为具体类型或 `Record<string, unknown>`                                                                       |
+| `no-restricted-imports ... 'Table' from 'antd'`       | 换为 `STable` from `@dalydb/sdesign`                                                                             |
+| `no-restricted-imports ... 'Form' from 'antd'`        | 换为 `SForm` from `@dalydb/sdesign`                                                                              |
+| Prettier / 格式报错                                   | `pnpm verify:fix`                                                                                                |
+| `Type 'string' is not assignable to type...`          | 加显式类型注解，如 `const columns: SColumnsType<Entity> = [...]`                                                 |
+| `'pageNum' does not exist in type 'PaginationFields'` | 改为 `current`。`PaginationFields` 只有 `current`/`pageSize`/`total`/`list` 四个 key                             |
+| `Cannot find name 'XXX'`                              | 检查 XXX 是否来自旧代码的常量/变量。若是且新组件已内置该功能 → 删除引用；不确定 → 问用户，不要盲目加回来         |
+| 修一轮后仍有错误                                      | **停止，问用户**。连续 2 轮 verify 错误数量不减少或累计 ≥5 轮 → 强制停止，报告：已修复清单 + 剩余错误 + 根因判断 |
 
 ---
 
@@ -145,4 +153,5 @@ const dictMapData = useDictStore((state) => state.dictMapData);
 - 需要修改 3 个以上文件（types.ts 联动不计入）
 - 需改 package.json / tsconfig / eslint / rsbuild 配置
 - 不确定改哪个文件
-- `pnpm verify` 修一轮还失败
+- `pnpm verify` 累计执行 ≥5 轮（无论每轮是否有进展）→ **强制停止**，向用户报告：① 已修复的错误清单 ② 当前剩余错误清单 ③ 根因判断（缺类型定义？组件 API 用法不对？缺文件？）
+- `pnpm verify` 连续 2 轮错误数量不减少 → **停止**，报告当前状态

@@ -211,7 +211,7 @@ git hooks: commit → lint-staged | push → type-check
 pnpm verify  # tsc + eslint + prettier（错误自动追加到 .ai/error-log/raw.jsonl）
 ```
 
-有错误 → 按优先级修复（tsc > eslint > prettier）→ 再次 verify → 最多 3 轮。仅处理当前输出锁范围内文件的错误。
+有错误 → **先查 `.ai/pitfalls/verify-errors.md` 速查表匹配签名** → 匹配则执行修复方法 → 未匹配则按优先级修复（tsc > eslint > prettier）→ 再次 verify → 最多 3 轮。连续 2 轮错误数量不减少 → 停止并报告当前状态。仅处理当前输出锁范围内文件的错误。
 
 > 跨模块修改时执行 `pnpm verify:scope` 检查范围（软告警，不阻断）。
 
@@ -223,6 +223,7 @@ Level 1 通过后逐条检查：
 - [ ] 无 any 类型，未直接 import axios，类型导入用 `import type`
 - [ ] API 方法名带 HTTP 后缀（getListByGet/createByPost 等）
 - [ ] SForm 字段联动用 `SForm.useWatch` + 动态 items 条件展开（禁止 `type: 'dependency'`）
+- [ ] SForm / SForm.Group 无 `loading` prop（需要 loading 用 `<Spin spinning={loading}>` 包裹）；分组表单用 `<SForm.Group groupItems={...}>` 而非在 items 中写 `type: 'group'`；`groupItems` 显式注解 `GroupItemsType[]`
 - [ ] 确认弹窗用 antd `Modal.confirm`（禁止 SConfirm）
 - [ ] Modal/Drawer 使用 `createModal`/`createDrawer` 工厂函数（`@dalydb/sdesign`），禁止手动管理 open 状态
 - [ ] 所有 API 调用通过 useRequest 包装（SSearchTable.requestFn 除外）

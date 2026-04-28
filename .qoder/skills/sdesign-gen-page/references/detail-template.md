@@ -19,13 +19,13 @@
 | `'rangeTime'` | 时间范围                         |
 | `'checkbox'`  | 复选展示                         |
 
-| 关键属性  | 说明                                      |
-| --------- | ----------------------------------------- |
-| `label`   | 字段标签                                  |
-| `name`    | 字段名                                    |
-| `dictKey` | 字典 key（需配合 SConfigProvider）        |
-| `dictMap` | 直接提供字典 `{ value: label }`           |
-| `render`  | 自定义渲染 `(value, record) => ReactNode` |
+| 关键属性  | 说明                                            |
+| --------- | ----------------------------------------------- |
+| `label`   | 字段标签                                        |
+| `name`    | 字段名                                          |
+| `dictKey` | 字典 key（需配合 SConfigProvider）              |
+| `dictMap` | 直接提供字典 `{ value: label }`                 |
+| `render`  | 自定义渲染 `(value?, dataSource?) => ReactNode` |
 
 ## 交互模式
 
@@ -34,35 +34,18 @@
 
 > 弹层封装原则同 Modal → 详见 crud-template.md「弹层封装原则」
 
-## 快速示例
-
-```tsx
-// 基础用法
-<SDetail title="详情" dataSource={data} items={items} column={2} />
-
-// 分组展示
-<SDetail.Group groupItems={[
-  { groupTitle: '基本信息', items: [...] },
-  { groupTitle: '金额信息', items: [...] },
-]} />
-
-// 数据加载
-const { data: detail, loading } = useRequest(() => getByIdByGet(id!), { ready: !!id });
-<SDetail dataSource={detail} items={items} loading={loading} />
-```
-
 ---
 
-## 填空模板（兜底方案）
+## 填空模板（主路径）
 
-> **适用场景**：多次生成偏离预期、弱模型不稳定、或希望快速产出可运行骨架时使用。
-> **原理**：将"理解规范 → 组装代码"降级为"识别 `@FILL` → 文本替换"，让模型只做填空题。
+> **默认使用填空模板**。模板注释已内嵌组件 API 约束和常见反例，无需额外读组件文档。仅 `pnpm verify` 报错且 `.ai/pitfalls/verify-errors.md` 未匹配签名时，才按需读对应组件文档。
 
 ### 使用方法
 
 1. **复制下方"填空模板"** 到目标 `.tsx` 文件中。
 2. **对 AI 发出指令**：
    > "请根据以下需求，**只修改**代码中所有 `@FILL` 标记的内容，**严禁修改任何其他已存在的代码**。需求：页面标题为'商品详情'，API 详情函数名 `getGoodsByIdByGet`，详情字段包括商品名称(name)、价格(price)、库存(stock)、创建时间(createTime)、描述(description)。"
+3. `pnpm verify` 报错时 → 先查 .ai/pitfalls/verify-errors.md 匹配签名 → 未匹配才读组件文档。
 
 ### 填空模板 — detail.tsx（独立页）
 
@@ -75,7 +58,8 @@ import type { SDetailItem } from '@dalydb/sdesign';
 import { Card, Spin } from 'antd';
 import { useRequest } from 'ahooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-// @FILL: 导入 API 函数，例如 import { getByIdByGet } from 'src/api/{module}';
+// @FILL: 导入 API 函数
+// ✅ import { getByIdByGet } from 'src/api/{module}';
 
 export default () => {
   const navigate = useNavigate();
@@ -84,22 +68,29 @@ export default () => {
 
   // 加载详情
   const { data: detail, loading } = useRequest(
-    // @FILL: 替换为详情 API，例如 () => getByIdByGet(id!)
+    // @FILL: 替换为详情 API
+    // ✅ () => getByIdByGet(id!)
     () => Promise.resolve({} as Record<string, unknown>),
     {
       ready: !!id,
     },
   );
 
+  // ⚠️ 必须用显式类型注解
+  // ✅ const detailItems: SDetailItem[] = [...]
   const detailItems: SDetailItem[] = [
     // @FILL: 详情项配置
-    // 示例: { label: '名称', name: 'name' },
+    // ✅ { label: '名称', name: 'name' }  // 默认 type: 'text'
+    // ✅ { label: '状态', name: 'status', type: 'dict', dictMap: { 1: '启用', 0: '禁用' } }
+    // ✅ { label: '金额', name: 'amount', render: (value) => `¥${value}` }  // render 签名: (value?, dataSource?) => ReactNode
+    // ✅ { label: '图片', name: 'image', type: 'img' }
     // 可选 type: 'text'(默认) | 'dict' | 'file' | 'img' | 'rangeTime' | 'checkbox'
-    // 字典映射: { label: '状态', name: 'status', type: 'dict', dictMap: { 1: '启用', 0: '禁用' } }
-    // 自定义渲染: { label: '金额', name: 'amount', render: (value) => `¥${value}` }
   ];
 
   return (
+    // ⚠️ SDetail 不支持 loading prop，用 Spin 包裹
+    // ✅ <Spin spinning={loading}><SDetail ... /></Spin>
+    // ❌ <SDetail loading={loading} ... />  // loading 不是合法 prop → TS 报错
     <Spin spinning={loading}>
       <Card
         title="@FILL:页面标题"
@@ -124,35 +115,42 @@ import { Drawer, Spin } from 'antd';
 import { useRequest } from 'ahooks';
 import { createDrawer } from '@dalydb/sdesign';
 import type { DrawerChildProps } from '@dalydb/sdesign';
-// @FILL: 导入 API 函数，例如 import { getByIdByGet } from 'src/api/{module}';
+// @FILL: 导入 API 函数
+// ✅ import { getByIdByGet } from 'src/api/{module}';
 
-// @FILL: 定义泛型参数类型，例如 type DetailParams = { id: string };
+// @FILL: 定义泛型参数类型
+// ✅ type DetailParams = { id: string };
 type DetailParams = { id: string };
 
 const DetailContent = ({ params, onClose }: DrawerChildProps<DetailParams>) => {
   // 加载详情
   const { data: detail, loading } = useRequest(
-    // @FILL: 替换为详情 API，例如 () => getByIdByGet(params.id)
+    // @FILL: 替换为详情 API
+    // ✅ () => getByIdByGet(params.id)
     () => Promise.resolve({} as Record<string, unknown>),
   );
 
   const detailItems: SDetailItem[] = [
     // @FILL: 详情项配置
-    // 示例: { label: '名称', name: 'name' },
+    // ✅ { label: '名称', name: 'name' }
+    // ✅ { label: '状态', name: 'status', type: 'dict', dictMap: { 1: '启用', 0: '禁用' } }
     // 可选 type: 'text'(默认) | 'dict' | 'file' | 'img' | 'rangeTime' | 'checkbox'
-    // 字典映射: { label: '状态', name: 'status', type: 'dict', dictMap: { 1: '启用', 0: '禁用' } }
-    // 自定义渲染: { label: '金额', name: 'amount', render: (value) => `¥${value}` }
   ];
 
   return (
+    // ⚠️ SDetail 不支持 loading prop，用 Spin 包裹
     <Drawer open title="@FILL:抽屉标题" width={600} onClose={onClose}>
       <Spin spinning={loading}>
+        {/* ⚠️ SDetail.Group 顶层 prop 是 items 不是 groupItems */}
+        {/* ✅ <SDetail.Group items={[{ groupTitle: '基本信息', items: [...] }]}> */}
+        {/* ❌ <SDetail.Group groupItems={...}>  // groupItems 不是顶层 prop → TS 报错 */}
         <SDetail dataSource={detail} items={detailItems} column={1} />
       </Spin>
     </Drawer>
   );
 };
 
-// @FILL: 修改导出名称，例如 export default createDrawer<DetailParams>(DetailContent);
+// @FILL: 修改导出名称
+// ✅ export default createDrawer<DetailParams>(DetailContent);
 export default createDrawer<DetailParams>(DetailContent);
 ```

@@ -171,16 +171,16 @@ const handleDelete = (id: string) => {
 
 ---
 
-## 填空模板（兜底方案）
+## 填空模板（主路径）
 
-> **适用场景**：多次生成偏离预期、弱模型不稳定、或希望快速产出可运行骨架时使用。
-> **原理**：将"理解规范 → 组装代码"降级为"识别 `@FILL` → 文本替换"，让模型只做填空题。
+> **默认使用填空模板**。模板注释已内嵌组件 API 约束和常见反例，无需额外读组件文档。仅 `pnpm verify` 报错且 `.ai/pitfalls/verify-errors.md` 未匹配签名时，才按需读对应组件文档。
 
 ### 使用方法
 
-1. **复制下方"填空模板"** 到目标 `.tsx` 文件中（替换原有内容）。
-2. **对 AI 发出指令**（建议选中整个文件后输入）：
-   > "请根据以下需求，**只修改**代码中所有 `@FILL` 标记的内容，**严禁修改任何其他已存在的代码**。需求：页面标题为'商品管理'，API 函数名为 `queryGoodsPage`，返回结构 `{ records: [], total: 0 }`，搜索项包括商品名称(name)和状态(status)，表格列包括商品名称、价格、库存、创建时间。"
+1. **复制下方"填空模板"** 到目标 `.tsx` 文件中。
+2. **对 AI 发出指令**：
+   > "请根据以下需求，**只修改**代码中所有 `@FILL` 标记的内容，**严禁修改任何其他已存在的代码**。需求：页面标题为'商品管理'，API 函数名为 `getGoodsListByGet`、`deleteGoodsByDelete`，实体类型为 `Goods`，搜索项包括商品名称(name)和状态(status)，表格列包括商品名称、价格、库存、创建时间。"
+3. `pnpm verify` 报错时 → 先查 .ai/pitfalls/verify-errors.md 匹配签名 → 未匹配才读组件文档。
 
 ### 填空模板 — index.tsx
 
@@ -196,17 +196,24 @@ import { message, Modal } from 'antd';
 import { useRequest } from 'ahooks';
 import { useRef } from 'react';
 import type { ModalContainerRef } from '@dalydb/sdesign';
-// @FILL: 导入 API 函数，例如 import { getListByGet, deleteByDelete } from 'src/api/{module}';
-// @FILL: 导入类型，例如 import type { Xxx, XxxQuery } from 'src/api/{module}/types';
-// @FILL: 导入 FormModal 组件，例如 import XxxFormModal from './components/XxxFormModal';
+// @FILL: 导入 API 函数
+// ✅ import { getListByGet, deleteByDelete } from 'src/api/{module}';
+// ❌ import axios / import { createRequest }（API 层已封装，页面只导函数）
+// @FILL: 导入类型 — 必须用 import type
+// ✅ import type { Product, ProductQuery } from 'src/api/{module}/types';
+// ❌ import { Product }（类型导入必须加 type 关键字）
+// @FILL: 导入 FormModal 组件（有弹窗时）
+// ✅ import ProductFormModal from './components/ProductFormModal';
 
 export default () => {
   const tableRef = useRef<SSearchTableRef>(null);
-  // @FILL: 定义弹窗 ref，例如 const formRef = useRef<ModalContainerRef<{ mode: 'create' | 'edit'; id?: string }>>(null);
+  // @FILL: 定义弹窗 ref（有弹窗时）
+  // ✅ const formRef = useRef<ModalContainerRef<{ mode: 'create' | 'edit'; id?: string }>>(null);
 
   // 删除操作
   const { run: handleDelete } = useRequest(
-    // @FILL: 替换为删除 API，例如 (id: string) => deleteByDelete(id)
+    // @FILL: 替换为删除 API
+    // ✅ (id: string) => deleteByDelete(id)
     (id: string) => Promise.resolve(id),
     {
       manual: true,
@@ -217,29 +224,37 @@ export default () => {
     },
   );
 
-  // @FILL: 将泛型 Record<string, unknown> 替换为实际实体类型，例如 SColumnsType<Product>
+  // ⚠️ 必须用显式类型注解，否则 TS2322 报错
+  // ✅ const columns: SColumnsType<Product> = [...]
+  // ❌ const columns = [...]   // 缺类型注解
+  // @FILL: 将 Record<string, unknown> 替换为实际实体类型
   const columns: SColumnsType<Record<string, unknown>> = [
     // @FILL: 表格列配置
-    // 示例: { title: '名称', dataIndex: 'name' },
-    // 支持 render: 'datetime' | 'date' | 'ellipsis'
-    // 支持 fixed: 'left' | 'right'（有类型注解后无需 as const）
+    // ✅ { title: '名称', dataIndex: 'name' }
+    // ✅ { title: '时间', dataIndex: 'createTime', render: 'datetime' }
+    // ✅ { title: '状态', dataIndex: 'status', dictKey: 'statusCode' }  // 枚举列用 dictKey
+    // ❌ { title: '状态', dataIndex: 'status', render: (text) => text === 1 ? '启用' : '禁用' }  // 禁止硬编码枚举
+    // ❌ render: (text, record) => ...  // 未使用参数不加 _ 前缀 → ESLint 报错
     {
       title: '操作',
       dataIndex: 'action',
       width: 150,
-      render: (_: unknown, record: Record<string, unknown>) => (
+      // ✅ 未使用参数加 _ 前缀
+      render: (_, record: Record<string, unknown>) => (
         <>
           <SButton
             actionType="edit"
             compact
             onClick={() => {
-              // @FILL: 打开编辑弹窗，例如 formRef.current?.open({ mode: 'edit', id: record.id as string });
+              // @FILL: 打开编辑弹窗
+              // ✅ formRef.current?.open({ mode: 'edit', id: record.id as string });
             }}
           />
           <SButton
             actionType="delete"
             compact
             onClick={() => {
+              // ✅ 确认弹窗用 Modal.confirm，禁止 SConfirm
               Modal.confirm({
                 title: '确认删除',
                 // @FILL: 替换确认内容
@@ -253,9 +268,13 @@ export default () => {
     },
   ];
 
+  // ⚠️ 必须用显式类型注解
+  // ✅ const searchItems: SFormItems[] = [...]
   const searchItems: SFormItems[] = [
     // @FILL: 搜索项配置
-    // 格式: { label: '名称', name: 'name', type: 'input' }
+    // ✅ { label: '名称', name: 'name', type: 'input' }
+    // ✅ { label: '状态', name: 'status', type: 'select', fieldProps: { dictKey: 'statusCode' } }
+    // ❌ { label: '状态', name: 'status', type: 'select', fieldProps: { options: [...] } }  // 禁止硬编码 options
     // 可选 type: input | select | datePicker | datePickerRange
   ];
 
@@ -264,14 +283,16 @@ export default () => {
       <SSearchTable
         ref={tableRef}
         headTitle={{ children: '@FILL:页面标题' }}
-        // @FILL: 替换为列表 API 函数引用，例如 requestFn={getListByGet}
+        // @FILL: 替换为列表 API 函数引用
+        // ✅ requestFn={getListByGet}
         requestFn={() => Promise.resolve({ dataList: [], totalSize: 0 })}
         tableTitle={{
           actionNode: (
             <SButton
               actionType="create"
               onClick={() => {
-                // @FILL: 打开新增弹窗，例如 formRef.current?.open({ mode: 'create' });
+                // @FILL: 打开新增弹窗
+                // ✅ formRef.current?.open({ mode: 'create' });
               }}
             />
           ),
@@ -284,9 +305,15 @@ export default () => {
           columns: columns,
           rowKey: '@FILL:主键字段', // 通常为 'id'
         }}
+        // ⚠️ paginationFields 的 key 是 current 不是 pageNum
+        // ✅ paginationFields: { current: 'pageNum', total: 'totalSize', list: 'records' }
+        // ❌ paginationFields: { pageNum: 'pageNum' }  // pageNum 不是合法 key → TS 报错
       />
-      {/* @FILL: 放置弹窗组件，例如 <XxxFormModal ref={formRef} onSuccess={() => tableRef.current?.refresh()} /> */}
+      {/* @FILL: 放置弹窗组件（有弹窗时） */}
+      {/* ✅ <ProductFormModal ref={formRef} onSuccess={() => tableRef.current?.refresh()} /> */}
     </>
   );
 };
 ```
+
+> 仅需查询列表（无增删改）→ 使用 `references/search-table-template.md`
