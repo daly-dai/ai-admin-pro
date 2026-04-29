@@ -56,7 +56,7 @@ export default () => {
         <div style={{ textAlign: 'center', marginTop: 24 }}>
           <SButton actionType="back" onClick={() => navigate(-1)} />
           <SButton
-            actionType="submit"
+            actionType="save"
             style={{ marginLeft: 16 }}
             onClick={() => form.submit()}
             loading={loading}
@@ -133,7 +133,7 @@ export default () => {
         <div style={{ textAlign: 'center', marginTop: 24 }}>
           <SButton actionType="back" onClick={() => navigate(-1)} />
           <SButton
-            actionType="submit"
+            actionType="save"
             style={{ marginLeft: 16 }}
             onClick={() => form.submit()}
             loading={loading}

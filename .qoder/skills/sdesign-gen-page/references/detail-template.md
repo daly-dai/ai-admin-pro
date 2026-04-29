@@ -23,8 +23,8 @@
 | --------- | ----------------------------------------------- |
 | `label`   | 字段标签                                        |
 | `name`    | 字段名                                          |
-| `dictKey` | 字典 key（需配合 SConfigProvider）              |
-| `dictMap` | 直接提供字典 `{ value: label }`                 |
+| `dictKey` | 字典 key（配合 SConfigProvider，**枚举首选**）  |
+| `dictMap` | 直接提供字典 `{ value: label }`（无全局字典时） |
 | `render`  | 自定义渲染 `(value?, dataSource?) => ReactNode` |
 
 ## 交互模式
@@ -81,9 +81,10 @@ export default () => {
   const detailItems: SDetailItem[] = [
     // @FILL: 详情项配置
     // ✅ { label: '名称', name: 'name' }  // 默认 type: 'text'
-    // ✅ { label: '状态', name: 'status', type: 'dict', dictMap: { 1: '启用', 0: '禁用' } }
+    // ✅ { label: '状态', name: 'status', type: 'dict', dictKey: 'statusCode' }  // 枚举优先用 dictKey（SConfigProvider 全局字典）
+    // ✅ { label: '状态', name: 'status', type: 'dict', dictMap: { 1: '启用', 0: '禁用' } }  // dictMap 仅无全局字典时用
+    // ❌ { label: '状态', name: 'status', render: (v) => v === 1 ? '启用' : '禁用' }  // 禁止 render 硬编码枚举
     // ✅ { label: '金额', name: 'amount', render: (value) => `¥${value}` }  // render 签名: (value?, dataSource?) => ReactNode
-    // ✅ { label: '图片', name: 'image', type: 'img' }
     // 可选 type: 'text'(默认) | 'dict' | 'file' | 'img' | 'rangeTime' | 'checkbox'
   ];
 
@@ -133,7 +134,10 @@ const DetailContent = ({ params, onClose }: DrawerChildProps<DetailParams>) => {
   const detailItems: SDetailItem[] = [
     // @FILL: 详情项配置
     // ✅ { label: '名称', name: 'name' }
-    // ✅ { label: '状态', name: 'status', type: 'dict', dictMap: { 1: '启用', 0: '禁用' } }
+    // ✅ { label: '状态', name: 'status', type: 'dict', dictKey: 'statusCode' }  // 枚举优先用 dictKey
+    // ✅ { label: '状态', name: 'status', type: 'dict', dictMap: { 1: '启用', 0: '禁用' } }  // 无全局字典时用 dictMap
+    // ❌ { label: '状态', name: 'status', render: (v) => v === 1 ? '启用' : '禁用' }  // 禁止 render 硬编码枚举
+    // ✅ { label: '金额', name: 'amount', render: (value) => `¥${value}` }
     // 可选 type: 'text'(默认) | 'dict' | 'file' | 'img' | 'rangeTime' | 'checkbox'
   ];
 
