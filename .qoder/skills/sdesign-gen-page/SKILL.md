@@ -18,6 +18,18 @@ description: 'Generates admin pages (CRUD list, detail, form) using @dalydb/sdes
 4. 生成代码时遵守 **§3-§4** 的硬约束和 API 约定
 5. 完成后按 **§5-§6** 自检和验证
 
+### 🛑 会话状态检查（避免重复挂载，每次执行第一步前必须判断）
+
+> ⛔ **本 Skill 在同一个会话中只应被完整执行一次。** 如果当前会话中已经读取过本 SKILL.md，**不要重新挂载 Skill、不要重新读取 Skill 文件**，直接跳到对应的步骤继续执行。
+
+| 已读取过的内容           | 本次行为                                                                        |
+| ------------------------ | ------------------------------------------------------------------------------- |
+| 本 SKILL.md              | **跳过**，不再读取。直接按上次确立的页面类型和步骤继续                          |
+| 代码模板（references/）  | **跳过**，不再读取。模板知识已在上下文中                                        |
+| 组件文档（.ai/sdesign/） | **跳过**，不再读取。仅在 `pnpm verify` 报错且 verify-errors.md 未匹配时才按需读 |
+
+> 判断方法：回顾当前会话历史，若已出现过 SKILL.md 的内容或模板内容，即视为已读取。
+
 ### ⚠️ 路径约定（必读）
 
 本 Skill 引用两类文件，**解析基准不同**：
@@ -58,13 +70,17 @@ description: 'Generates admin pages (CRUD list, detail, form) using @dalydb/sdes
 
 ### 前置步骤：复用检查（所有页面类型通用，生成文件前必须执行）
 
-1. `ls src/pages/{module}/` 列出目标目录已有文件
-2. 如果已有以下文件，**不新建，改为修改已有文件**：
+1. `ls src/pages/{module}/` 列出目标目录已有页面文件
+2. `ls src/api/{module}/` 列出目标目录已有 API 文件
+3. 如果已有以下文件，**不新建，改为修改已有文件**：
    - 已有 `form.tsx` / `create.tsx` / `edit.tsx` → 不再新建功能重叠的表单页
    - 已有 `index.tsx` → 不再新建列表页
    - 已有 `detail.tsx` → 不再新建详情页
-3. 仅在目标文件确实不存在时才新建
-4. 新建文件前向用户确认文件列表
+   - 已有 `types.ts` → **只补充缺失的类型定义，不重写整个文件**
+   - 已有 `index.ts`（API 文件）→ **只补充缺失的 API 方法，不重写整个文件**
+4. ⛔ **禁止覆盖已有的 API 文件**：如果 `src/api/{module}/index.ts` 已存在且包含同名导出，**不要重新生成**。重复定义会导致 ESLint 报错并浪费修复轮次。
+5. 仅在目标文件确实不存在时才新建
+6. 新建文件前向用户确认文件列表
 
 ---
 
@@ -237,6 +253,7 @@ description: 'Generates admin pages (CRUD list, detail, form) using @dalydb/sdes
 | P012 | 表单        | **生成新页面前先检查目标目录已有文件**。若已有功能相似文件（如已有 `form.tsx` 时不要再建 `create.tsx`），优先复用/修改已有文件                                                                                                                                | 先 `ls` 再决定新建还是复用                                                       |
 | P013 | 表单        | **默认优先共用单个表单页**。新增和编辑差异小时通过 `?id` 参数或 `mode: 'create' \| 'edit'` 区分，`isEdit = !!id`。**差异大时（字段、布局、区块明显不同）向用户确认后再拆分**，禁止不经确认直接拆成两个文件                                                    | 默认 `form.tsx`；确认后可拆分                                                    |
 | P014 | 详情        | **SDetail.Group 顶层 prop 是 `items` 不是 `groupItems`**。`<SDetail.Group items={[{ groupTitle, items }]}>`。`groupItems` 是分组内嵌套子组字段。**SDetail 不支持 `loading` 属性**，用 `<Spin>` 包裹                                                           | `items` 而非 `groupItems`；`<Spin>` 包裹                                         |
+| P015 | 迁移/改造   | **未知的外部实现用 `// TODO` 占位，禁止猜测**。当 PRD 未提供外部模块（组件/工具函数/API）的实现细节时，禁止凭空猜测。用 `// TODO: 补充 {描述}` 占位，保证代码通过 verify。猜测的错误实现会引入更多类型错误，浪费修复轮次。                                    | `// TODO: 补充 xxx` 占位                                                         |
 
 ---
 
