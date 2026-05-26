@@ -116,11 +116,7 @@ export default tseslint.config(
     ],
     rules: {
       // 禁止直接导出函数声明，强制使用 const + 箭头函数
-      'func-style': [
-        'error',
-        'expression',
-        { allowArrowFunctions: true },
-      ],
+      'func-style': ['error', 'expression', { allowArrowFunctions: true }],
     },
   },
 );

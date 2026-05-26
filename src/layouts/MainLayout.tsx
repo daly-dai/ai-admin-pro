@@ -5,6 +5,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   SettingOutlined,
+  TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { SErrorBoundary } from '@dalydb/sdesign';
@@ -73,11 +74,27 @@ const MainLayout: React.FC = () => {
   // 侧边栏菜单
   const menuItems = [
     {
-      key: '/dashboard',
+      key: '/home',
       icon: <HomeOutlined />,
       label: '首页',
     },
-    // AI生成的新菜单项将添加在这里
+    {
+      key: '/system',
+      icon: <SettingOutlined />,
+      label: '系统管理',
+      children: [
+        {
+          key: '/system/user',
+          icon: <UserOutlined />,
+          label: '用户管理',
+        },
+        {
+          key: '/system/role',
+          icon: <TeamOutlined />,
+          label: '角色管理',
+        },
+      ],
+    },
   ];
 
   return (

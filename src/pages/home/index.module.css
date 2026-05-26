@@ -1,0 +1,236 @@
+.wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ---- page header ---- */
+
+.pageHeader {
+  animation: fadeUp 0.6s ease-out both;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 4px;
+  margin-bottom: 32px;
+}
+
+.greeting {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.greetingSub {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 8px 0 0;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+/* ---- stat strip ---- */
+
+.statStrip {
+  animation: fadeUp 0.6s ease-out both;
+  display: flex;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.statItem {
+  flex: 1;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+}
+
+.statItem + .statItem {
+  border-left: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.statBadge {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statValue {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 2px;
+  letter-spacing: -0.01em;
+}
+
+.statSub {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+/* ---- section card ---- */
+
+.section {
+  animation: fadeUp 0.6s ease-out both;
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.sectionInner {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  transition:
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.sectionInner:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.09);
+}
+
+/* accent bar at top of each section card */
+
+.accentBar {
+  position: absolute;
+  top: 0;
+  left: 24px;
+  right: 24px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  transform-origin: left;
+  animation: drawLine 0.8s ease-out both;
+}
+
+/* section head */
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.iconBox {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+}
+
+.sectionSubtitle {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+.sectionNumber {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.5;
+  letter-spacing: 0.02em;
+}
+
+/* expand button */
+
+.expandBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: #94a3b8;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.expandBtn:hover {
+  color: #6366f1;
+  border-color: rgba(99, 102, 241, 0.25);
+  background: #eef2ff;
+}
+
+/* section body (Mermaid container) */
+
+.sectionBody {
+  padding: 16px 12px 8px;
+}
+
+/* ---- keyframes ---- */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drawLine {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
