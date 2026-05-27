@@ -6,15 +6,9 @@
 
 ---
 
-## 零、上下文加速（新会话第一步）
+## 零、新会话第一步
 
-> 避免每次会话重复读取已稳定的项目知识。
-
-1. **查记忆**：有记忆系统时，先搜索项目约束/组件规则/API 模式相关记忆。有 → 直接跳到第一节「阶段判断」
-2. **读速览**：无记忆或不完整 → 读 `.ai/project-brief.md`（~68 行认知底座）
-3. **进入阶段判断**：回到下方第一节
-
-> 速览已覆盖 tech-stack / architecture / coding-standards / api-conventions 的核心知识，这些文件仅在需要详细模板或完整代码示例时才读取。
+新会话先读 `.ai/project-brief.md`（认知底座），然后回到下方第一节阶段判断。
 
 ---
 
@@ -56,12 +50,6 @@ PRD 到达 → ⓪ PRD→Spec ─┬─ ⓪a 单PRD (CRUD) ─┐ → ① 画 De
 | ④    | 接口对接  | 真实接口就绪 + "对接/联调/替换mock"     | 占位URL→真实URL，删除TODO注释                                        | `modes/api-connect.md`                                    | `src/api/{module}/` + 用户确认的页面文件                                    | diff对比 → 确认 → 替换                                                   |
 | ⑤    | 迭代修复  | "改一下/加字段/修复/调整"               | 最小范围修改                                                         | `modes/incremental.md`                                    | 仅用户指定的目标文件及其直接关联的类型文件                                  | 最小范围改动                                                             |
 
-### 工具能力：跨会话 Task Prompt（多页面分步生成）
-
-> Task ≥ 3 且上下文有限时，Session 1 完成规划+API，后续 Session 用脚本生成 prompt。
-
-**命令**：`pnpm task:prompt {feature}` → 输出自包含上下文（spec + 模板 + 组件文档 + 约束 + 已有源码），AI 通过一条命令获取全部信息。
-
 ### 阶段判断
 
 | 用户信号                                   | 进入阶段                                     |
@@ -90,8 +78,6 @@ PRD 到达 → ⓪ PRD→Spec ─┬─ ⓪a 单PRD (CRUD) ─┐ → ① 画 De
 | 文案调整/样式小改              | ⑤ 迭代修复                                                 | 仅目标文件                         |
 
 > 混合变更取最早阶段，仅对变更部分执行，已完成且未受影响的部分不重做。
->
-> 非线性跳转、弹性退出、Task 拆解通用能力 → 详见 `.ai/core/lifecycle-advanced.md`
 
 ---
 
@@ -158,18 +144,11 @@ git hooks: commit → lint-staged | push → type-check
 
 > AI 输出范围必须严格匹配用户请求边界。未提及的不生成。**量化**: ≤10 新文件 / ≤10 修改文件（超出时先列清单确认）
 
-### 上下文管理原则
-
-- 优先读取当前阶段文档（见阶段表「进入后必须读取」列），可按需预读相邻阶段文档以辅助规划
-- 读取 .ai/ 文档后提取关键规则，不要在后续响应中全文复述原文
-- 生成代码时直接写代码，不要先把组件文档复述一遍
-
 ### 引用深度规则
 
-- **不设硬性层数上限**，沿引用链按需读取直到获得足够信息
-- 同一会话内已读过的文件不重复读取
+- 沿引用链按需读取直到获得足够信息，同一会话内已读过的文件不重复读取
 - 遇到循环引用（A→B→A）时停止
-- 当单次任务累计读取文件 > 15 个时，暂停并告知用户当前已读文件清单，确认是否继续
+- 当文件读取量显著增大时，暂停并告知用户当前已读文件清单，确认是否继续
 
 ### 风险操作确认
 
@@ -186,30 +165,6 @@ git hooks: commit → lint-staged | push → type-check
 | 全自主模式 | 「使用全自主模式」 | 仅删除和修改全局配置需确认    |
 
 > 原则：暂停确认的代价很低，超出范围的修改代价非常高。类型报错处理 → `.ai/conventions/verification.md`
-
-### 上下文生命周期管理
-
-长任务（Task ≥ 3 或涉及多页面）执行过程中：
-
-| 时机                 | 行为                                                             |
-| -------------------- | ---------------------------------------------------------------- |
-| 每个 Task 完成时     | 更新 `specs/{feature}/progress.md`，记录已完成项和下一步         |
-| 上下文接近容量上限时 | 主动告知用户，建议分会话并提供 `pnpm task:prompt {feature}` 衔接 |
-| 会话中断恢复时       | 先读 progress.md 恢复状态，再继续未完成的 Task                   |
-
-> 目标：即使会话被截断，下一个会话也能通过 progress.md + task:prompt 无损衔接。
-
-### 渐进式自主权
-
-在标准模式下，AI 可根据执行情况动态调整确认频率：
-
-| 条件                                             | 自主权变化                       |
-| ------------------------------------------------ | -------------------------------- |
-| 连续 2 个 Task 的 `pnpm verify` 通过且无用户纠正 | 后续 Task 自动提升至全自主模式   |
-| 用户纠正了写法或指出错误                         | 立即回退至标准模式，后续每步确认 |
-| 切换到新模块/新阶段                              | 重置为标准模式                   |
-
-> 保守模式和全自主模式不受此规则影响（用户显式指定优先）。
 
 ---
 
@@ -229,19 +184,7 @@ pnpm verify  # tsc + eslint + prettier（错误自动追加到 .ai/error-log/raw
 
 ### Level 2：AI 自检清单
 
-Level 1 通过后逐条检查：
-
-- [ ] 业务页面使用 sdesign 组件（SSearchTable/SForm/SButton/SDetail），未使用不存在的 sdesign 组件
-- [ ] 无 any 类型，未直接 import axios，类型导入用 `import type`
-- [ ] API 方法名带 HTTP 后缀（getListByGet/createByPost 等）
-- [ ] SForm 字段联动用 `SForm.useWatch` + 动态 items 条件展开（禁止 `type: 'dependency'`）
-- [ ] SForm / SForm.Group 无 `loading` prop（需要 loading 用 `<Spin spinning={loading}>` 包裹）；分组表单用 `<SForm.Group groupItems={...}>` 而非在 items 中写 `type: 'group'`；`groupItems` 显式注解 `GroupItemsType[]`
-- [ ] 确认弹窗用 antd `Modal.confirm`（禁止 SConfirm）
-- [ ] Modal/Drawer 使用 `createModal`/`createDrawer` 工厂函数（`@dalydb/sdesign`），禁止手动管理 open 状态
-- [ ] 所有 API 调用通过 useRequest 包装（SSearchTable.requestFn 除外）
-- [ ] 写操作 useRequest 配置了 onSuccess（提示 + 刷新/跳转）
-- [ ] types.ts 类型完整（Entity + EntityQuery + EntityFormData）
-- [ ] **枚举列/下拉/回显不硬编码 options**，STable 列通过 `dictKey` 指定字典编码，SForm 下拉通过 `fieldProps: { dictKey }` 指定，手动场景从 `useDictStore.dictMapData` 取值（见 `.ai/conventions/dict-conventions.md`）
+> Level 1 通过后对照 `.ai/conventions/verification.md` Level 2 自检清单逐条检查。
 
 > 详细验证流程（三级体系、失败处理） → `.ai/conventions/verification.md`
 
@@ -251,7 +194,7 @@ Level 1 通过后逐条检查：
 
 ## 五、纠错沉淀（用户纠正时触发）
 
-当用户指出写法错误/过时时，**必须** 读取 `.ai/conventions/correction-workflow.md` 并按其四层防御体系执行沉淀。禁止只口头应答而不落实到文件。
+当用户指出写法错误/过时时，**必须** 读取 `.ai/conventions/correction-workflow.md` 并按纠错沉淀流程执行。禁止只口头应答而不落实到文件。
 
 ## 六、扩展新阶段
 

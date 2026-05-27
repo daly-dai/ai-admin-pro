@@ -20,41 +20,6 @@
 | DELETE | `ByDelete` | `deleteByDelete`      |
 | PATCH  | `ByPatch`  | `updateStatusByPatch` |
 
-## 多后端服务配置
-
-| 配置          | 说明             | 默认值    |
-| ------------- | ---------------- | --------- |
-| `prefix`      | URL前缀          | `''`      |
-| `codeKey`     | 状态码字段名     | `code`    |
-| `successCode` | 成功状态码值     | `200`     |
-| `dataKey`     | 数据字段名       | `''`      |
-| `msgKey`      | 消息字段名       | `message` |
-| `timeout`     | 超时时间（毫秒） | `30000`   |
-
-## 接口定义格式
-
-```yaml
-module: [module_name]
-name: [模块中文名]
-basePath: /api/[module]
-config: { prefix, codeKey, successCode, dataKey, msgKey }
-interfaces:
-  - name: [method_name]By[HTTP]
-    desc: [接口描述]
-    method: [GET|POST|PUT|DELETE|PATCH]
-    path: /api/[module]
-    query: [{ name, type, required }]
-    params: [{ name, type, required }]
-    body: [{ name, type, required }]
-    response: { type: [ReturnType] }
-types:
-  [EntityName]: [{ name, type, desc }]
-```
-
-## AI 生成规则
-
-> 生成模板 → `.ai/templates/api-module.md`
-
 ## useRequest 规范
 
 > 必须用 `useRequest` 包装 API 调用，禁止手动 useState 管理 loading/data。
@@ -74,15 +39,6 @@ types:
 | `onSuccess` | 成功回调                    |
 | `ready`     | 就绪控制（常用于 id）       |
 
-## 硬约束
-
-> 通用硬约束（no any / no axios / import type / src/ 路径）→ `AGENTS.md` 第二节。以下为 API 层特有约束：
-
-- **方法名必须添加 HTTP 方法后缀**（`getListByGet` 等）
-- 所有方法需要泛型注解（返回类型由泛型推导）
-- 添加 JSDoc 注释
-- 页面中使用 useRequest 包装 API 调用（详见上方 useRequest 规范）
-
 ## 字段类型映射
 
 | 后端类型      | TS类型        | SForm组件   |
@@ -95,14 +51,11 @@ types:
 | enum          | string/number | select      |
 | array         | T[]           | checkbox    |
 
-## API 签名冲突处理
+## 硬约束
 
-- 以 spec.md 为准，在 Task 下标注偏离点
+> 通用硬约束（no any / no axios / import type / src/ 路径）→ `AGENTS.md` 第二节。
 
-## 特殊字段处理
-
-| 字段类型 | 关键配置                                            |
-| -------- | --------------------------------------------------- |
-| 状态     | `valueEnum: { key: { text, status } }`              |
-| 时间     | `valueType: 'dateTime', search: false`              |
-| 操作     | `valueType: 'option', render: (_, record) => [...]` |
+- **方法名必须添加 HTTP 方法后缀**（`getListByGet` 等）
+- 所有方法需要泛型注解（返回类型由泛型推导）
+- 添加 JSDoc 注释
+- 页面中使用 useRequest 包装 API 调用

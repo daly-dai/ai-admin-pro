@@ -30,7 +30,7 @@
 | G14  | `.ai/conventions/correction-workflow.md` | 纠错五层防御                | -      | - 不蒸馏  | —                 | 2026-04-23 |
 | G15  | `.ai/core/coding-standards.md`           | TS/React 编码规范           | P0     | 部分覆盖  | S2 禁止模式       | 2026-04-23 |
 | G16  | `.ai/core/architecture.md`               | 项目结构约束                | P1     | - 不蒸馏  | Skill 内嵌        | 2026-04-23 |
-| G17  | `.ai/core/lifecycle-advanced.md`         | 非线性跳转/弹性退出         | -      | - 不蒸馏  | —                 | 2026-04-23 |
+| G17  | `.ai/core/lifecycle-advanced.md`         | 非线性跳转/弹性退出         | -      | - 已删除  | —                 | 2026-05-27 |
 | G18  | `.ai/core/tech-stack.md`                 | 技术栈+禁用列表             | P1     | 部分覆盖  | 文件头标注        | 2026-04-23 |
 | G19  | `.ai/pitfalls/*.md`                      | 错题集 P001-P006+           | P0     | 已覆盖    | S1 第4步读取      | 2026-04-23 |
 

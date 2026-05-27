@@ -3,10 +3,14 @@
 > 用户拿到单份 PRD 文档，从中拆出前端范围，生成 spec.md + progress.md。
 > 适用于产品PRD或后端SDD单独到达的场景。双PRD同时到达走 ⓪b blueprint。
 
+## 前置检查
+
+开始前确认已获取 PRD 文档。缺 → 向用户索要。
+
 ## 触发条件
 
 - 用户提供单份 PRD 文档 + 要求「拆前端范围/生成 spec/出开发任务」
-- PRD 来源：产品 PM / 后端 SDD，格式参照 `prd-template.md`
+- PRD 来源：产品 PM / 后端 SDD
 
 ## 前提假设
 
@@ -16,18 +20,7 @@
 
 ---
 
-## 步骤
-
-### 1. 读取 PRD 与参考文件
-
-并行读取：
-
-- 用户提供的 PRD 文档
-- `.ai/specs/template.md` — spec 输出格式
-- `.ai/templates/page-classification.md` — 页面类型分类目录
-- `.ai/conventions/task-gates.md` — Task 输出锁 + 验收闸门模板
-
-### 2. 提取前端范围
+## 提取规则
 
 逐章节扫描 PRD，提取前端相关内容：
 
@@ -47,23 +40,13 @@
 - 明确后端：定时任务/数据清洗/存储过程/接口开发/数据库 → 排除
 - 不确定 → 标注 `[待确认]`，询问用户
 
-> 如果 PRD 是后端 SDD（以接口/数据模型为主，缺少页面描述），则从接口模式推断页面类型，置信度标「低」，在步骤5让用户确认。
+> 如果 PRD 是后端 SDD（以接口/数据模型为主，缺少页面描述），则从接口模式推断页面类型，置信度标「低」，在用户确认步骤让用户确认。
 
-### 3. 页面类型分类
+## 页面类型分类
 
-对 PRD 中每个前端功能/页面，按 `page-classification.md` 分类：
+按 `page-classification.md` 的类型目录表匹配分类。分类结果标注置信度：`高` / `中` / `低`。
 
-```
-1. 扫描页面描述 → 匹配关键词
-2. 信号 >= 2 且无竞争 → 自动分类
-3. 信号弱或歧义 → AI 推断 + 标置信度「中」
-4. 后端SDD缺少页面描述 → 从接口模式推断 + 标置信度「低」
-5. 仍不确定 → 标记 custom
-```
-
-分类结果标注置信度：`高` / `中` / `低`
-
-### 4. 映射为 Task
+## Task 映射
 
 按页面分类结果，从 `task-gates.md` 取对应 Task 类型的输出锁 + 验收闸门：
 
@@ -79,7 +62,7 @@
 
 > 已有模块追加功能时，跳过 api Task（复用已有 API 层）。
 
-### 5. 用户确认
+## 用户确认
 
 展示提取结果摘要：
 
@@ -93,56 +76,34 @@ Task 数量：{N}  前端文件预估：{M} 个
 Task 清单：
   1. [api] {module} API 模块
   2. [page-list] {module} 列表页
-  3. [page-dashboard] {module} 大屏
   ...
 
 置信度「低」的页面分类：[列出，请用户确认]
 
 [待确认]：[不确定的前端范围项]
-
-确认后执行：pnpm task:prompt {feature}
 ```
 
-### 6. 生成 spec.md
+## 生成 spec.md + progress.md
 
-按 `specs/template.md` 格式，写入 `.ai/specs/{feature}/spec.md`。
-
-**生成每个 Task 时**：
-
-1. 从 `.ai/conventions/task-gates.md` 按 Task 类型取默认值
-2. `{module}` 替换为实际模块名，`{Entity}` 替换为实际实体名
-3. 输出锁和验收闸门填入 Task，不得留空
-
-### 7. 生成 progress.md
-
-按 `progress-template.md` 格式，写入 `.ai/specs/{feature}/progress.md`。
-
-初始化所有 Task 为 ⬜。在「不可丢失的上下文」中记录：
-
-- 页面类型分类决策
-- 关键字段映射
-- `[待确认]` 项目清单
+按 `specs/template.md` 格式生成 spec.md。每个 Task 包含输出锁 + 验收闸门（从 task-gates.md 按类型取）。
 
 ---
 
 ## 约束
 
 - **不写代码**：本阶段只生成 spec.md + progress.md，不写 `src/` 下任何文件
-- **不确定不猜**：PRD 中模糊的功能标注 `[待确认]`，不自行判断前后端边界
+- **不确定不猜**：PRD 中模糊的功能标注 `[待确认]`
 - **字段名保持 PRD 原文**：不转换命名风格，转换在代码生成阶段做
 - **一个 feature 一个目录**：存入 `.ai/specs/{feature}/`
-- **Task 格式统一**：所有 Task 使用 `输出锁` + `验收闸门` 格式（来自 task-gates.md）
+- **Task 格式统一**：所有 Task 使用 `输出锁` + `验收闸门` 格式
 
 ## 输出锁
 
 🔒 `.ai/specs/{feature}/spec.md` + `.ai/specs/{feature}/progress.md`
 
----
-
 ## 下一步衔接
 
-| 场景       | 下一步                                      |
-| ---------- | ------------------------------------------- |
-| 接口没就绪 | AGENTS.md ① 画 Demo（占位 API）             |
-| 接口已就绪 | AGENTS.md ② 接口合并（Swagger → 真实 API）  |
-| 想分步执行 | `pnpm task:prompt {feature}` → 逐 Task 执行 |
+| 场景       | 下一步                                     |
+| ---------- | ------------------------------------------ |
+| 接口没就绪 | AGENTS.md ① 画 Demo（占位 API）            |
+| 接口已就绪 | AGENTS.md ② 接口合并（Swagger → 真实 API） |

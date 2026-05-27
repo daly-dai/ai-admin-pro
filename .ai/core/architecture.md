@@ -2,9 +2,9 @@
 
 > AI必须理解并遵循的架构规范
 
-## 技术栈（固定）
+## 技术栈
 
-> ⚠️ 技术栈详情必须 读取 `.ai/core/tech-stack.md`
+> 技术栈详情 → `.ai/core/tech-stack.md`
 
 ## 项目结构（强制）
 
@@ -64,82 +64,30 @@ src/
 
 ## 核心约定
 
-### 1. 组件规范（强制）
+### 1. 组件规范
 
-```typescript
-// 1. 函数式组件 + TypeScript
-import React from 'react';
-import { /* antd components */ } from 'antd';
+函数式组件 + TypeScript，Props 接口独立定义。
 
-// 2. Props接口定义
-interface ComponentNameProps {
-  /** 属性说明 */
-  propName: string;
-}
+> 详细组件结构 → `.ai/core/coding-standards.md`
 
-// 3. 组件实现
-const ComponentName: React.FC<ComponentNameProps> = ({ propName }) => {
-  return <div>{propName}</div>;
-};
+### 2. API 层规范
 
-export default ComponentName;
-```
+API 模块采用 `types.ts`（类型定义）+ `index.ts`（API 对象）双文件结构，导出 `{module}Api` 对象，包含 5 个标准方法。
 
-### 2. API层规范（强制）
+> 完整类型模板和 API 对象模板 → `.ai/conventions/api-conventions.md`
 
-API 模块采用 `types.ts`（类型定义）+ `index.ts`（API 对象）双文件结构，导出 `{module}Api` 对象，包含 5 个标准方法（getList/getById/create/update/delete）。
+### 3. 状态管理规范
 
-> 完整类型模板和 API 对象模板 → ⚠️ 接口合并/改造阶段必须 读取 `.ai/conventions/api-conventions.md`。
+使用 Zustand + immer + persist，Store 接口定义 state + actions + reset。
 
-### 3. 状态管理规范（强制）
+> 完整模板 → `.ai/core/coding-standards.md`
 
-```typescript
-// stores/[domain].ts
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { immer } from 'zustand/middleware/immer';
+### 4. 页面组件规范
 
-interface [Domain]State {
-  // State
-  [data]: [DataType] | null;
-  [flag]: boolean | null;
+列表页用 `SSearchTable`，表单页用 `SForm`，详情页用 `SDetail`。
 
-  // Actions
-  set[Data]: (data: [DataType] | null) => void;
-  set[Flag]: (flag: [FlagType] | null) => void;
-  reset: () => void;
-}
-
-export const use[Domain]Store = create<[Domain]State>()(
-  persist(
-    immer((set) => ({
-      [data]: null,
-      [flag]: null,
-      set[Data]: (data) =>
-        set((state) => {
-          state.[data] = data;
-        }),
-      set[Flag]: (flag) =>
-        set((state) => {
-          state.[flag] = flag;
-        }),
-      reset: () =>
-        set((state) => {
-          state.[data] = null;
-          state.[flag] = null;
-        }),
-    })),
-    { name: '[domain]-store' },
-  ),
-);
-```
-
-### 4. 页面组件规范（强制）
-
-管理后台列表页使用 `SSearchTable` 一体化组件，表单页使用 `SForm`，详情页使用 `SDetail`。
-
-> 列表页骨架代码 → `.ai/core/coding-standards.md` 或 `.ai/templates/crud-page.md`
-> ⚠️ 生成页面前必须 读取 对应模板；使用 sdesign 组件前必须 读取 对应组件文档
+> 代码模板 → `.ai/templates/crud-page.md`、`form-page.md`、`detail-page.md`
+> 使用 sdesign 组件前必须读取对应组件文档
 
 ## 禁止事项
 

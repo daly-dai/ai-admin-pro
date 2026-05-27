@@ -2,16 +2,17 @@
 
 > 页面已存在，真实接口地址到位。将占位 URL 替换为真实接口，删除 TODO 注释。
 
-## 步骤
+## 前置检查
 
-1. **读已有代码**：`src/api/{module}/types.ts` + `index.ts`
-2. **解析接口文档**：用户提供的 swagger/接口文档
-3. **读错题集**：Read `.ai/pitfalls/index.md` 匹配页面类型
-4. **对比差异**：生成变更清单（新增/删除字段、类型变更、URL 替换），告知用户
-5. **更新 API 层**：types.ts 替换临时类型 + index.ts 替换占位 URL，删除 `// TODO`
-6. **读 sdesign 文档**：修改页面前 读取 对应组件文档
-7. **按需更新页面**：检查是否需要同步修改（新增搜索字段、列定义变更等），需确认
-8. **验证**：按 `conventions/verification.md` 执行 Level 1 + Level 2，报错先查 `pitfalls/verify-errors.md`
+开始前确认：**真实接口文档已提供** + **目标页面文件已存在**。缺任一 → 向用户索要。
+
+## 核心步骤
+
+1. 读已有代码：types.ts + index.ts
+2. 解析接口文档 → 对比差异 → 生成变更清单，告知用户
+3. 更新 API 层：types.ts 替换临时类型 + index.ts 替换占位 URL，删除 `// TODO`
+4. 读涉及组件的 sdesign 文档 → 按需更新页面
+5. 验证：`pnpm verify`
 
 ## 约束
 

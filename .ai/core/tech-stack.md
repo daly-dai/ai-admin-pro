@@ -1,6 +1,6 @@
-#技术栈规范
+# 技术栈规范
 
-> 项目使用的技术栈定义，AI必须严格遵循
+> AI必须严格遵循的技术栈定义
 
 ## 当前技术栈
 
@@ -19,47 +19,11 @@ Hooks: ahooks ^3.8.0
 
 ## 核心组件库
 
-### @dalydb/sdesign (主要组件库)
+- **@dalydb/sdesign**: SSearchTable / SForm / SDetail / SButton / STable / STitle
+- **Ant Design**: 辅助组件 + 图标库
+- 组件文档 → `.ai/sdesign/`
 
-> 📚 **AI 文档参考**: `.ai/sdesign/`（`llms.txt` 概览 + `components/` 各组件详细文档）
-
-核心组件：
-
-- **SSearchTable**: 搜索表格一体化组件
-- **SForm**: 配置式表单组件 (支持 22 种控件类型)
-- **SDetail**: 分组详情展示组件
-- **SButton**: 增强按钮组件 (支持 actionType 预设)
-- **STable**: 增强表格组件
-- **STitle**: 标题组件
-
-AI 可通过 `llms.txt` 获取完整 Props 定义、类型说明和使用示例。
-
-### Ant Design (辅助组件库)
-
-- 基础 UI 组件补充
-- 图标库支持
-- 样式系统
-
-## 项目依赖关系
-
-```
-@dalydb/sdesign (核心)
-    ↓ 依赖
-Ant Design (基础)
-    ↓ 依赖
-React生态系统
-```
-
-##版本兼容性要求
-
--所有组件必须与 React 18兼容
-
-- TypeScript 严格模式必须启用
-- 不允许使用已废弃的API -必支持现代浏览器（Chrome 80+, Firefox 75+, Safari 14+）
-
-##禁用技术
-
-以下技术禁止在项目中使用：
+## 禁用技术
 
 ```yaml
 状态管理: Redux (使用Zustand替代)
@@ -68,24 +32,3 @@ React生态系统
 HTTP客户端: ky, fetch (使用Axios封装替代)
 路由管理: Next.js路由 (使用React Router替代)
 ```
-
-##性能要求
-
-- Bundle size:单个页面不超过 500KB -首屏加载时间: 不超过 2秒
-- 交互响应时间: 不超过 100ms -内使用:持使用不超过 100MB
-
-## 开发环境要求
-
-- Node.js: >= 18.0.0
-- pnpm: >= 8.0.0
-- IDE: VS Code with recommended extensions
-- Browser: Chrome DevTools for debugging
-
-## 更新策略
-
-技术栈更新遵循以下原则：
-
-1. **主版本更新**:需要充分测试和团队评审
-2. **次版本更新**:可以自动更新，但需要回归测试
-3. **补丁更新**:可以安全自动更新
-4. **依赖移除**:需要评估影响和替代方案
