@@ -2,7 +2,6 @@ import { lazy, Suspense } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import { MainLayout } from '@/layouts';
-import DashboardPage from '@/pages/dashboard';
 import { RequireAuth } from '../guards';
 import authRoutes from './auth';
 import errorRoutes from './error';
@@ -35,14 +34,6 @@ export const routes = [
         element: (
           <LazyLoad>
             <HomePage />
-          </LazyLoad>
-        ),
-      },
-      {
-        path: 'dashboard',
-        element: (
-          <LazyLoad>
-            <DashboardPage />
           </LazyLoad>
         ),
       },
