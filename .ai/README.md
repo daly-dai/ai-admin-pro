@@ -5,13 +5,13 @@
 ## AI 阅读顺序
 
 ```
-1. AGENTS.md → 唯一入口，判断阶段（① 画 Demo / ② 接口合并 / ③ 改造适配 / ④ 接口对接 / ⑤ 迭代修复）
+1. AGENTS.md → 唯一入口，阶段表含完整步骤和独有约束
 1.5 .ai/project-brief.md → 认知底座（首次会话读取，记忆覆盖后可跳过）
-2. modes/{mode}.md → 按匹配的模式读取对应流程文件，获取详细步骤和输出锁
-3. 按模式步骤按需读取 templates/ / conventions/ 等文件
+2. modes/{mode}.md → 仅 ⓪ ② ⑤ 有独立 mode 文件（含不可内联的规则表）
+3. 按阶段需读取 templates/ / conventions/ 等文件
 ```
 
-> 不要跳过模式判断直接生成代码，也不要一次性读取所有文件。按模式步骤渐进式加载。
+> 阶段 ① ③ ④ 的步骤和约束已内联在 AGENTS.md 阶段表中，无需额外读取 mode 文件。
 
 ## 目录结构
 
@@ -23,12 +23,10 @@
 │   ├── coding-standards.md      # 代码规范（TypeScript/React/API 质量标准）
 │   ├── lifecycle-advanced.md    # 生命周期补充（非线性跳转、弹性退出、Task 拆解）
 │   └── tech-stack.md            # 技术栈定义和约束
-├── modes/                       # 工作模式流程（每个阶段一个文件）
-│   ├── demo.md                  # ① 画 Demo 模式
-│   ├── api-merge.md             # ② 接口合并模式
-│   ├── demo-refine.md           # ③ 改造适配模式
-│   ├── api-connect.md           # ④ 接口对接模式
-│   └── incremental.md           # ⑤ 迭代修复模式
+├── modes/                       # 工作模式流程（仅不可内联的规则表）
+│   ├── prd-to-spec.md           # ⓪ PRD→Spec（单PRD提取 / 双PRD交叉对比）
+│   ├── api-merge.md             # ② 接口合并（条件分支 + 🔴🟡🟢差异分级）
+│   └── incremental.md           # ⑤ 迭代修复（修改边界定义）
 ├── conventions/                 # 开发约定
 │   ├── api-conventions.md       # API 规范（SSOT，唯一权威来源）
 │   ├── verification.md          # 验证流程规范（三级验证体系）
@@ -67,15 +65,14 @@
 ## 开发流程
 
 ```
-① 阶段判断（AGENTS.md 阶段总览表）
-   ↓ 根据用户消息关键词匹配模式
-② 读取模式文件（modes/{mode}.md）
-   ↓ 获取步骤、约束、输出锁
-③ 按步骤执行（读模板 → 读 sdesign 文档 → 读错题集 → 生成代码）
+① 阶段判断（AGENTS.md 阶段表关键词匹配）
+   ↓ 阶段 ①③④ 步骤+约束已在表中，直接执行
+   ↓ 阶段 ⓪②⑤ 读取对应 modes/ 文件获取独有规则
+② 按步骤执行（读模板 → 读 sdesign 文档 → 读错题集 → 生成代码）
    ↓ 遵循硬约束，使用 sdesign 组件前必须读文档
-④ 验证（pnpm verify + 自检 + 错题集对照）
+③ 验证（pnpm verify + 自检 + 错题集对照）
    ↓ 最多 3 轮修复
-⑤ 完成
+④ 完成
 ```
 
 ## 硬约束验证

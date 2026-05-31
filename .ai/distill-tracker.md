@@ -12,27 +12,26 @@
 
 ## 追踪表
 
-| 组号 | 源文件                                   | 主题                        | 优先级 | LITE 状态 | LITE 位置         | 确认日期   |
-| ---- | ---------------------------------------- | --------------------------- | ------ | --------- | ----------------- | ---------- |
-| G01  | `AGENTS.md#S1`                           | 生命周期与阶段路由          | -      | - 不蒸馏  | —                 | 2026-04-23 |
-| G02  | `AGENTS.md#S2-组件`                      | 组件替换+阻断性读取         | P0     | 已覆盖    | S2 组件替换       | 2026-04-23 |
-| G03  | `AGENTS.md#S2-导入`                      | 导入规则+全局类型           | P0     | 已覆盖    | S2 禁止模式       | 2026-04-23 |
-| G04  | `AGENTS.md#S2-流程`                      | 上下文/引用深度/自主权/风险 | -      | - 不蒸馏  | —                 | 2026-04-23 |
-| G05  | `AGENTS.md#S3`                           | 验证规则+自检清单           | P1     | 部分覆盖  | S3 常见报错       | 2026-04-23 |
-| G06  | `AGENTS.md#S5`                           | 纠错沉淀触发                | -      | - 不蒸馏  | —                 | 2026-04-23 |
-| G07  | `.ai/modes/demo.md`                      | 1 画 Demo 流程              | -      | - 不蒸馏  | Skill 覆盖        | 2026-04-23 |
-| G08  | `.ai/modes/api-merge.md`                 | 2 接口合并流程              | -      | - 不蒸馏  | Skill 覆盖        | 2026-04-23 |
-| G09  | `.ai/modes/demo-refine.md`               | 3 改造适配流程              | -      | - 不蒸馏  | Skill 覆盖        | 2026-04-23 |
-| G10  | `.ai/modes/api-connect.md`               | 4 接口对接流程              | -      | - 不蒸馏  | Skill 覆盖        | 2026-04-23 |
-| G11  | `.ai/modes/incremental.md`               | 5 迭代修复                  | P1     | 部分覆盖  | S1 修改路径 T1-T8 | 2026-04-23 |
-| G12  | `.ai/conventions/api-conventions.md`     | API 命名/useRequest         | P0     | 部分覆盖  | S2 禁止模式(部分) | 2026-04-23 |
-| G13  | `.ai/conventions/verification.md`        | 三级验证体系                | P1     | 部分覆盖  | S3 常见报错       | 2026-04-23 |
-| G14  | `.ai/conventions/correction-workflow.md` | 纠错五层防御                | -      | - 不蒸馏  | —                 | 2026-04-23 |
-| G15  | `.ai/core/coding-standards.md`           | TS/React 编码规范           | P0     | 部分覆盖  | S2 禁止模式       | 2026-04-23 |
-| G16  | `.ai/core/architecture.md`               | 项目结构约束                | P1     | - 不蒸馏  | Skill 内嵌        | 2026-04-23 |
-| G17  | `.ai/core/lifecycle-advanced.md`         | 非线性跳转/弹性退出         | -      | - 已删除  | —                 | 2026-05-27 |
-| G18  | `.ai/core/tech-stack.md`                 | 技术栈+禁用列表             | P1     | 部分覆盖  | 文件头标注        | 2026-04-23 |
-| G19  | `.ai/pitfalls/*.md`                      | 错题集 P001-P006+           | P0     | 已覆盖    | S1 第4步读取      | 2026-04-23 |
+| 组号 | 源文件                                                   | 主题                        | 优先级 | LITE 状态 | LITE 位置             | 确认日期   |
+| ---- | -------------------------------------------------------- | --------------------------- | ------ | --------- | --------------------- | ---------- |
+| G01  | `AGENTS.md#S1`                                           | 生命周期与阶段路由          | -      | - 不蒸馏  | —                     | 2026-04-23 |
+| G02  | `AGENTS.md#S2-组件`                                      | 组件替换+阻断性读取         | P0     | 已覆盖    | S2 组件替换           | 2026-04-23 |
+| G03  | `AGENTS.md#S2-导入`                                      | 导入规则+全局类型           | P0     | 已覆盖    | S2 禁止模式           | 2026-04-23 |
+| G04  | `AGENTS.md#S2-流程`                                      | 上下文/引用深度/自主权/风险 | -      | - 不蒸馏  | —                     | 2026-04-23 |
+| G05  | `AGENTS.md#S3`                                           | 验证规则+自检清单           | P1     | 部分覆盖  | S3 常见报错           | 2026-04-23 |
+| G06  | `AGENTS.md#S5`                                           | 纠错沉淀触发                | -      | - 不蒸馏  | —                     | 2026-04-23 |
+| G07  | `.ai/modes/prd-to-spec.md`                               | ⓪ PRD→Spec（单/双PRD）      | -      | - 不蒸馏  | Skill 覆盖            | 2026-06-04 |
+| G08  | `.ai/modes/api-merge.md`                                 | ② 接口合并流程              | -      | - 不蒸馏  | Skill 覆盖            | 2026-04-23 |
+| G09  | `.ai/modes/incremental.md`                               | ⑤ 迭代修复                  | P1     | 部分覆盖  | S1 修改路径 T1-T8     | 2026-04-23 |
+| G10  | `.ai/modes/` (demo, demo-refine, api-connect, blueprint) | 已删除                      | -      | -         | 约束已内联至AGENTS.md | 2026-06-04 |
+| G11  | `.ai/conventions/api-conventions.md`                     | API 命名/useRequest         | P0     | 部分覆盖  | S2 禁止模式(部分)     | 2026-04-23 |
+| G12  | `.ai/conventions/verification.md`                        | 三级验证体系                | P1     | 部分覆盖  | S3 常见报错           | 2026-04-23 |
+| G13  | `.ai/conventions/correction-workflow.md`                 | 纠错五层防御                | -      | - 不蒸馏  | —                     | 2026-04-23 |
+| G14  | `.ai/core/coding-standards.md`                           | TS/React 编码规范           | P0     | 部分覆盖  | S2 禁止模式           | 2026-04-23 |
+| G15  | `.ai/core/architecture.md`                               | 项目结构约束                | P1     | - 不蒸馏  | Skill 内嵌            | 2026-04-23 |
+| G16  | `.ai/core/lifecycle-advanced.md`                         | 非线性跳转/弹性退出         | -      | - 已删除  | —                     | 2026-05-27 |
+| G17  | `.ai/core/tech-stack.md`                                 | 技术栈+禁用列表             | P1     | 部分覆盖  | 文件头标注            | 2026-04-23 |
+| G18  | `.ai/pitfalls/*.md`                                      | 错题集 P001-P006+           | P0     | 已覆盖    | S1 第4步读取          | 2026-04-23 |
 
 **优先级**：`P0` = 必须蒸馏（弱模型依赖） | `P1` = 部分蒸馏 | `-` = 不蒸馏（强模型专属或 Skill 已覆盖）
 

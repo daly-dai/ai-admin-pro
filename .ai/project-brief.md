@@ -1,7 +1,9 @@
 # 项目认知速览
 
 > 所有 AI 模型的认知底座。读完本文件即可回到 `AGENTS.md` 进入阶段判断。
-> 浓缩自 tech-stack / architecture / coding-standards / api-conventions，这些文件仅在需要详细模板或完整代码示例时才读取。
+> 浓缩自 tech-stack / architecture / coding-standards / api-conventions / **principles**，这些文件仅在需要详细模板或完整代码示例时才读取。
+>
+> ⚠️ **所有架构、流程、规约决策必须对照 AGENTS.md § 核心原则（⑨ > ① > ③ > ② > ④ > ⑦ > ⑧ > ⑤ > ⑥）**
 
 ## 1. 项目身份
 
@@ -83,26 +85,25 @@ useRequest 模式：列表 → SSearchTable.requestFn 直传 | 写操作 → `ma
 
 ## 7. 阶段速览
 
-| 阶段       | 触发词                | 读取                   |
-| ---------- | --------------------- | ---------------------- |
-| ⓪ PRD→Spec | PRD + 拆前端范围/spec | `modes/prd-to-spec.md` |
-| ① 画 Demo  | PRD/需求 + 画页面     | `modes/demo.md`        |
-| ② 接口合并 | Swagger/接口文档      | `modes/api-merge.md`   |
-| ③ 改造适配 | feature-spec + 改造   | `modes/demo-refine.md` |
-| ④ 接口对接 | 联调/替换 mock        | `modes/api-connect.md` |
-| ⑤ 迭代修复 | 改/加字段/修 bug      | `modes/incremental.md` |
+| 阶段       | 触发词                     | 读取                     |
+| ---------- | -------------------------- | ------------------------ |
+| ⓪ PRD→Spec | PRD + 拆前端范围/spec/蓝图 | `modes/prd-to-spec.md`   |
+| ① 画 Demo  | PRD/需求 + 画页面          | —（见 AGENTS.md 阶段表） |
+| ② 接口合并 | Swagger/接口文档           | `modes/api-merge.md`     |
+| ③ 改造适配 | feature-spec + 改造        | —（见 AGENTS.md 阶段表） |
+| ④ 接口对接 | 联调/替换 mock             | —（见 AGENTS.md 阶段表） |
+| ⑤ 迭代修复 | 改/加字段/修 bug           | `modes/incremental.md`   |
 
 ## 8. 深入导航
 
-| 需要             | 读取                                                                           |
-| ---------------- | ------------------------------------------------------------------------------ |
-| 阶段流程和输出锁 | `AGENTS.md` 阶段表 或 `modes/{mode}.md`                                        |
-| Task闸门与输出锁 | `conventions/task-gates.md`                                                    |
-| 双PRD蓝图生成    | `modes/blueprint.md` + `templates/page-classification.md`                      |
-| PRD→Spec 提取    | `modes/prd-to-spec.md` + `specs/template.md`                                   |
-| 代码模板         | `templates/{crud-page,form-page,detail-page,dashboard-page,editable-table}.md` |
-| 组件详细 API     | `sdesign/components/{Name}.md`                                                 |
-| 验证三级体系     | `conventions/verification.md`                                                  |
-| 纠错沉淀         | `conventions/correction-workflow.md`                                           |
-| 字典使用         | `conventions/dict-conventions.md`                                              |
-| 项目完整目录树   | `core/architecture.md`                                                         |
+| 需要              | 读取                                                                              |
+| ----------------- | --------------------------------------------------------------------------------- |
+| 阶段流程和输出锁  | `AGENTS.md` 阶段表                                                                |
+| Task闸门与输出锁  | `conventions/task-gates.md`                                                       |
+| PRD→Spec（单/双） | `modes/prd-to-spec.md` + `specs/template.md` + `templates/page-classification.md` |
+| 代码模板          | `templates/{crud-page,form-page,detail-page,dashboard-page,editable-table}.md`    |
+| 组件详细 API      | `sdesign/components/{Name}.md`                                                    |
+| 验证三级体系      | `conventions/verification.md`                                                     |
+| 纠错沉淀          | `conventions/correction-workflow.md`                                              |
+| 字典使用          | `conventions/dict-conventions.md`                                                 |
+| 项目完整目录树    | `core/architecture.md`                                                            |
