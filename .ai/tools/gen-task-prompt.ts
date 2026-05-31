@@ -1,9 +1,12 @@
 /**
  * Task Prompt 生成器
- * 从 spec.md + progress.md 自动组装自包含 prompt，用于 DeepSeek-V3 分步执行
+ * 从 spec.md + progress.md 自动组装自包含 prompt，用于分步执行
+ *
+ * ⚠️ 仅用于非标 Lane（prd-fallback → PRD → spec.md + progress.md）。
+ * CRUD / 大屏 / 多Tab详情 Lane 不生成 spec/progress 文件，不使用此工具。
  *
  * 用法:
- *   pnpm task:prompt <feature>            # 自动找下一个 Level 1 = ⬜ 的 Task
+ *   pnpm task:prompt <feature>            # 自动找下一个未完成的 Task
  *   pnpm task:prompt <feature> --task 3   # 指定 Task 编号
  */
 

@@ -38,11 +38,7 @@
 │   ├── detail-page.md            # 详情页模板
 │   ├── dashboard-page.md         # 大屏页面骨架模板
 │   ├── editable-table.md         # 可编辑表格模板
-│   ├── feature-spec.md           # 功能规格书模板
 │   └── page-classification.md    # 页面类型分类目录
-├── specs/                        # 需求产物（per feature）
-│   ├── contract-management/      # prd.md + spec.md + progress.md
-│   └── simple-crud/
 ├── pitfalls/                     # 错题集
 │   ├── index.md                  # 全局索引（P001-P006+）
 │   ├── verify-errors.md          # 错误速查表
