@@ -1,0 +1,53 @@
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- 状态遮罩层 ---- */
+.stateOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: inherit;
+  border-radius: inherit;
+  z-index: 10;
+}
+
+/* 半透明遮罩（loading / empty 状态下盖住图表） */
+.stateOverlay--dimmed {
+  background: rgb(255 255 255 / 70%);
+}
+
+/* ---- 错误状态 ---- */
+.errorContent {
+  text-align: center;
+  padding: 24px;
+}
+
+.errorTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ff4d4f;
+  margin-bottom: 8px;
+}
+
+.errorMessage {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+/* ---- 空状态 ---- */
+.emptyContent {
+  text-align: center;
+  padding: 24px;
+}

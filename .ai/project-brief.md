@@ -33,16 +33,7 @@
 
 ## 3. 组件体系
 
-| 禁止直接使用      | 必须替换为            | 使用前必读                                           |
-| ----------------- | --------------------- | ---------------------------------------------------- |
-| antd Table        | STable / SSearchTable | `.ai/sdesign/components/SSearchTable.md`             |
-| antd Form         | SForm / SForm.Search  | `.ai/sdesign/components/SForm.md`                    |
-| antd Button       | SButton               | `.ai/sdesign/components/SButton.md`                  |
-| antd Descriptions | SDetail               | `.ai/sdesign/components/SDetail.md`                  |
-| echarts-for-react | EChartsBase           | `src/components/`（内置 loading/error/empty/resize） |
-
-**阻断性要求**：生成含上述 5 个组件的代码前，必须先读取对应组件文档。
-可直接用（无需替换）：Modal / Modal.confirm / Tag / message / Card / Spin / InputNumber
+> 组件替换规则 + 阻断性要求 → `AGENTS.md` §三
 
 ## 4. 代码规约
 

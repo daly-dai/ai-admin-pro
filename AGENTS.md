@@ -245,16 +245,7 @@
 | T7   | 改文案/样式 | 对应文件                     | 目标文案/样式位置     |
 | T8   | 加删除确认  | `pages/{module}/index.tsx`   | 操作列                |
 
-### D1-D6（大屏修改）
-
-| 模板 | 场景              | 目标文件                           | 锚点                    |
-| ---- | ----------------- | ---------------------------------- | ----------------------- |
-| D1   | 加/换图表         | `pages/{module}/index.tsx`         | Grid 区域               |
-| D2   | 改图表配置        | `components/{Chart}.tsx`           | option 变量             |
-| D3   | 改主题/颜色       | 主题文件 or 组件 option            | 色值/主题引用           |
-| D4   | 加筛选条件        | `store.ts` → `index.tsx`           | filter 字段 → FilterBar |
-| D5   | 加/减指标卡片     | `pages/{module}/index.tsx`         | 指标卡 Grid 区域        |
-| D6   | 改数据源/接口字段 | `types.ts` → `api/index.ts` → 组件 | 逐层追踪                |
+> D1-D6（大屏修改路径）→ `.ai/conventions/dashboard-conventions.md` §七
 
 ---
 
