@@ -20,14 +20,12 @@
    └──────┬───────┘    └──────┬───────┘    └──────────────┘
           │                   │
           ▼                   ▼
-   ┌──────────────┐    ┌──────────────┐
-   │  modes/       │    │ sdesign-gen- │
-   │  5 阶段文件   │    │ page Skill   │
-   └──────┬───────┘    └──────┬───────┘
-          │                   │
-          └─────────┬─────────┘
-                    │
-                    ▼
+   ┌──────────────┐
+   │ sdesign-gen- │
+   │ page Skill   │
+   └──────┬───────┘
+          │
+          ▼
    ┌─────────────────────────────────────┐
    │          .ai/ 知识供给层              │
    │                                     │
@@ -79,12 +77,6 @@
 - **自包含 bundle**：模板内联组件 Props、错题集、约束规则
 
 ### 管道蒸馏
-
-```
-源文件（AGENTS.md / .ai/ 文件）  ──git变更检测──▶  目标文件（AGENTS-LITE.md）
-                                distill:check
-                                19组追踪矩阵（G01-G19）
-```
 
 ### 纠错飞轮
 
@@ -158,9 +150,6 @@ pnpm verify
 # 自动修复
 pnpm verify:fix
 
-# 蒸馏漂移检测
-pnpm distill:check
-
 # 错题聚合扫描
 pnpm pitfall:scan
 ```
@@ -175,15 +164,14 @@ ai-admin-pro/
 ├── AGENTS-LITE.md               # 弱模型入口（~120 行）
 ├── .ai/                         # AI 配置中心（人工维护，唯一可信源）
 │   ├── core/                    # 核心规范
-│   ├── conventions/             # 开发约定
-│   ├── modes/                   # 五阶段文件
+│   ├── conventions/             # 开发规约（API/大屏/字典/闸门/验证）
 │   ├── templates/               # 页面模板
 │   ├── pitfalls/                # 错题集（P001-P006+）
 │   ├── sdesign/                 # 组件库文档（自动同步）
 │   ├── specs/                   # 功能规格书
 │   ├── tools/                   # 工具脚本
 │   ├── project-brief.md         # 项目认知底座
-│   └── distill-tracker.md       # 蒸馏追踪矩阵
+
 ├── .qoder/skills/sdesign-gen-page/  # Skill 编译产物（脚本自动生成）
 │   ├── SKILL.md                     # 路由表 + 固定步骤表
 │   └── references/                  # 自包含 bundle 模板

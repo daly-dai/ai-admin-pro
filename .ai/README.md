@@ -1,86 +1,76 @@
 ﻿# .ai/ 配置目录索引
 
-> 本目录包含 AI 辅助开发的规范和指南文档。项目入口为根目录的 `AGENTS.md`。
+> 项目入口为根目录 `AGENTS.md`（执行管道）。本目录是资产库——模板、规约、错题集、组件文档。
 
 ## AI 阅读顺序
 
 ```
-1. AGENTS.md → 唯一入口，阶段表含完整步骤和独有约束
-1.5 .ai/project-brief.md → 认知底座（首次会话读取，记忆覆盖后可跳过）
-2. modes/{mode}.md → 仅 ⓪ ② ⑤ 有独立 mode 文件（含不可内联的规则表）
-3. 按阶段需读取 templates/ / conventions/ 等文件
+1. AGENTS.md → 唯一入口，执行策略 → 场景匹配 → Lane 分发
+2. .ai/project-brief.md → 认知底座（首次会话读取，后续记忆覆盖可跳过）
+3. 按 Lane 需读取 templates/ / conventions/ 等资产文件（不跳转流程文件）
 ```
 
-> 阶段 ① ③ ④ 的步骤和约束已内联在 AGENTS.md 阶段表中，无需额外读取 mode 文件。
+> AGENTS.md 是管道，.ai/ 是资产。管道告诉 AI "做什么 + 用什么"，资产告诉 AI "长什么样 + 不能犯什么错"。
 
 ## 目录结构
 
 ```
 .ai/
-├── project-brief.md             # 项目认知速览（~68 行，浓缩 tech-stack/architecture/coding-standards/api-conventions）
-├── core/                        # 核心规范（速览已覆盖 80%，详细模板按需读取）
-│   ├── architecture.md          # 架构规范、项目结构
-│   ├── coding-standards.md      # 代码规范（TypeScript/React/API 质量标准）
-│   ├── lifecycle-advanced.md    # 生命周期补充（非线性跳转、弹性退出、Task 拆解）
-│   └── tech-stack.md            # 技术栈定义和约束
-├── modes/                       # 工作模式流程（仅不可内联的规则表）
-│   ├── prd-to-spec.md           # ⓪ PRD→Spec（单PRD提取 / 双PRD交叉对比）
-│   ├── api-merge.md             # ② 接口合并（条件分支 + 🔴🟡🟢差异分级）
-│   └── incremental.md           # ⑤ 迭代修复（修改边界定义）
-├── conventions/                 # 开发约定
-│   ├── api-conventions.md       # API 规范（SSOT，唯一权威来源）
-│   ├── verification.md          # 验证流程规范（三级验证体系）
-│   └── correction-workflow.md   # 纠错沉淀工作流（四层防御）
-├── templates/                   # 代码模板 + 开发指南（合并）
-│   ├── api-module.md            # API 模块模板
-│   ├── crud-page.md             # CRUD 页面模板（含交互模式选择 + 弹层封装原则）
-│   ├── form-page.md             # 表单页面模板
-│   ├── detail-page.md           # 详情页面模板
-│   ├── editable-table.md       # 可编辑表格模板（EditableProTable 受控模式 + SForm 嵌入）
-│   └── feature-spec.md          # 功能规格书输出模板
-├── specs/                       # 需求规格
-│   ├── template.md              # 需求拆解模板
-│   ├── progress-template.md     # 进度追踪模板
-
-│   ├── prd-template.md          # PRD 模板（含 AI 提取清单）
-│   └── [feature]/               # 每个功能的需求目录
-├── pitfalls/                    # 错题集（已知错误模式）
-│   ├── index.md                 # 错题索引
-│   └── *.md                     # 各错误模式详情
-├── error-log/                   # 错误飞轮日志（O2）
-│   ├── raw.jsonl                # verify 自动追加的原始错误日志（gitignore）
-│   └── pending/                 # pitfall:scan 生成的草稿（待人工审批）
-├── sdesign/                     # @dalydb/sdesign 组件库文档（自动同步，已 gitignore）
-│   ├── README.md                # 组件索引
-│   └── components/              # 各组件详细文档（SForm.md, SSearchTable.md 等）
-└── tools/                       # 工具脚本
-    ├── gen-task-prompt.ts       # 跨会话 Task Prompt 生成（pnpm task:prompt <feature>）
-    ├── sync-sdesign-docs.ts     # 组件库文档同步（pnpm sync-ai-docs，postinstall 自动执行）
-    ├── verify-wrapper.ts        # verify 增强包装器（pnpm verify，自动追加错误到 raw.jsonl）
-    ├── pitfall-scan.ts          # 错误模式聚合器（pnpm pitfall:scan，生成 pitfall 草稿）
-    ├── distill-check.ts          # 蒸馏漂移检测（pnpm distill:check，AGENTS→LITE 知识漂移）
-    └── verify-scope.ts          # 输出锁范围检查（pnpm verify:scope，跨模块软告警）
+├── project-brief.md              # 项目认知速览（浓缩 tech-stack/architecture/coding-standards/principles）
+├── core/                         # 核心规范
+│   ├── principles.md             # 9 条核心原则（所有决策的宪法）
+│   ├── architecture.md           # 架构规范、项目结构
+│   ├── coding-standards.md       # 代码规范（TypeScript/React/API）
+│   └── tech-stack.md             # 技术栈定义和约束
+├── conventions/                  # 开发规约
+│   ├── api-conventions.md        # API 规范（SSOT，含 🔴🟡🟢 差异分级）
+│   ├── dashboard-conventions.md  # 大屏规约（组件独立性/数据分离/D1-D6）
+│   ├── dict-conventions.md       # 字典使用规范
+│   ├── task-gates.md             # Task 闸门 + 输出锁
+│   └── verification.md           # 验证三级体系
+├── templates/                    # 代码模板（填空式）
+│   ├── prd/                      # PRD 模板
+│   │   ├── prd-standard.md       # 标准场景 PRD（CRUD/表单/详情）
+│   │   └── prd-fallback.md       # 兜底 PRD（非标场景）
+│   ├── api-module.md             # API 模块模板
+│   ├── crud-page.md              # CRUD 列表页模板
+│   ├── form-page.md              # 表单页模板
+│   ├── detail-page.md            # 详情页模板
+│   ├── dashboard-page.md         # 大屏页面骨架模板
+│   ├── editable-table.md         # 可编辑表格模板
+│   ├── feature-spec.md           # 功能规格书模板
+│   └── page-classification.md    # 页面类型分类目录
+├── specs/                        # 需求产物（per feature）
+│   ├── contract-management/      # prd.md + spec.md + progress.md
+│   └── simple-crud/
+├── pitfalls/                     # 错题集
+│   ├── index.md                  # 全局索引（P001-P006+）
+│   ├── verify-errors.md          # 错误速查表
+│   └── *.md                      # 各错题详情
+├── sdesign/                      # 组件库文档（自动同步）
+│   └── components/
+└── tools/                        # 工具脚本
+    ├── gen-task-prompt.ts        # 跨会话 Task 提示词生成
+    ├── pitfall-scan.ts           # 高频错误聚合
+    ├── sync-sdesign-docs.ts      # 组件文档同步
+    ├── verify-scope.ts           # 输出锁范围检查
+    └── verify-wrapper.ts         # verify 增强包装器
 ```
 
 ## 开发流程
 
 ```
-① 阶段判断（AGENTS.md 阶段表关键词匹配）
-   ↓ 阶段 ①③④ 步骤+约束已在表中，直接执行
-   ↓ 阶段 ⓪②⑤ 读取对应 modes/ 文件获取独有规则
-② 按步骤执行（读模板 → 读 sdesign 文档 → 读错题集 → 生成代码）
-   ↓ 遵循硬约束，使用 sdesign 组件前必须读文档
-③ 验证（pnpm verify + 自检 + 错题集对照）
-   ↓ 最多 3 轮修复
-④ 完成
+用户需求 → AGENTS.md §一 执行策略（前置判断）
+  → §二 场景匹配 → Lane 分发（CRUD / 大屏 / 多Tab / 非标）
+  → §四 生成流程（读模板 → 读组件文档 → 读错题集 → 填空 → verify）
+  → §五 修改路径（迭代）
 ```
 
-## 硬约束验证
+## 验证
 
 ```bash
-pnpm verify        # 全量验证（tsc + eslint + prettier），错误自动追加到 error-log/raw.jsonl
+pnpm verify        # tsc + eslint + prettier
 pnpm verify:fix    # 自动修复
-pnpm verify:scope  # 跨模块修改范围检查（软告警）
-pnpm distill:check # 检测 AGENTS→LITE 知识漂移，输出报告
-pnpm pitfall:scan  # 聚合高频错误，生成 pitfall 草稿到 error-log/pending/
+pnpm verify:scope  # 跨模块修改范围检查
+pnpm pitfall:scan  # 高频错误聚合 → 生成 pitfall 草稿
 ```

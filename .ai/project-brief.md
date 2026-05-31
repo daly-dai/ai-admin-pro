@@ -1,6 +1,6 @@
 # 项目认知速览
 
-> 所有 AI 模型的认知底座。读完本文件即可回到 `AGENTS.md` 进入阶段判断。
+> 所有 AI 模型的认知底座。读完本文件即可回到 `AGENTS.md` 进入 Lane 分发。
 > 浓缩自 tech-stack / architecture / coding-standards / api-conventions / **principles**，这些文件仅在需要详细模板或完整代码示例时才读取。
 >
 > ⚠️ **所有架构、流程、规约决策必须对照 AGENTS.md § 核心原则（⑨ > ① > ③ > ② > ④ > ⑦ > ⑧ > ⑤ > ⑥）**
@@ -33,14 +33,15 @@
 
 ## 3. 组件体系
 
-| 禁止直接使用      | 必须替换为            | 使用前必读                               |
-| ----------------- | --------------------- | ---------------------------------------- |
-| antd Table        | STable / SSearchTable | `.ai/sdesign/components/SSearchTable.md` |
-| antd Form         | SForm / SForm.Search  | `.ai/sdesign/components/SForm.md`        |
-| antd Button       | SButton               | `.ai/sdesign/components/SButton.md`      |
-| antd Descriptions | SDetail               | `.ai/sdesign/components/SDetail.md`      |
+| 禁止直接使用      | 必须替换为            | 使用前必读                                           |
+| ----------------- | --------------------- | ---------------------------------------------------- |
+| antd Table        | STable / SSearchTable | `.ai/sdesign/components/SSearchTable.md`             |
+| antd Form         | SForm / SForm.Search  | `.ai/sdesign/components/SForm.md`                    |
+| antd Button       | SButton               | `.ai/sdesign/components/SButton.md`                  |
+| antd Descriptions | SDetail               | `.ai/sdesign/components/SDetail.md`                  |
+| echarts-for-react | EChartsBase           | `src/components/`（内置 loading/error/empty/resize） |
 
-**阻断性要求**：生成含上述 4 个组件的代码前，必须先读取对应组件文档。
+**阻断性要求**：生成含上述 5 个组件的代码前，必须先读取对应组件文档。
 可直接用（无需替换）：Modal / Modal.confirm / Tag / message / Card / Spin / InputNumber
 
 ## 4. 代码规约
@@ -83,27 +84,30 @@ useRequest 模式：列表 → SSearchTable.requestFn 直传 | 写操作 → `ma
 
 详情和正反例 → `.ai/pitfalls/index.md`
 
-## 7. 阶段速览
+## 7. Lane 速览
 
-| 阶段       | 触发词                     | 读取                     |
-| ---------- | -------------------------- | ------------------------ |
-| ⓪ PRD→Spec | PRD + 拆前端范围/spec/蓝图 | `modes/prd-to-spec.md`   |
-| ① 画 Demo  | PRD/需求 + 画页面          | —（见 AGENTS.md 阶段表） |
-| ② 接口合并 | Swagger/接口文档           | `modes/api-merge.md`     |
-| ③ 改造适配 | feature-spec + 改造        | —（见 AGENTS.md 阶段表） |
-| ④ 接口对接 | 联调/替换 mock             | —（见 AGENTS.md 阶段表） |
-| ⑤ 迭代修复 | 改/加字段/修 bug           | `modes/incremental.md`   |
+| Lane      | 触发词                  | 关键规则                                                           |
+| --------- | ----------------------- | ------------------------------------------------------------------ |
+| CRUD      | 列表/CRUD/增删改查/管理 | 模板填空，不生成 PRD。后端MD→types+api→columns。修改走 T1-T8       |
+| 大屏      | 大屏/仪表盘/监控/统计   | 骨架模板 + AI生成option + 规约约束。EChartsBase 基座。修改走 D1-D6 |
+| 多Tab详情 | 详情（含多Tab）         | 初始同CRUD + 增量规则（加Tab不改已有Tab）                          |
+| 非标      | 无匹配场景              | prd-fallback.md 兜底 → PRD → Task拆解                              |
 
 ## 8. 深入导航
 
-| 需要              | 读取                                                                              |
-| ----------------- | --------------------------------------------------------------------------------- |
-| 阶段流程和输出锁  | `AGENTS.md` 阶段表                                                                |
-| Task闸门与输出锁  | `conventions/task-gates.md`                                                       |
-| PRD→Spec（单/双） | `modes/prd-to-spec.md` + `specs/template.md` + `templates/page-classification.md` |
-| 代码模板          | `templates/{crud-page,form-page,detail-page,dashboard-page,editable-table}.md`    |
-| 组件详细 API      | `sdesign/components/{Name}.md`                                                    |
-| 验证三级体系      | `conventions/verification.md`                                                     |
-| 纠错沉淀          | `conventions/correction-workflow.md`                                              |
-| 字典使用          | `conventions/dict-conventions.md`                                                 |
-| 项目完整目录树    | `core/architecture.md`                                                            |
+| 需要                  | 读取                                                                                      |
+| --------------------- | ----------------------------------------------------------------------------------------- |
+| 执行管道              | `AGENTS.md` §一§二                                                                        |
+| 修改路径              | `AGENTS.md` §五                                                                           |
+| Task闸门 + 输出锁     | `conventions/task-gates.md`                                                               |
+| 大屏规约              | `conventions/dashboard-conventions.md`                                                    |
+| 非标 PRD→Task         | `AGENTS.md` §二.4                                                                         |
+| Swagger→API 合并      | `conventions/api-conventions.md`                                                          |
+| 迭代修改详细规则      | `AGENTS.md` §五                                                                           |
+| 代码模板              | `templates/{crud-page,form-page,detail-page,dashboard-page,api-module,editable-table}.md` |
+| 组件详细 API          | `sdesign/components/{Name}.md`                                                            |
+| PRD 模板（标准/兜底） | `templates/prd/prd-standard.md` / `prd-fallback.md`                                       |
+| 验证三级体系          | `conventions/verification.md`                                                             |
+| 错题集                | `pitfalls/index.md`                                                                       |
+| 字典使用              | `conventions/dict-conventions.md`                                                         |
+| 项目完整目录树        | `core/architecture.md`                                                                    |
