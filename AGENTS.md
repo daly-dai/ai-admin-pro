@@ -136,7 +136,7 @@
 1. 加载 `.ai/templates/prd/prd-fallback.md`
 2. 逐项提取：能推导的填，不能的标 `[待补充]`
 3. 暂停，列出 `[待补充]` 清单，人工一次性补齐
-4. 产出 `.ai/specs/{feature}/prd.md`
+4. 产出 `specs/{feature}/prd.md`
 5. prd.md → Task 拆解（尽量匹配已有模板；无匹配的走规约约束 + 闸门兜底）
 
 **PRD 规则**：**只有 Task 匹配不到任何模板时，才走 PRD。**

@@ -19,7 +19,7 @@ Hooks: ahooks ^3.8.0
 
 ## 核心组件库
 
-- **@dalydb/sdesign**: SSearchTable / SForm / SDetail / SButton / STable / STitle
+- **@dalydb/sdesign**: SProTable / SForm / SDetail / SButton / STable / STitle
 - **Ant Design**: 辅助组件 + 图标库
 - 组件文档 → `.ai/sdesign/`
 
@@ -28,7 +28,7 @@ Hooks: ahooks ^3.8.0
 ```yaml
 状态管理: Redux (使用Zustand替代)
 表单处理: Formik (使用SForm替代)
-表格组件: react-table (使用SSearchTable替代)
+表格组件: react-table (使用SProTable替代)
 HTTP客户端: ky, fetch (使用Axios封装替代)
 路由管理: Next.js路由 (使用React Router替代)
 ```

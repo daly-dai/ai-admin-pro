@@ -95,15 +95,15 @@ pnpm verify 报错时：
 
 **验收闸门**:
 
-- [ ] 使用 SSearchTable（非 antd Table）
+- [ ] 使用 SProTable（非 antd Table）
 - [ ] columns 显式类型注解：`const columns: SColumnsType<Entity> = [...]`
-- [ ] searchItems 显式类型注解：`const searchItems: SFormItems[] = [...]`
+- [ ] searchItems 禁止类型注解（让 TS point-wise 推断 fieldProps 精确类型，见 P006）
 - [ ] 枚举列通过 `dictKey` 指定字典编码，不硬编码 options/render
 - [ ] 分页配置 `paginationFields` 用 `current`（非 `pageNum`）
 - [ ] 操作列使用 SButton（actionType 预设）
 - [ ] 新增/编辑弹层使用 createModal 工厂函数
 - [ ] 删除确认使用 Modal.confirm
-- [ ] API 请求通过 SSearchTable.requestFn 或 useRequest
+- [ ] API 请求通过 SProTable request.service 或 useRequest
 - [ ] 写操作 useRequest 配置了 onSuccess（提示 + 刷新）
 - [ ] 全局闸门 G1-G12 全部通过
 - [ ] `pnpm verify` 0 error（仅本Task输出锁内文件）
@@ -119,7 +119,7 @@ pnpm verify 报错时：
 
 - [ ] 使用 createModal 工厂函数（非手动管理 open）
 - [ ] 使用 SForm（非 antd Form）
-- [ ] formItems 显式类型注解：`const formItems: SFormItems[] = [...]`
+- [ ] formItems 禁止类型注解（同 searchItems，让 TS 逐项推断 fieldProps）
 - [ ] 控件类型使用 sdesign 支持的值（input/select/datePicker/...）
 - [ ] 字段联动使用 SForm.useWatch + 条件展开（非 type:'dependency'）
 - [ ] 下拉框通过 `fieldProps: { dictKey }` 指定字典

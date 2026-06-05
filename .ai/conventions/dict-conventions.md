@@ -13,7 +13,7 @@
 
 | 场景                      | 正确做法                                                                 | 禁止做法                                                            |
 | ------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| SSearchTable 枚举列       | 列配置中显式设置 `dictKey: 'dictCode'`，由 STable 从 globalDict 解析回显 | 硬编码 `const statusMap = {1:'启用'}` 或省略 `dictKey` 期望自动匹配 |
+| SProTable 枚举列          | 列配置中显式设置 `dictKey: 'dictCode'`，由 STable 从 globalDict 解析回显 | 硬编码 `const statusMap = {1:'启用'}` 或省略 `dictKey` 期望自动匹配 |
 | SForm/SForm.Search 下拉框 | items 中通过 `fieldProps: { dictKey: 'dictCode' }` 指定字典编码          | items 中写死 `options: [...]` 或省略 `dictKey` 期望按 name 自动匹配 |
 | 手动获取字典值            | `const dictMapData = useDictStore(state => state.dictMapData)`           | 在组件里发请求                                                      |
 | 展示枚举文本              | `dictMapData?.['statusCode']?.[record.status] ?? '-'`                    | `{1:'启用'}[v]`                                                     |

@@ -53,7 +53,7 @@ import { EditableProTable } from '@ant-design/pro-components';
 1. SForm 的 `type: 'table'` 底层是普通 antd Table，**不具备行内编辑、动态增删行能力**
 2. STable 是只读增强表格（字典映射、序号列、快捷 render），同样不支持编辑
 3. 项目已安装 `@ant-design/pro-components`，`EditableProTable` 是此场景的标准方案
-4. **普通只读表格仍必须使用 STable / SSearchTable**，`EditableProTable` 仅限可编辑场景
+4. **普通只读表格仍必须使用 STable / SProTable**，`EditableProTable` 仅限可编辑场景
 
 ## 完整范例
 

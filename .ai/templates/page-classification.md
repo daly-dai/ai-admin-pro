@@ -5,15 +5,15 @@
 
 ## 类型目录
 
-| 类型 Key        | 显示名称    | 触发关键词                                                      | 数据模式    | 核心组件                     | Task 类型映射                                                          | 必读模板                                                  |
-| --------------- | ----------- | --------------------------------------------------------------- | ----------- | ---------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------- |
-| crud-management | CRUD 管理   | 管理、列表、增删改查、CRUD、数据维护                            | 完整 CRUD   | SSearchTable, SForm, SDetail | api, page-list, page-form, page-detail                                 | api-module.md, crud-page.md, form-page.md, detail-page.md |
-| dashboard       | 大屏/仪表盘 | 大屏、仪表盘、Dashboard、统计看板、监控大屏、数据概览、实时监控 | 只读+聚合   | ECharts, StatCard, Grid      | api, data-transform, component-chart, component-widget, page-dashboard | dashboard-page.md                                         |
-| workflow        | 工作流/审批 | 工作流、审批、流程、工单、流转、申请                            | 状态机+表单 | SForm, Steps, Timeline       | api, page-workflow, component                                          | —（规划中）                                               |
-| landing         | 落地/门户   | 首页、门户、导航、Portal、欢迎页、工作台                        | 静态+导航   | Card, List, StatCard         | page-landing                                                           | —（规划中）                                               |
-| form-only       | 纯表单      | 配置、设置、参数                                                | 读+写标量   | SForm                        | api, page-form                                                         | form-page.md, api-module.md                               |
-| list-only       | 纯列表      | 日志、操作记录、审计                                            | 只读+查询   | SSearchTable                 | api, page-list                                                         | crud-page.md, api-module.md                               |
-| custom          | 自定义      | (兜底—任意未匹配)                                               | 按分析      | 按分析                       | page-custom                                                            | —（用户指定）                                             |
+| 类型 Key        | 显示名称    | 触发关键词                                                      | 数据模式    | 核心组件                  | Task 类型映射                                                          | 必读模板                                                  |
+| --------------- | ----------- | --------------------------------------------------------------- | ----------- | ------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------- |
+| crud-management | CRUD 管理   | 管理、列表、增删改查、CRUD、数据维护                            | 完整 CRUD   | SProTable, SForm, SDetail | api, page-list, page-form, page-detail                                 | api-module.md, crud-page.md, form-page.md, detail-page.md |
+| dashboard       | 大屏/仪表盘 | 大屏、仪表盘、Dashboard、统计看板、监控大屏、数据概览、实时监控 | 只读+聚合   | ECharts, StatCard, Grid   | api, data-transform, component-chart, component-widget, page-dashboard | dashboard-page.md                                         |
+| workflow        | 工作流/审批 | 工作流、审批、流程、工单、流转、申请                            | 状态机+表单 | SForm, Steps, Timeline    | api, page-workflow, component                                          | —（规划中）                                               |
+| landing         | 落地/门户   | 首页、门户、导航、Portal、欢迎页、工作台                        | 静态+导航   | Card, List, StatCard      | page-landing                                                           | —（规划中）                                               |
+| form-only       | 纯表单      | 配置、设置、参数                                                | 读+写标量   | SForm                     | api, page-form                                                         | form-page.md, api-module.md                               |
+| list-only       | 纯列表      | 日志、操作记录、审计                                            | 只读+查询   | SProTable                 | api, page-list                                                         | crud-page.md, api-module.md                               |
+| custom          | 自定义      | (兜底—任意未匹配)                                               | 按分析      | 按分析                    | page-custom                                                            | —（用户指定）                                             |
 
 > **置信度**: `高` = 自动分类 | `中` = AI推断 | `低` = 标记custom待确认
 

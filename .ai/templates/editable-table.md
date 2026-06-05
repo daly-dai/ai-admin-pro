@@ -1,6 +1,6 @@
 # 可编辑表格页代码模板
 
-> 适用场景：需要行内编辑、动态增删行的表格。普通只读表格仍用 SSearchTable / STable。
+> 适用场景：需要行内编辑、动态增删行的表格。普通只读表格仍用 SProTable / STable。
 > 组件来源：`EditableProTable` from `@ant-design/pro-components`。完整 API 见根目录 `EditableProTable-API.md`。
 
 ## 范例一：受控模式完整页面
@@ -155,4 +155,4 @@ const formItems: SFormItems = [
 | 2   | `controlled` + `value/onChange` 受控模式                      | `defaultValue` 非受控（状态难追踪）              |
 | 3   | `recordCreatorProps.record` 用函数返回唯一 id（`Date.now()`） | 硬编码固定 id（导致 key 冲突）                   |
 | 4   | `editableKeys` + `onChange` 受控管理编辑行                    | 不传 `editableKeys`（默认单行，不灵活）          |
-| 5   | 普通只读表格用 `SSearchTable` / `STable`                      | 只读场景也用 EditableProTable                    |
+| 5   | 普通只读表格用 `SProTable` / `STable`                         | 只读场景也用 EditableProTable                    |

@@ -58,7 +58,7 @@
 类型: {Entity} + {Entity}Query extends PageQuery + {Entity}FormData
 ```
 
-useRequest 模式：列表 → SSearchTable.requestFn 直传 | 写操作 → `manual: true` + `onSuccess` | 详情 → `ready: !!id`
+useRequest 模式：列表 → SProTable request.service 直传 | 写操作 → `manual: true` + `onSuccess` | 详情 → `ready: !!id`
 
 完整规范 → `.ai/conventions/api-conventions.md`
 

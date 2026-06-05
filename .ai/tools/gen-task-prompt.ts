@@ -43,7 +43,7 @@ const TYPE_FILE_MAP: Record<string, FileMapping> = {
   'page-list': {
     templates: ['templates/crud-page.md'],
     sdesign: [
-      'sdesign/components/SSearchTable.md',
+      'sdesign/components/SProTable.md',
       'sdesign/components/SButton.md',
     ],
   },

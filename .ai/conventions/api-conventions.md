@@ -26,7 +26,7 @@
 
 | 场景     | 模式                                                    | 模板参考       |
 | -------- | ------------------------------------------------------- | -------------- |
-| 列表查询 | SSearchTable `requestFn` 直传                           | crud-page.md   |
+| 列表查询 | SProTable `request.service` 直传                        | crud-page.md   |
 | 写操作   | `useRequest(apiFn, { manual: true, onSuccess })`        | crud-page.md   |
 | 详情加载 | `useRequest(() => getByIdByGet(id!), { ready: !!id })`  | detail-page.md |
 | 表单提交 | `useRequest(apiFn, { manual: true })` + onFinish 调 run | crud-page.md   |

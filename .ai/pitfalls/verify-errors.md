@@ -11,7 +11,7 @@
 | `TS7006: Parameter implicitly has 'any' type`                                  | 缺标注     | 给参数加类型: `(record: Entity) => ...`                                                                      |
 | `TS2554: Expected N arguments, but got M`                                      | 参数数量   | 检查 API 方法签名是否与调用匹配                                                                              |
 | `no-unused-vars: 'text' is defined`                                            | 命名       | 加 `_` 前缀: `(_text, record)`                                                                               |
-| `no-restricted-imports: 'antd' import 'Table'`                                 | 组件违规   | 换 SSearchTable 或 STable                                                                                    |
+| `no-restricted-imports: 'antd' import 'Table'`                                 | 组件违规   | 换 SProTable 或 STable                                                                                       |
 | `prettier: ...`                                                                | 格式       | `pnpm verify:fix` 自动修复                                                                                   |
 | `TS2322: Type '"group"' is not assignable to type 'FormItemType'`              | 类型违规   | SForm 没有 `type: 'group'`。分组表单用 `<SForm.Group groupItems={[...]}>` 组件，不在 items 里加 type         |
 | `TS2339: Property 'loading' does not exist on type ... 'SFormProps'`           | 属性不存在 | SForm / SForm.Group 均不支持 `loading`。需要 loading 效果用 `<Spin spinning={loading}>` 包裹                 |
@@ -28,7 +28,7 @@
 
 | 报错涉及的关键词                                                                                      | 读取的组件文档                                                                             |
 | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `SSearchTable` / `STable` / `columns` / `SColumnsType` / `paginationFields` / `requestFn`             | `.ai/sdesign/components/SSearchTable.md`                                                   |
+| `SProTable` / `STable` / `columns` / `SColumnsType` / `paginationFields` / `request`                  | `.ai/sdesign/components/SProTable.md`                                                      |
 | `SForm` / `formItems` / `SFormItems` / `SForm.Group` / `useWatch` / `GroupItemsType` / `FormItemType` | `.ai/sdesign/components/SForm.md`                                                          |
 | `SDetail` / `SDetailItem` / `SDetail.Group` / `SDetailGroupProps`                                     | `.ai/sdesign/components/SDetail.md`                                                        |
 | `SButton` / `actionType`                                                                              | `.ai/sdesign/components/SButton.md`                                                        |
