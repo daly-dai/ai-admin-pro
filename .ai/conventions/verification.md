@@ -32,7 +32,6 @@ Level 1 通过后逐条检查：
 - [ ] 大屏场景使用 EChartsBase 基座，未直接 import echarts-for-react
 - [ ] 无 any 类型，未直接 import axios，类型导入用 `import type`
 - [ ] API 方法名带 HTTP 后缀（getListByGet/createByPost 等）
-- [ ] SForm 字段联动用 `SForm.useWatch` + 动态 items 条件展开（禁止 `type: 'dependency'`）
 - [ ] 确认弹窗用 antd `Modal.confirm`（禁止 SConfirm）
 - [ ] Modal/Drawer 使用 `createModal`/`createDrawer` 工厂函数（`@dalydb/sdesign`），禁止手动管理 open 状态
 - [ ] 所有 API 调用通过 useRequest 包装（SProTable request.service 除外）

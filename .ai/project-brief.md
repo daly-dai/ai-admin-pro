@@ -69,8 +69,7 @@ useRequest 模式：列表 → SProTable request.service 直传 | 写操作 → 
 | P001 | 弹层 → `createModal`/`createDrawer`，禁止父组件管 open 状态                          |
 | P002 | 可编辑表格 → `EditableProTable`（@ant-design/pro-components），非 SForm type:'table' |
 | P003 | 未用参数 → 加 `_` 前缀，禁止 void / eslint-disable 绕过                              |
-| P004 | 字段联动 → `SForm.useWatch` + 条件展开 items，禁止 type:'dependency'                 |
-| P005 | 确认弹窗 → `Modal.confirm`，禁止 SConfirm                                            |
+| P004 | 确认弹窗 → `Modal.confirm`，禁止 SConfirm                                            |
 | P006 | 列类型 → `const columns: SColumn[] = [...]`，禁止 as const                           |
 
 详情和正反例 → `.ai/pitfalls/index.md`

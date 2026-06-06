@@ -28,7 +28,7 @@ input | inputNumber | password | textarea | select | slider |
 radio | radioGroup | switch | treeSelect | upload |
 datePicker | datePickerRange |
 timePicker | timePickerRange | checkbox | checkGroup |
-cascader | table | dependency
+cascader | table
 
 已废弃别名（仍可用，建议迁移为 camelCase）:
 SDatePicker → datePicker | SDatePickerRange → datePickerRange | SCascader → cascader
