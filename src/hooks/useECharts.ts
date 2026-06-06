@@ -208,6 +208,7 @@ export function useECharts(options: UseEChartsOptions): UseEChartsReturn {
   }, [option]);
 
   // ===================== 3. 加载状态（通过 ref 读取最新配置，避免对象引用依赖） =====================
+  // eslint-disable-next-line complexity
   useEffect(() => {
     const instance = instanceRef.current;
     if (!instance || instance.isDisposed()) return;

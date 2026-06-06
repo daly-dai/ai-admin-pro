@@ -8,24 +8,24 @@ import { RouterProvider } from 'react-router-dom';
 
 import 'dayjs/locale/zh-cn';
 
+import { initSeedData } from '@/plugins/storage/seed';
 import { router } from '@/router';
 import { useDictStore } from '@/stores';
 
 import '@/styles/global.css';
 
-/**
- * 文件上传地址配置
- * 可通过环境变量 VITE_UPLOAD_URL 配置不同环境的上传地址
- */
-// const uploadUrl = import.meta.env.VITE_UPLOAD_URL || '/api/upload';
-
 // 设置dayjs语言
 dayjs.locale('zh-cn');
 
+// eslint-disable-next-line react-refresh/only-export-components
 const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const dictMapData = useDictStore((s) => s.dictMapData);
+
   return <SConfigProvider globalDict={dictMapData}>{children}</SConfigProvider>;
 };
+
+// 初始化种子数据（幂等：首次加载写入，后续跳过）
+initSeedData();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

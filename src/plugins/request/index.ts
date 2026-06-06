@@ -1,3 +1,4 @@
+import { applyStorageInterceptor } from '@/plugins/storage';
 import { message } from 'antd';
 import axios, {
   type AxiosInstance,
@@ -27,7 +28,7 @@ const defaultConfig: Required<RequestConfig> = {
   prefix: '',
   codeKey: 'code',
   successCode: 200,
-  dataKey: '',
+  dataKey: 'data',
   msgKey: 'message',
   timeout: 30000,
 };
@@ -143,6 +144,7 @@ export function createRequest(config?: RequestConfig) {
 
   // 创建新实例
   const instance = createAxiosInstance(cfg);
+  applyStorageInterceptor(instance);
   instanceCache.set(key, instance);
 
   return createRequestMethods(instance);

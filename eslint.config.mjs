@@ -4,14 +4,12 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  // 全局忽略
   { ignores: ['dist', 'node_modules', '*.config.*'] },
 
-  // 基础规则
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
 
-  // 全局配置
+  // 全局规则
   {
     plugins: {
       'react-hooks': reactHooks,
@@ -22,26 +20,24 @@ export default tseslint.config(
 
       'react-refresh/only-export-components': [
         'warn',
-        { allowConstantExport: true },
+        {
+          allowConstantExport: true,
+          extraHOCs: ['createModal', 'createDrawer'],
+        },
       ],
 
-      // === Harness Engineering: 硬约束规则 ===
+      // === Harness Engineering 硬约束 ===
 
-      // 禁止 any 类型
       '@typescript-eslint/no-explicit-any': 'error',
-
-      // 强制使用 import type
       '@typescript-eslint/consistent-type-imports': [
         'error',
         { prefer: 'type-imports' },
       ],
-
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_' },
       ],
 
-      // 禁止直接导入 axios
       'no-restricted-imports': [
         'error',
         {
@@ -57,22 +53,34 @@ export default tseslint.config(
     },
   },
 
-  // src/plugins/request/ 是唯一允许直接使用 axios 的目录
+  // ======================== 函数质量约束 ========================
+
+  // 业内共识：圈复杂度 + 嵌套深度已足够衡量函数质量。
+  // JSX 行数 ≠ 逻辑复杂度，行数用 code review 管。
   {
-    files: ['src/plugins/request/**/*.ts'],
     rules: {
-      'no-restricted-imports': 'off',
+      'complexity': ['error', { max: 10 }],
+      'max-depth': ['error', { max: 3 }],
+      'max-params': ['warn', { max: 3 }],
     },
   },
 
-  // 业务页面和组件：限制 antd 高阶组件，引导使用 sdesign
+  // ======================== 目录级规则 ========================
+
+  // src/plugins/request/ — 允许直接使用 axios
+  {
+    files: ['src/plugins/request/**/*.ts'],
+    rules: { 'no-restricted-imports': 'off' },
+  },
+
+  // 业务页面：限制 antd Table/Form/Button/Descriptions，引导使用 sdesign
   {
     files: ['src/pages/**/*.tsx', 'src/components/**/*.tsx'],
     ignores: [
       'src/pages/login/**',
       'src/pages/error/**',
       'src/pages/register/**',
-      'src/components/editable-tables/**', // 可编辑表格组件库豁免
+      'src/components/editable-tables/**',
     ],
     rules: {
       'no-restricted-imports': [
@@ -93,20 +101,10 @@ export default tseslint.config(
           ],
         },
       ],
-      // 示例：禁止在非豁免目录使用 Modal.confirm
-      // .eslintrc 中配置 no-restricted-syntax 或自定义规则
-      // 'no-restricted-properties': [
-      //   'error',
-      //   {
-      //     object: 'Modal',
-      //     property: 'confirm',
-      //     message: '使用 SConfirm 组件替代',
-      //   },
-      // ],
     },
   },
 
-  // 页面组件命名规范：必须使用 const XxxPage = () => {} 形式
+  // 页面组件命名规范
   {
     files: ['src/pages/**/*.tsx'],
     ignores: [
@@ -115,7 +113,6 @@ export default tseslint.config(
       'src/pages/register/**',
     ],
     rules: {
-      // 禁止直接导出函数声明，强制使用 const + 箭头函数
       'func-style': ['error', 'expression', { allowArrowFunctions: true }],
     },
   },

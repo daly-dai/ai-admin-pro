@@ -12,8 +12,8 @@
 | 阶段一：地基                | 3       | 0     | 3      |
 | 阶段二：权限页面            | 3       | 0     | 3      |
 | 阶段三：管控集成 + 配方沉淀 | 3       | 0     | 3      |
-| 阶段四：收尾 + 已有模块改造 | 7       | 0     | 7      |
-| **合计**                    | **16**  | **0** | **16** |
+| 阶段四：收尾 + 已有模块改造 | 8       | 0     | 8      |
+| **合计**                    | **17**  | **0** | **17** |
 
 ---
 
@@ -166,8 +166,7 @@
 **验收标准**：
 
 - [ ] persist `partialize` 包含 `permissions`
-- [ ] `login` 方法调用 `setPermissionsByRoles`
-- [ ] `setPermissionsByRoles` 从 roles 提取所有 permissionIds 去重
+- [ ] `setPermissionsByRoles` 从 roles 提取所有 permissionIds 去重，解析 ID 为 code
 - [ ] `hasPermission` 支持通配符 `*`
 - [ ] pnpm verify 通过
 
@@ -177,17 +176,16 @@
 
 ### Task 3.2 — 路由守卫增强
 
-| 项         | 内容                                                                                                                                                             |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **类型**   | 非标（guard 改造 — 粒度闸门：~15 行）                                                                                                                            |
-| **输出锁** | `src/router/guards/RequireAuth.tsx`（修改）                                                                                                                      |
-| **做什么** | 增加 `requiredPermission` 可选参数。有值时检查 `hasPermission`，无权限跳转 403。路由配置中给 `/system/user` / `/system/role` / `/system/permission` 加对应权限。 |
+| 项         | 内容                                                                                         |
+| ---------- | -------------------------------------------------------------------------------------------- |
+| **类型**   | 非标（guard 改造 — 粒度闸门：~15 行）                                                        |
+| **输出锁** | `src/router/guards/RequireAuth.tsx`（修改）                                                  |
+| **做什么** | 增加 `requiredPermission` 可选参数。有值时检查 `hasPermission`，无权限渲染 403 Result 页面。 |
 
 **验收标准**：
 
 - [ ] `RequireAuth` props 增加 `requiredPermission?: string`
-- [ ] 无权限时跳转错误页（复用 404 或简单提示）
-- [ ] 路由配置中三条系统路由加了 `requiredPermission`
+- [ ] 无权限时渲染 antd `<Result status="403">` 页面
 - [ ] 不影响已有 token 检查逻辑
 - [ ] pnpm verify 通过
 
@@ -197,17 +195,16 @@
 
 ### Task 3.3 — RBAC 配方沉淀
 
-| 项           | 内容                                                                                                                                                                                      |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **类型**     | 配方沉淀                                                                                                                                                                                  |
-| **做什么**   | Task 3.1 + 3.2 跑通后，将其操作步骤 + MainLayout 菜单过滤 + 按钮权限控制沉淀为 `rbac-scaffold` 配方。在 `routing-strategy.md` 匹配表注册，在 `recipe-conventions.md` 指引下提议用户确认。 |
-| **沉淀内容** | 6 步操作：stores/user.ts → RequireAuth → MainLayout 菜单过滤 → 用户列表页按钮 → 角色列表页按钮 → 权限管理页按钮                                                                           |
+| 项         | 内容                                                                                                                                                             |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **类型**   | 配方沉淀                                                                                                                                                         |
+| **做什么** | Task 3.1 + 3.2 跑通后，将其操作步骤 + MainLayout 菜单过滤 + 按钮权限控制沉淀为 `rbac-scaffold` 配方。在 `routing-strategy.md` 匹配表和 `recipes/index.md` 注册。 |
 
 **验收标准**：
 
 - [ ] `.ai/recipes/rbac-scaffold.md` 文件存在
 - [ ] 按 `templates/recipe.md` 格式：钩子/优先级/触发条件/做什么/验证场景
-- [ ] 在 `routing-strategy.md` §三.3 匹配表注册
+- [ ] 在 `routing-strategy.md` 和 `recipes/index.md` 注册
 - [ ] 用户已确认
 
 **状态**：⬜ 待实施
@@ -223,7 +220,6 @@
 | **类型**   | api                                                              |
 | **输出锁** | `src/api/user/types.ts`（新建）、`src/api/user/index.ts`（新建） |
 | **模板**   | `.ai/templates/api-module.md`                                    |
-| **做什么** | 新建用户 API 模块。5 个标准方法 + 类型定义。                     |
 
 **验收标准**：
 
@@ -231,7 +227,6 @@
 - [ ] `UserQuery extends PageQuery`（keyword / status / dateRange）
 - [ ] `UserFormData` 完整（username / password / nickname / email / phone / status / roleIds / remark）
 - [ ] 5 个 API 方法：`getListByGet` / `getByIdByGet` / `createByPost` / `updateByPut` / `deleteByDelete`
-- [ ] 方法签名类型正确
 - [ ] pnpm verify 通过
 
 **状态**：⬜ 待实施
@@ -312,7 +307,6 @@
 | **类型**   | api                                                              |
 | **输出锁** | `src/api/role/types.ts`（新建）、`src/api/role/index.ts`（新建） |
 | **模板**   | `.ai/templates/api-module.md`                                    |
-| **做什么** | 新建角色 API 模块。5 个标准方法 + 类型定义。                     |
 
 **验收标准**：
 
@@ -320,7 +314,6 @@
 - [ ] `RoleQuery extends PageQuery`（keyword / status）
 - [ ] `RoleFormData` 完整（code / name / description / status / permissionIds）
 - [ ] 5 个 API 方法：`getListByGet` / `getByIdByGet` / `createByPost` / `updateByPut` / `deleteByDelete`
-- [ ] 方法签名类型正确
 - [ ] pnpm verify 通过
 
 **状态**：⬜ 待实施
@@ -372,8 +365,6 @@
 
 ---
 
-## 阶段四补充：MainLayout 菜单
-
 ### Task 4.8 — MainLayout 菜单过滤 + 权限管理入口
 
 | 项         | 内容                                                                                                                                                   |
@@ -400,12 +391,13 @@
 2. **输出锁纪律**：不改锁外文件，不顺手重构
 3. **配方沉淀**：Task 3.1+3.2+4.8 跑通后，按 `recipe-conventions.md` 沉淀 `rbac-scaffold`
 4. **storage-layer 沉淀**：Task 1.1+1.2+1.3 跑通后，按 `recipe-conventions.md` 沉淀 `storage-layer`
+5. **强制**：多 Task 执行时调用 Skill: `task-executor` 逐 Task 推进
 
 ---
 
 ## Task 复盘记录
 
-> 每个 Task 验收通过后，在此记录卡点和归因。这是后续优化规约、模板、PRD、错题集的**唯一输入源**。
+> 每个 Task 验收通过后，在此记录卡点和归因。
 
 ### 复盘格式
 
@@ -423,14 +415,14 @@
 
 ### 归因分类
 
-| 归因           | 说明                                                                    | 优化目标                                        |
-| -------------- | ----------------------------------------------------------------------- | ----------------------------------------------- |
-| **规约缺失**   | task-gates / api-conventions / recipe-conventions / 硬约束 没覆盖到的坑 | 补到对应 conventions 文件                       |
-| **PRD 不完整** | PRD 中字段、接口、业务规则有遗漏或错误                                  | 修改 `specs/rbac-design.md`                     |
-| **模板问题**   | 模板骨架与实际情况不匹配，或模板缺少关键说明                            | 修改对应 `.ai/templates/`                       |
-| **错题集缺失** | 犯了 pitfalls 未收录的低级错误                                          | 补到 `.ai/pitfalls/index.md`                    |
-| **架构设计**   | 路由策略、粒度闸门、匹配机制等设计缺陷                                  | 修改 `.ai/core/routing-strategy.md` 或 哲学文档 |
-| **我的失误**   | AI 自身判断错误、漏读文件、误解需求                                     | 无需改文件——记录供后续模式识别                  |
+| 归因           | 说明                                   | 优化目标                            |
+| -------------- | -------------------------------------- | ----------------------------------- |
+| **规约缺失**   | conventions 没覆盖到的坑               | 补到对应 conventions 文件           |
+| **PRD 不完整** | PRD 中字段、接口、业务规则有遗漏或错误 | 修改 `specs/rbac-design.md`         |
+| **模板问题**   | 模板骨架与实际情况不匹配               | 修改对应 `.ai/templates/`           |
+| **错题集缺失** | 犯了 pitfalls 未收录的低级错误         | 补到 `.ai/pitfalls/index.md`        |
+| **架构设计**   | 路由策略、粒度闸门、匹配机制等设计缺陷 | 修改 `.ai/core/routing-strategy.md` |
+| **我的失误**   | AI 自身判断错误、漏读文件、误解需求    | 记录供后续模式识别                  |
 
 ### 复盘记录
 

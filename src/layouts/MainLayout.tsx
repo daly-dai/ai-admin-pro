@@ -5,6 +5,7 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  SafetyCertificateOutlined,
   SettingOutlined,
   TeamOutlined,
   UserOutlined,
@@ -23,6 +24,8 @@ import {
 import React from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
+import type { ItemType } from 'antd/es/menu/interface';
+
 import { useAppStore, useUserStore } from '@/stores';
 
 const { Header, Sider, Content } = Layout;
@@ -33,7 +36,7 @@ const MainLayout: React.FC = () => {
   const { token } = theme.useToken();
 
   const { sidebarCollapsed, toggleSidebar } = useAppStore();
-  const { userInfo, logout } = useUserStore();
+  const { userInfo, logout, hasPermission } = useUserStore();
 
   // 用户菜单
   const userMenuItems = [
@@ -72,36 +75,55 @@ const MainLayout: React.FC = () => {
     }
   };
 
+  // 菜单 key → 所需权限 映射表
+  const menuPermissions: Record<string, string> = {
+    '/system/user': 'user:list',
+    '/system/role': 'role:list',
+    '/system/permission': 'perm:list',
+  };
+
   // 侧边栏菜单
-  const menuItems = [
-    {
-      key: '/home',
-      icon: <HomeOutlined />,
-      label: '首页',
-    },
-    {
-      key: '/dashboard',
-      icon: <DashboardOutlined />,
-      label: '仪表盘',
-    },
+  const menuItems: ItemType[] = [
+    { key: '/home', icon: <HomeOutlined />, label: '首页' },
+    { key: '/dashboard', icon: <DashboardOutlined />, label: '仪表盘' },
     {
       key: '/system',
       icon: <SettingOutlined />,
       label: '系统管理',
       children: [
+        { key: '/system/user', icon: <UserOutlined />, label: '用户管理' },
+        { key: '/system/role', icon: <TeamOutlined />, label: '角色管理' },
         {
-          key: '/system/user',
-          icon: <UserOutlined />,
-          label: '用户管理',
-        },
-        {
-          key: '/system/role',
-          icon: <TeamOutlined />,
-          label: '角色管理',
+          key: '/system/permission',
+          icon: <SafetyCertificateOutlined />,
+          label: '权限管理',
         },
       ],
     },
   ];
+
+  /** 递归过滤无权限菜单，无权限子项全部移除时父项也移除 */
+  const filterMenuByPermission = (items: ItemType[]): ItemType[] => {
+    return items
+      .filter((item) => {
+        if (!item) return false;
+        const key = item.key as string;
+        const required = menuPermissions[key];
+        if (required && !hasPermission(required)) return false;
+        return true;
+      })
+      .map((item) => {
+        if (item && 'children' in item && item.children) {
+          const filtered = filterMenuByPermission(item.children as ItemType[]);
+          if (filtered.length === 0) return null;
+          return { ...item, children: filtered };
+        }
+        return item;
+      })
+      .filter(Boolean) as ItemType[];
+  };
+
+  const filteredMenuItems = filterMenuByPermission(menuItems);
 
   return (
     <Layout style={{ height: '100vh' }}>
@@ -131,7 +153,7 @@ const MainLayout: React.FC = () => {
         <Menu
           mode="inline"
           selectedKeys={[location.pathname]}
-          items={menuItems}
+          items={filteredMenuItems}
           onClick={({ key }) => navigate(key)}
           style={{ borderRight: 0 }}
         />

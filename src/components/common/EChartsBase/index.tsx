@@ -4,7 +4,7 @@ import type {
   ECharts as EChartsInstance,
   EChartsOption,
 } from 'echarts';
-import React from 'react';
+import { memo } from 'react';
 
 import { SButton, SErrorBoundary } from '@dalydb/sdesign';
 import { useECharts } from 'src/hooks/useECharts';
@@ -97,6 +97,65 @@ interface EChartsProps {
   height?: number | string;
 }
 
+// ==================== 子组件 ====================
+
+/** 加载遮罩 */
+const LoadingOverlay = ({ text }: { text: string }) => (
+  <div className={`${styles.stateOverlay} ${styles['stateOverlay--dimmed']}`}>
+    <Spin tip={text} />
+  </div>
+);
+
+/** 空数据遮罩 */
+const EmptyOverlay = ({ text }: { text: string }) => (
+  <div className={`${styles.stateOverlay} ${styles['stateOverlay--dimmed']}`}>
+    <div className={styles.emptyContent}>
+      <Empty description={text} />
+    </div>
+  </div>
+);
+
+/** 错误状态 */
+const ErrorState = ({
+  error,
+  errorTitle,
+  onRetry,
+  wrapperStyle,
+  className,
+}: {
+  error: Error | string;
+  errorTitle: string;
+  onRetry?: () => void;
+  wrapperStyle: React.CSSProperties;
+  className?: string;
+}) => {
+  const message = error instanceof Error ? error.message : String(error);
+
+  return (
+    <div
+      className={`${styles.wrapper} ${className ?? ''}`}
+      style={wrapperStyle}
+    >
+      <div className={styles.stateOverlay}>
+        <Result
+          status="error"
+          title={errorTitle}
+          subTitle={message}
+          extra={
+            onRetry ? (
+              <SButton type="primary" onClick={onRetry}>
+                重试
+              </SButton>
+            ) : undefined
+          }
+        />
+      </div>
+    </div>
+  );
+};
+
+// ==================== 主组件 ====================
+
 /**
  * ECharts 基座组件
  *
@@ -129,92 +188,32 @@ interface EChartsProps {
  * }
  * ```
  */
-const EChartsBase = React.memo<EChartsProps>((props) => {
-  const {
-    option,
-    theme,
-    initOpts,
-    notMerge = true,
-    lazyUpdate = false,
-    renderer = 'canvas',
-    autoResize = true,
-    resizeDebounce = 0,
-    loading = false,
-    loadingConfig,
-    error,
-    empty = false,
-    loadingText,
-    errorTitle = '图表渲染出错',
-    emptyText = '暂无数据',
-    onChartReady,
-    onError,
-    onRetry,
-    events,
-    style,
-    className,
-    height,
-  } = props;
+interface ChartContentProps {
+  containerRef: React.RefObject<HTMLDivElement>;
+  loading: boolean;
+  loadingText?: string;
+  empty: boolean;
+  emptyText?: string;
+  errorTitle?: string;
+  onRetry?: () => void;
+  className?: string;
+  wrapperStyle: React.CSSProperties;
+}
 
-  // ---- 合并 loading 配置（hook 内部通过 ref 读取，无需 memo） ----
-  const mergedLoadingConfig: LoadingConfig = {
-    ...loadingConfig,
-    text: loadingText ?? loadingConfig?.text ?? '',
-  };
-
-  // ---- 使用 Hook 管理实例 ----
-  const { containerRef } = useECharts({
-    option,
-    theme,
-    initOpts,
-    notMerge,
-    lazyUpdate,
-    autoResize,
-    resizeDebounce,
-    renderer,
-    loading,
-    loadingConfig: mergedLoadingConfig,
-    events,
-    onChartReady,
-    onError,
-  });
-
-  // ---- 容器样式 ----
-  const wrapperStyle: React.CSSProperties = {
-    ...style,
-    height: height ?? style?.height ?? '100%',
-    width: style?.width ?? '100%',
-  };
-
-  // ---- 错误状态（外部传入） ----
-  if (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-
-    return (
-      <div
-        className={`${styles.wrapper} ${className ?? ''}`}
-        style={wrapperStyle}
-      >
-        <div className={styles.stateOverlay}>
-          <Result
-            status="error"
-            title={errorTitle}
-            subTitle={errorMessage}
-            extra={
-              onRetry ? (
-                <SButton type="primary" onClick={onRetry}>
-                  重试
-                </SButton>
-              ) : undefined
-            }
-          />
-        </div>
-      </div>
-    );
-  }
-
+const ChartContent = ({
+  containerRef,
+  loading,
+  loadingText,
+  empty,
+  emptyText,
+  errorTitle = '图表渲染出错',
+  onRetry,
+  className,
+  wrapperStyle,
+}: ChartContentProps) => {
   const showEmpty = empty && !loading;
+  const showLoadingText = loading && loadingText != null && loadingText !== '';
 
-  // ---- 正常渲染（SErrorBoundary 防止组件级崩溃扩散到页面） ----
   return (
     <div
       className={`${styles.wrapper} ${className ?? ''}`}
@@ -242,31 +241,96 @@ const EChartsBase = React.memo<EChartsProps>((props) => {
           </div>
         )}
       >
-        {/* 图表容器 — 始终渲染以保持实例存活 */}
-        <div ref={containerRef} className={styles.chart} />
-
-        {/* 加载遮罩 */}
-        {loading && loadingText != null && loadingText !== '' && (
-          <div
-            className={`${styles.stateOverlay} ${styles['stateOverlay--dimmed']}`}
-          >
-            <Spin tip={loadingText} />
-          </div>
-        )}
-
-        {/* 空数据遮罩 */}
-        {showEmpty && (
-          <div
-            className={`${styles.stateOverlay} ${styles['stateOverlay--dimmed']}`}
-          >
-            <div className={styles.emptyContent}>
-              <Empty description={emptyText} />
-            </div>
-          </div>
-        )}
+        <div
+          ref={containerRef as React.RefObject<HTMLDivElement>}
+          className={styles.chart}
+        />
+        {showLoadingText && <LoadingOverlay text={loadingText!} />}
+        {showEmpty && <EmptyOverlay text={emptyText!} />}
       </SErrorBoundary>
     </div>
   );
-});
+};
 
-export default EChartsBase;
+// eslint-disable-next-line complexity
+const EChartsBase = (props: EChartsProps) => {
+  const {
+    option,
+    theme,
+    initOpts,
+    notMerge = true,
+    lazyUpdate = false,
+    renderer = 'canvas',
+    autoResize = true,
+    resizeDebounce = 0,
+    loading = false,
+    loadingConfig,
+    error,
+    empty = false,
+    loadingText = '',
+    errorTitle = '图表渲染出错',
+    emptyText = '暂无数据',
+    onChartReady,
+    onError,
+    onRetry,
+    events,
+    style,
+    className,
+    height,
+  } = props;
+
+  const mergedLoadingConfig: LoadingConfig = {
+    ...loadingConfig,
+    text: loadingText ?? loadingConfig?.text ?? '',
+  };
+
+  const { containerRef } = useECharts({
+    option,
+    theme,
+    initOpts,
+    notMerge,
+    lazyUpdate,
+    autoResize,
+    resizeDebounce,
+    renderer,
+    loading,
+    loadingConfig: mergedLoadingConfig,
+    events,
+    onChartReady,
+    onError,
+  });
+
+  const wrapperStyle: React.CSSProperties = {
+    ...style,
+    height: height ?? style?.height ?? '100%',
+    width: style?.width ?? '100%',
+  };
+
+  if (error) {
+    return (
+      <ErrorState
+        error={error}
+        errorTitle={errorTitle}
+        onRetry={onRetry}
+        wrapperStyle={wrapperStyle}
+        className={className}
+      />
+    );
+  }
+
+  return (
+    <ChartContent
+      containerRef={containerRef}
+      loading={loading}
+      loadingText={loadingText}
+      empty={empty}
+      emptyText={emptyText}
+      errorTitle={errorTitle}
+      onRetry={onRetry}
+      className={className}
+      wrapperStyle={wrapperStyle}
+    />
+  );
+};
+
+export default memo(EChartsBase);

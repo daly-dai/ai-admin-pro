@@ -37,6 +37,10 @@
 | G9  | SForm / SDetail 无 `loading` prop（用 `<Spin>` 包裹）        | review              |
 | G10 | 枚举列/下拉不硬编码 options（通过 `dictKey` 指定字典编码）   | review              |
 | G11 | `pnpm verify` 通过（0 error，warning 可忽略）                | tsc+eslint+prettier |
+| G12 | Task 验收后必须更新状态 + 写复盘，禁止连续执行后批量补填     | review              |
+| G13 | 圈复杂度 ≤ 10                                                | eslint `complexity` |
+| G14 | 嵌套深度 ≤ 3 层                                              | eslint `max-depth`  |
+| G15 | 函数参数 ≤ 3 个（超过用对象参数）                            | eslint `max-params` |
 
 ### 1.3 验证边界（❗关键）
 
