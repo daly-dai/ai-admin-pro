@@ -18,7 +18,7 @@
 .ai/
 ├── project-brief.md              # 项目认知速览（浓缩 tech-stack/architecture/coding-standards/principles）
 ├── core/                         # 核心规范
-│   ├── principles.md             # 9 条核心原则（所有决策的宪法）
+│   ├── ai-engineering-principles.md  # 指导思想（宪法 + 执政纲领 + 落地笔记）
 │   ├── architecture.md           # 架构规范、项目结构
 │   ├── coding-standards.md       # 代码规范（TypeScript/React/API）
 │   └── tech-stack.md             # 技术栈定义和约束
