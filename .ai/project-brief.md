@@ -95,9 +95,9 @@ useRequest 模式：列表 → SProTable request.service 直传 | 写操作 → 
 | 修改路径              | `AGENTS.md` §五                                                                           |
 | Task闸门 + 输出锁     | `conventions/task-gates.md`                                                               |
 | 大屏规约              | `conventions/dashboard-conventions.md`                                                    |
-| 非标 PRD→Task         | `AGENTS.md` §二.4                                                                         |
+| Lane 详细流程         | `conventions/lanes.md`                                                                    |
+| 修改路径              | `conventions/modify-paths.md`                                                             |
 | Swagger→API 合并      | `conventions/api-conventions.md`                                                          |
-| 迭代修改详细规则      | `AGENTS.md` §五                                                                           |
 | 代码模板              | `templates/{crud-page,form-page,detail-page,dashboard-page,api-module,editable-table}.md` |
 | 组件详细 API          | `sdesign/components/{Name}.md`                                                            |
 | PRD 模板（标准/兜底） | `templates/prd/prd-standard.md` / `prd-fallback.md`                                       |
@@ -108,3 +108,5 @@ useRequest 模式：列表 → SProTable request.service 直传 | 写操作 → 
 | 路由策略与配方        | `core/routing-strategy.md`                                                                |
 | 配方格式骨架          | `templates/recipe.md`                                                                     |
 | 配方闸门              | `conventions/recipe-conventions.md`                                                       |
+| Task 拆分规约         | `conventions/task-splitting.md`                                                           |
+| TypeScript 编码规约   | `conventions/typescript-conventions.md`                                                   |
