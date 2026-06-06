@@ -37,6 +37,7 @@
 ## 零、新会话第一步
 
 新会话先读 `.ai/project-brief.md`（认知底座）。
+路由策略与配方机制 → `.ai/core/routing-strategy.md`。
 
 ---
 
@@ -219,6 +220,7 @@
   2. 读组件文档（涉及 SSearchTable/SForm/SButton/SDetail/EChartsBase 时）
   3. 读错题集（.ai/pitfalls/index.md）
   4. 填空生成
+  4.1 执行后置任务 — 扫配方匹配表，命中则执行对应配方（见 routing-strategy.md §三）
   5. pnpm verify（最多 3 轮）
 
 信息不完整时：Task 正常匹配，缺的标 [待补充]，占位 URL/TODO，不阻塞流程。

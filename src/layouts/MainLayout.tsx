@@ -1,5 +1,6 @@
 import {
   BellOutlined,
+  DashboardOutlined,
   HomeOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
@@ -77,6 +78,11 @@ const MainLayout: React.FC = () => {
       key: '/home',
       icon: <HomeOutlined />,
       label: '首页',
+    },
+    {
+      key: '/dashboard',
+      icon: <DashboardOutlined />,
+      label: '仪表盘',
     },
     {
       key: '/system',

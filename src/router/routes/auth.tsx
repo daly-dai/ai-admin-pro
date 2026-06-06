@@ -1,13 +1,9 @@
-import { lazy } from 'react';
-
-import { lazyLoad } from '../utils';
-
-const Login = lazy(() => import('@/pages/login'));
+import { lazyPage } from '../utils/lazyPage';
 
 export const authRoutes = [
   {
     path: '/login',
-    element: lazyLoad(Login),
+    element: lazyPage(() => import('@/pages/login')),
   },
 ];
 

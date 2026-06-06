@@ -64,24 +64,28 @@ useRequest 模式：列表 → SProTable request.service 直传 | 写操作 → 
 
 ## 6. 关键陷阱
 
-| 编号 | 规则                                                                                 |
-| ---- | ------------------------------------------------------------------------------------ |
-| P001 | 弹层 → `createModal`/`createDrawer`，禁止父组件管 open 状态                          |
-| P002 | 可编辑表格 → `EditableProTable`（@ant-design/pro-components），非 SForm type:'table' |
-| P003 | 未用参数 → 加 `_` 前缀，禁止 void / eslint-disable 绕过                              |
-| P004 | 确认弹窗 → `Modal.confirm`，禁止 SConfirm                                            |
-| P006 | 列类型 → `const columns: SColumn[] = [...]`，禁止 as const                           |
+| 编号 | 规则                                                           |
+| ---- | -------------------------------------------------------------- |
+| P001 | 弹层 → `createModal`/`createDrawer`，禁止父组件管 open 状态    |
+| P002 | 可编辑表格 → `EditableProTable`，非 SForm type:'table'         |
+| P003 | 未用参数 → 加 `_` 前缀，禁止 void / eslint-disable             |
+| P004 | 字段联动 → `SForm.useWatch` + 条件展开，禁止 type:'dependency' |
+| P005 | 确认弹窗 → `Modal.confirm`，禁止 SConfirm                      |
+| P006 | searchItems 禁止类型注解，columns 必须注解                     |
+| P007 | 分页配置 `paginationFields` 用 `current`，非 `pageNum`         |
+| P008 | 枚举列/下拉 → 禁止硬编码，用 `dictKey` 指定字典                |
 
-详情和正反例 → `.ai/pitfalls/index.md`
+完整 17 条 → `.ai/pitfalls/index.md`
 
 ## 7. Lane 速览
 
-| Lane      | 触发词                  | 关键规则                                                           |
-| --------- | ----------------------- | ------------------------------------------------------------------ |
-| CRUD      | 列表/CRUD/增删改查/管理 | 模板填空，不生成 PRD。后端MD→types+api→columns。修改走 T1-T8       |
-| 大屏      | 大屏/仪表盘/监控/统计   | 骨架模板 + AI生成option + 规约约束。EChartsBase 基座。修改走 D1-D6 |
-| 多Tab详情 | 详情（含多Tab）         | 初始同CRUD + 增量规则（加Tab不改已有Tab）                          |
-| 非标      | 无匹配场景              | prd-fallback.md 兜底 → PRD → Task拆解                              |
+| Lane / 机制 | 触发词                           | 关键规则                                                                         |
+| ----------- | -------------------------------- | -------------------------------------------------------------------------------- |
+| CRUD        | 列表/CRUD/增删改查/管理          | 模板填空，不生成 PRD。后端MD→types+api→columns。修改走 T1-T8                     |
+| 大屏        | 大屏/仪表盘/监控/统计            | 骨架模板 + AI生成option + 规约约束。EChartsBase 基座。修改走 D1-D6               |
+| 多Tab详情   | 详情（含多Tab）                  | 初始同CRUD + 增量规则（加Tab不改已有Tab）                                        |
+| 非标        | 无匹配场景                       | prd-fallback.md 兜底 → PRD → Task拆解                                            |
+| 配方        | 权限控制 / 前端存储 / 非标布局 … | Lane 执行后或 Lane 不命中时扫匹配表，命中则执行 → `.ai/core/routing-strategy.md` |
 
 ## 8. 深入导航
 
@@ -101,3 +105,6 @@ useRequest 模式：列表 → SProTable request.service 直传 | 写操作 → 
 | 错题集                | `pitfalls/index.md`                                                                       |
 | 字典使用              | `conventions/dict-conventions.md`                                                         |
 | 项目完整目录树        | `core/architecture.md`                                                                    |
+| 路由策略与配方        | `core/routing-strategy.md`                                                                |
+| 配方格式骨架          | `templates/recipe.md`                                                                     |
+| 配方闸门              | `conventions/recipe-conventions.md`                                                       |

@@ -1,19 +1,10 @@
-import { lazy, Suspense } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import { MainLayout } from '@/layouts';
 import { RequireAuth } from '../guards';
+import { lazyPage } from '../utils/lazyPage';
 import authRoutes from './auth';
 import errorRoutes from './error';
-
-const HomePage = lazy(() => import('@/pages/home'));
-const UserPage = lazy(() => import('@/pages/user'));
-const RolePage = lazy(() => import('@/pages/role'));
-const RoleFormPage = lazy(() => import('@/pages/role/form'));
-
-const LazyLoad = ({ children }: { children: React.ReactNode }) => (
-  <Suspense fallback={null}>{children}</Suspense>
-);
 
 export const routes = [
   ...authRoutes,
@@ -31,35 +22,7 @@ export const routes = [
       },
       {
         path: 'home',
-        element: (
-          <LazyLoad>
-            <HomePage />
-          </LazyLoad>
-        ),
-      },
-      {
-        path: 'system/user',
-        element: (
-          <LazyLoad>
-            <UserPage />
-          </LazyLoad>
-        ),
-      },
-      {
-        path: 'system/role',
-        element: (
-          <LazyLoad>
-            <RolePage />
-          </LazyLoad>
-        ),
-      },
-      {
-        path: 'system/role/form',
-        element: (
-          <LazyLoad>
-            <RoleFormPage />
-          </LazyLoad>
-        ),
+        element: lazyPage(() => import('@/pages/home')),
       },
     ],
   },
