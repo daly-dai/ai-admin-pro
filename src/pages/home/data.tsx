@@ -276,11 +276,11 @@ export const stats: StatDef[] = [
 // ---- helpers ----
 
 export const getGreeting = () => {
-  const h = new Date().getHours();
-  if (h < 6) return '夜深了';
-  if (h < 9) return '早上好';
-  if (h < 12) return '上午好';
-  if (h < 14) return '中午好';
-  if (h < 18) return '下午好';
+  const hour = new Date().getHours();
+  if (hour < 6) return '夜深了';
+  if (hour < 9) return '早上好';
+  if (hour < 12) return '上午好';
+  if (hour < 14) return '中午好';
+  if (hour < 18) return '下午好';
   return '晚上好';
 };

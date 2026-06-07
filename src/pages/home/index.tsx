@@ -7,7 +7,7 @@ import { getGreeting, sections, stats } from './data';
 import styles from './index.module.css';
 
 const HomePage: React.FC = () => {
-  const userInfo = useUserStore((s) => s.userInfo);
+  const userInfo = useUserStore((state) => state.userInfo);
   const [expanded, setExpanded] = useState<{
     code: string;
     label: string;
@@ -37,29 +37,29 @@ const HomePage: React.FC = () => {
 
       {/* ---- Stat gauge strip ---- */}
       <div className={styles.statStrip} style={{ animationDelay: '0.08s' }}>
-        {stats.map((s, i) => (
-          <div key={s.label} className={styles.statItem}>
+        {stats.map((stat, index) => (
+          <div key={stat.label} className={styles.statItem}>
             <div
               className={styles.statBadge}
-              style={{ background: s.bg, color: s.color }}
+              style={{ background: stat.bg, color: stat.color }}
             >
-              {String(i + 1).padStart(2, '0')}
+              {String(index + 1).padStart(2, '0')}
             </div>
             <div>
-              <div className={styles.statLabel}>{s.label}</div>
-              <div className={styles.statValue}>{s.value}</div>
-              <div className={styles.statSub}>{s.sub}</div>
+              <div className={styles.statLabel}>{stat.label}</div>
+              <div className={styles.statValue}>{stat.value}</div>
+              <div className={styles.statSub}>{stat.sub}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* ---- Architecture diagram sections ---- */}
-      {sections.map((section, i) => (
+      {sections.map((section, idx) => (
         <div
           key={section.id}
           className={styles.section}
-          style={{ animationDelay: `${0.14 + i * 0.07}s` }}
+          style={{ animationDelay: `${0.14 + idx * 0.07}s` }}
         >
           <div className={styles.sectionInner}>
             {/* accent bar */}
@@ -67,7 +67,7 @@ const HomePage: React.FC = () => {
               className={styles.accentBar}
               style={{
                 background: section.accentColor,
-                animationDelay: `${0.8 + i * 0.12}s`,
+                animationDelay: `${0.8 + idx * 0.12}s`,
               }}
             />
 
@@ -102,7 +102,7 @@ const HomePage: React.FC = () => {
                 className={styles.sectionNumber}
                 style={{ color: section.accentColor }}
               >
-                {String(i + 1).padStart(2, '0')}
+                {String(idx + 1).padStart(2, '0')}
               </span>
             </div>
 
