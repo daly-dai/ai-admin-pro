@@ -36,6 +36,8 @@
 
 ## 快速示例
 
+> import: `SDetail` `SDetailItem` from `@dalydb/sdesign`，`useRequest` from `ahooks`，`Spin` from `antd`
+
 ```tsx
 // 基础用法
 <SDetail title="详情" dataSource={data} items={items} column={2} />

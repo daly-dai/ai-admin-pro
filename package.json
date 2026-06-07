@@ -17,8 +17,7 @@
     "type-check": "tsc --noEmit",
     "verify": "tsx .ai/tools/verify-wrapper.ts",
     "verify:fix": "eslint src/ --fix && prettier --write src/",
-    "verify:raw": "tsc --noEmit && eslint src/ && prettier --check src/",
-    "verify:scope": "tsx .ai/tools/verify-scope.ts"
+    "verify:raw": "tsc --noEmit && eslint src/ && prettier --check src/"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

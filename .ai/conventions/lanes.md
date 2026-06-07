@@ -1,6 +1,9 @@
 # Lane 详细流程
 
 > AGENTS.md §一 只做匹配，本文档是每个 Lane 的完整执行 SOP。
+>
+> **⚠️ 所有 Lane（含 CRUD）都必须先拆 Task 到 `specs/{feature}-tasks.md`，再逐 Task 执行。**
+> "不生成 PRD"≠"不拆 Task"。PRD 是需求文档，Task 是执行计划——两者独立。
 
 ---
 

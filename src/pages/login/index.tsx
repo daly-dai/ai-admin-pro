@@ -20,88 +20,22 @@ interface LoginForm {
 }
 
 const loginApi = (data: { username: string; password: string }) => {
-  return new Promise<{ user: User; token: string; permissions: string[] }>(
-    (resolve, reject) => {
-      setTimeout(() => {
-        try {
-          const rawUsers = localStorage.getItem('rbac-users');
-          const rawRoles = localStorage.getItem('rbac-roles');
-          if (!rawUsers || !rawRoles) {
-            reject(new Error('系统未初始化，请联系管理员'));
-            return;
-          }
-
-          const users = JSON.parse(rawUsers) as {
-            id: string;
-            username: string;
-            password: string;
-            nickname: string;
-            avatar: string;
-            status: number;
-            roleIds: string[];
-            email: string;
-            createTime: string;
-          }[];
-
-          const roles = JSON.parse(rawRoles) as {
-            id: string;
-            permissionIds: string[];
-          }[];
-
-          const found = users.find(
-            (u) => u.username === data.username && u.password === data.password,
-          );
-
-          if (!found) {
-            reject(new Error('用户名或密码错误'));
-            return;
-          }
-
-          if (found.status !== 1) {
-            reject(new Error('账户已被停用'));
-            return;
-          }
-
-          const userRoles = roles.filter((r) => found.roleIds.includes(r.id));
-
-          // 将 permissionIds 解析为 code
-          const rawPerms = localStorage.getItem('rbac-permissions');
-          let permMap: Record<string, string> = {};
-          if (rawPerms) {
-            const perms = JSON.parse(rawPerms) as {
-              id: string;
-              code: string;
-            }[];
-            permMap = Object.fromEntries(perms.map((p) => [p.id, p.code]));
-          }
-
-          const permissions = Array.from(
-            new Set(
-              userRoles.flatMap((r) =>
-                r.permissionIds.map((pid) => permMap[pid] || pid),
-              ),
-            ),
-          );
-
-          resolve({
-            user: {
-              id: found.id,
-              username: found.username,
-              nickname: found.nickname,
-              email: found.email || '',
-              avatar: found.avatar || '',
-              status: String(found.status),
-              createTime: found.createTime,
-            },
-            token: `token-${found.id}-${Date.now()}`,
-            permissions,
-          });
-        } catch (err) {
-          reject(err instanceof Error ? err : new Error('登录失败'));
-        }
-      }, 500);
-    },
-  );
+  return new Promise<{ user: User; token: string }>((resolve) => {
+    setTimeout(() => {
+      resolve({
+        user: {
+          id: '1',
+          username: data.username,
+          nickname: '管理员',
+          email: 'admin@example.com',
+          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
+          status: 'active',
+          createTime: new Date().toISOString(),
+        },
+        token: 'mock-token-12345',
+      });
+    }, 500);
+  });
 };
 
 const featureHighlights = [
@@ -136,7 +70,6 @@ const LoginPage: React.FC = () => {
     onSuccess: (data) => {
       message.success('登录成功');
       login(data.user, data.token);
-      useUserStore.getState().setPermissions(data.permissions);
       navigate('/');
     },
   });
@@ -570,7 +503,7 @@ const LoginPage: React.FC = () => {
                   color: 'rgba(148,163,184,0.6)',
                 }}
               >
-                测试账号：admin / admin123
+                演示环境 · 输入任意用户名密码即可登录
               </div>
             </div>
           </div>
