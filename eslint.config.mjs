@@ -38,6 +38,11 @@ export default tseslint.config(
         { argsIgnorePattern: '^_' },
       ],
 
+      'id-length': [
+        'error',
+        { min: 2, exceptions: ['_', 'i', 'j', 'k'] },
+      ],
+
       'no-restricted-imports': [
         'error',
         {

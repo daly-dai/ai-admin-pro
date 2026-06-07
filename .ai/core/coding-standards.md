@@ -14,6 +14,20 @@
 | 容器组件 | `{Entity}{Layer}`     | `ProductFormModal`, `ProductDetailDrawer` |
 | Hooks    | `use` + `PascalCase`  | `useProductList`                          |
 
+### 变量名最小长度
+
+```typescript
+// 正确：有意义的名字
+users.filter((user) => user.active);
+roles.map((role) => role.name);
+
+// 错误：单字母（eslint id-length 会报错）
+users.filter((u) => u.active);
+roles.map((r) => r.name);
+```
+
+> 例外：`_`（未使用参数）、`i`/`j`/`k`（循环下标）
+
 ### 命名冲突处理
 
 当实体类型名与 `src/types/` 下全局类型冲突时：使用模块前缀（如 `MgmtUser`、`SystemRole`），生成前先 `Grep: export interface [EntityName]` 确认。
