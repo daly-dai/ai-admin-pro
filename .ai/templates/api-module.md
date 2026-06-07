@@ -14,13 +14,11 @@ src/api/{module}/index.ts  — API 实现
 ```typescript
 import { createRequest } from 'src/plugins/request';
 
-export const {module}Api = createRequest({
-  prefix: '/api/{module}',    // URL 前缀
-  codeKey: 'code',            // 状态码字段名
-  successCode: 200,           // 成功状态码值
-  dataKey: '',                // 数据字段名（空则不解包）
-  msgKey: 'message',          // 消息字段名
+const {module}Api = createRequest({
+  prefix: '/api/{module}',
+  dataKey: 'data',            // 响应自动拆包
 });
+// 多后端服务配置 → `.ai/conventions/api-conventions.md`
 ```
 
 > 配置项说明 → `.ai/conventions/api-conventions.md`「多后端服务配置」
@@ -52,22 +50,22 @@ import { createRequest } from 'src/plugins/request';
 import type { {Entity}, {Entity}Query, {Entity}FormData } from './types';
 import type { PageData } from 'src/types';
 
-export const {module}Api = createRequest({ prefix: '/{module}', ... });
+const {module}Api = createRequest({ prefix: '/api/{module}' });
 
-export const getListByGet = (params?: {Entity}Query) =>
-  {module}Api.get<PageData<{Entity}>>('/{module}', { params });
+export const get{Entity}ListByGet = (params?: {Entity}Query) =>
+  {module}Api.get<PageData<{Entity}>>('', { params });
 
-export const getByIdByGet = (id: string) =>
-  {module}Api.get<{Entity}>(`/{module}/${id}`);
+export const get{Entity}ByIdByGet = (id: string) =>
+  {module}Api.get<{Entity}>(`/${id}`);
 
-export const createByPost = (data: {Entity}FormData) =>
-  {module}Api.post<{Entity}>('/{module}', data);
+export const create{Entity}ByPost = (data: {Entity}FormData) =>
+  {module}Api.post<{Entity}>('', data);
 
-export const updateByPut = (id: string, data: Partial<{Entity}FormData>) =>
-  {module}Api.put<{Entity}>(`/{module}/${id}`, data);
+export const update{Entity}ByPut = (id: string, data: Partial<{Entity}FormData>) =>
+  {module}Api.put<{Entity}>(`/${id}`, data);
 
-export const deleteByDelete = (id: string) =>
-  {module}Api.delete(`/{module}/${id}`);
+export const delete{Entity}ByDelete = (id: string) =>
+  {module}Api.delete(`/${id}`);
 ```
 
 ## useRequest 用法

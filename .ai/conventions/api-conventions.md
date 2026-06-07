@@ -2,13 +2,13 @@
 
 ## 命名约定
 
-| 对象     | 规则               | 示例              |
-| -------- | ------------------ | ----------------- |
-| API对象  | `[module]Api`      | `productApi`      |
-| 实体类型 | `[Entity]`         | `Product`         |
-| 查询参数 | `[Entity]Query`    | `ProductQuery`    |
-| 表单数据 | `[Entity]FormData` | `ProductFormData` |
-| 接口方法 | `[name]By[HTTP]`   | `getListByGet`    |
+| 对象     | 规则                     | 示例               |
+| -------- | ------------------------ | ------------------ |
+| API对象  | `[module]Api`            | `productApi`       |
+| 实体类型 | `[Entity]`               | `Product`          |
+| 查询参数 | `[Entity]Query`          | `ProductQuery`     |
+| 表单数据 | `[Entity]FormData`       | `ProductFormData`  |
+| 接口方法 | `{Entity}{name}By{HTTP}` | `getDictListByGet` |
 
 ## 方法命名规则
 

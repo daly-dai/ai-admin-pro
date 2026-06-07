@@ -58,7 +58,7 @@ const FormContent = ({ params, onClose, onSuccess }: ModalChildProps<Params>) =>
 
   const { run, loading } = useRequest(
     (values) => isEdit ? updateByPut(params.id!, values) : createByPost(values),
-    { manual: true, onSuccess: () => { message.success('操作成功'); onSuccess(); } },
+    { manual: true, onSuccess: () => { message.success('操作成功'); onSuccess?.(); } },
   );
 
   return (
@@ -71,10 +71,14 @@ const FormContent = ({ params, onClose, onSuccess }: ModalChildProps<Params>) =>
 export default createModal<Params>(FormContent);
 
 // 列表页通过 ref 触发
-import type { ModalContainerRef } from '@dalydb/sdesign';
+import type { ModalContainerRef, SProTableRef } from '@dalydb/sdesign';
+import { useRef } from 'react';
 
-const formRef = useRef<ModalContainerRef<Params>>(null);
+const tableRef = useRef<SProTableRef>(null);                    // 表格 ref，调用 refresh()
+const formRef = useRef<ModalContainerRef<Params>>(null);        // Modal ref，调用 open(params)
+
 <SButton actionType="create" onClick={() => formRef.current?.open({ mode: 'create' })} />
+<SProTable ref={tableRef} ... />
 <{Entity}FormModal ref={formRef} onSuccess={() => tableRef.current?.refresh()} />
 ```
 
@@ -105,6 +109,108 @@ const formRef = useRef<ModalContainerRef<Params>>(null);
 
 // 详情页
 <SDetail title="详情" dataSource={data} items={detailItems} column={2} />
+```
+
+## searchItems 定义
+
+```tsx
+// ⚠️ 禁止类型注解，让 TS 逐项推断 fieldProps 精确类型（P006）
+const searchItems = [
+  { label: '关键词', name: 'keyword', type: 'input' },
+  {
+    label: '状态',
+    name: 'status',
+    type: 'select',
+    fieldProps: { dictKey: 'userStatus', allowClear: true },
+  },
+  { label: '创建时间', name: 'dateRange', type: 'datePickerRange' },
+];
+```
+
+## columns 定义
+
+```tsx
+// ⚠️ 必须显式类型注解 SColumnsType<Entity>（P006）
+const columns: SColumnsType<User> = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    width: 60,
+    render: (_text, _record, index) => index + 1,
+  },
+  { title: '用户名', dataIndex: 'username', width: 120 },
+  { title: '状态', dataIndex: 'status', width: 80, dictKey: 'userStatus' },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    width: 180,
+    render: 'datetime' as const,
+  },
+  {
+    title: '操作',
+    dataIndex: 'action',
+    width: 220,
+    render: (_text, record) => (
+      <SButton.Group
+        items={[
+          {
+            actionType: 'edit',
+            compact: true,
+            onClick: () =>
+              formRef.current?.open({ mode: 'edit', id: record.id }),
+          },
+          {
+            actionType: 'delete',
+            compact: true,
+            onClick: () => {
+              Modal.confirm({
+                title: '确认删除',
+                content: `确认删除？`,
+                onOk: () => handleDelete(record.id),
+              });
+            },
+          },
+          {
+            actionType: 'view',
+            compact: true,
+            onClick: () => detailRef.current?.open({ id: record.id }),
+          },
+        ]}
+      />
+    ),
+  },
+];
+```
+
+## 列表页完整骨架
+
+```tsx
+import type { ModalContainerRef, SColumnsType, SFormItems, SProTableRef } from '@dalydb/sdesign';
+import { SButton, SProTable } from '@dalydb/sdesign';
+import { useRequest } from 'ahooks';
+import { message, Modal } from 'antd';
+import { useRef } from 'react';
+
+const tableRef = useRef<SProTableRef>(null);
+const formRef = useRef<ModalContainerRef<{ mode: 'create' | 'edit'; id?: string }>>(null);
+const detailRef = useRef<ModalContainerRef<{ id: string }>>(null);
+
+const { run: handleDelete } = useRequest(deleteByDelete, {
+  manual: true,
+  onSuccess: () => { message.success('删除成功'); tableRef.current?.refresh(); },
+});
+
+<SProTable
+  ref={tableRef}
+  title={{ children: '{模块}管理' }}
+  request={{ service: getListByGet, options: { paginationFields: { list: 'dataList', total: 'totalSize' } } }}
+  tableTitle={{ actionNode: <SButton actionType="create" onClick={() => formRef.current?.open({ mode: 'create' })} /> }}
+  searchProps={{ items: searchItems, columns: 4 }}
+  tableProps={{ columns, rowKey: 'id' }}
+/>
+
+<{Entity}FormModal ref={formRef} onSuccess={() => tableRef.current?.refresh()} />
+<{Entity}DetailDrawer ref={detailRef} />
 ```
 
 ## useRequest 用法
