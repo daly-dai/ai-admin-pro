@@ -6,7 +6,6 @@
   "scripts": {
     "build": "rsbuild build",
     "dev": "rsbuild dev",
-    "postinstall": "pnpm sync-ai-docs",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "mock": "node mock/server.cjs",
@@ -15,8 +14,6 @@
     "prettier": "prettier -c --write . --cache",
     "prettier-import-sort": "npm run prettier -- --plugin=@ianvs/prettier-plugin-sort-imports",
     "preview": "rsbuild preview",
-    "sync-ai-docs": "tsx .ai/tools/sync-sdesign-docs.ts",
-    "task:prompt": "tsx .ai/tools/gen-task-prompt.ts",
     "type-check": "tsc --noEmit",
     "verify": "tsx .ai/tools/verify-wrapper.ts",
     "verify:fix": "eslint src/ --fix && prettier --write src/",
