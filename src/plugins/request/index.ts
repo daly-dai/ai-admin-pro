@@ -1,4 +1,3 @@
-import { applyStorageInterceptor } from '@/plugins/storage';
 import { message } from 'antd';
 import axios, {
   type AxiosInstance,
@@ -144,7 +143,6 @@ export function createRequest(config?: RequestConfig) {
 
   // 创建新实例
   const instance = createAxiosInstance(cfg);
-  applyStorageInterceptor(instance);
   instanceCache.set(key, instance);
 
   return createRequestMethods(instance);
