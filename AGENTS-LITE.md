@@ -16,18 +16,48 @@
 
 ---
 
-## 0. 工作模式选择（收到需求后第一步）
+## 0. 管道：收到需求后执行的完整流程
 
-| 需求类型                                 | 工作模式             | 处理方式                                                                                                    |
-| ---------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------- |
-| 新建模块 / 新建页面 / 新增完整功能       | **sdesign-gen-page** | Skill 默认使用填空模板（模板注释已内嵌组件 API 约束，无需额外读组件文档）。仅模板无法覆盖时报错才按需读文档 |
-| 给已有模块加表单 / 详情 / 列表           | **sdesign-gen-page** | 同上                                                                                                        |
-| 只需类型定义 / 只需 API 层               | **sdesign-gen-page** | 同上                                                                                                        |
-| 改字段 / 加列 / 改文案 / 修 bug / 小调整 | **修改路径**         | → 第 1 节                                                                                                   |
-| 非标场景（无 Skill 覆盖的复杂页面）      | **模板参考**         | 先查 `.ai/templates/` 有无类似模板 → 有则仿造 → 无则问用户                                                  |
-| 不确定                                   | 问用户               | —                                                                                                           |
+```
+需求
+  │
+  ├─ 小修改（改字段/修bug/调样式，≤20行）
+  │     → §1 修改路径（不经过 Lane，不走 skill）
+  │
+  ├─ 命中 Lane（匹配下表）→ 走对应流程
+  │     ├─ CRUD / 大屏 / 多Tab详情 → skill: sdesign-gen-page
+  │     │     执行完毕后 → 扫配方表 → 命中则执行配方 → pnpm verify
+  │     └─ 非标 → 先扫配方表 → 命中则执行配方
+  │            → 不命中 → PRD 兜底（读 `.ai/templates/prd/prd-fallback.md`）
+  │
+  └─ 不命中 Lane → 扫配方表 → 命中则执行
+        → 不命中 → 非标 Lane（PRD 兜底）
+```
 
+### Lane 匹配表（不推理，纯关键词匹配）
+
+| 用户意图                             | Lane      | 处理方式                            |
+| ------------------------------------ | --------- | ----------------------------------- |
+| 小修改（改字段/修bug/调样式，≤20行） | 修改路径  | → §1                                |
+| 新建/新模块 + 列表/CRUD/增删改查     | CRUD      | skill: sdesign-gen-page（填空模板） |
+| 新建 + 大屏/仪表盘/监控/统计         | 大屏      | skill: sdesign-gen-page（骨架模板） |
+| 新建 + 详情（含多Tab）               | 多Tab详情 | skill: sdesign-gen-page（增量追加） |
+| 无法匹配任何场景                     | 非标      | 扫配方 → PRD 兜底                   |
+
+> Lane 详细流程（CRUD/大屏/多Tab/非标各自 SOP）→ 外部读 `.ai/conventions/lanes.md`
 > 🛑 **Skill 会话状态**：同一会话中 Skill 只挂载一次。若已执行过 sdesign-gen-page，不要重新挂载或重读 Skill 文件，直接继续当前步骤。
+
+### 配方匹配表（Lane 执行后 / 不命中 Lane 时必扫）
+
+| 关键词                                       | 配方 | 说明 |
+| -------------------------------------------- | ---- | ---- |
+| （暂无配方，遇到横切场景并验证有效后再沉淀） |      |      |
+
+> 配方是 Lane 和非标 Lane 之间的缓冲层——命中就执行，不命中才走非标 Lane 重流程。
+
+### Task 拆解
+
+复杂需求（涉及多个页面/模块，或需求描述超过一句话）→ 先读 `.ai/conventions/task-splitting.md`，按规则拆成 Task 清单，再逐 Task 推进。简单需求（单页面/单模块）跳过此步。
 
 ### 🛑 防循环规则（每次行动前自检，违反任一条即停止）
 
@@ -59,7 +89,7 @@
 
 1. **读目标文件**：读取用户指定的文件
 2. **读类型文件**：涉及新字段 → 同时读 `src/api/{module}/types.ts`
-3. ⛔ **读组件文档**：涉及 SSearchTable / SForm / SButton / SDetail → 读 `.ai/sdesign/components/{组件名}.md`
+3. ⛔ **读组件文档**：涉及 SProTable / SForm / SButton / SDetail → 读 `.ai/sdesign/components/{组件名}.md`
 4. ⛔ **读错题集**：生成/修改页面代码前 → 读 `.ai/pitfalls/index.md`
 5. **匹配模板**：从下方 T1-T8 找匹配项执行；无匹配 → 查 `.ai/templates/` 有无类似模板仿造；仍无 → 问用户
 6. **验证**：`pnpm verify`（错误自动记录到 `.ai/error-log/raw.jsonl`），出错查第 3 节；修一轮还失败 → 停止问用户
@@ -91,41 +121,50 @@
 
 ### 组件替换（必须遵守）
 
-| 禁止直接使用      | 替换为                | 使用前必读                               |
-| ----------------- | --------------------- | ---------------------------------------- |
-| antd Table        | STable / SSearchTable | `.ai/sdesign/components/SSearchTable.md` |
-| antd Form         | SForm / SForm.Search  | `.ai/sdesign/components/SForm.md`        |
-| antd Button       | SButton               | `.ai/sdesign/components/SButton.md`      |
-| antd Descriptions | SDetail               | `.ai/sdesign/components/SDetail.md`      |
+| 禁止直接使用      | 替换为               | 使用前必读                            |
+| ----------------- | -------------------- | ------------------------------------- |
+| antd Table        | STable / SProTable   | `.ai/sdesign/components/SProTable.md` |
+| antd Form         | SForm / SForm.Search | `.ai/sdesign/components/SForm.md`     |
+| antd Button       | SButton              | `.ai/sdesign/components/SButton.md`   |
+| antd Descriptions | SDetail              | `.ai/sdesign/components/SDetail.md`   |
 
 > 可直接用（不受限制）：Modal / Modal.confirm / Tag / message / Card / Spin / InputNumber
 
 ### 禁止模式
 
-| 禁止                                 | 正确做法                                                                                                                      |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| `any` 类型                           | `Record<string, unknown>` 或具体 Entity 类型                                                                                  |
-| `import axios`                       | `import { createRequest } from 'src/plugins/request'`                                                                         |
-| `type: 'dependency'` (SForm)         | `SForm.useWatch(fieldName, form)` + 条件展开 items                                                                            |
-| `SConfirm`                           | `Modal.confirm()`                                                                                                             |
-| 父组件管理 Modal/Drawer 的 open 状态 | 使用 `createModal` / `createDrawer`（`@dalydb/sdesign`）工厂函数                                                              |
-| 未使用参数不加前缀                   | `(_, record) => ...`                                                                                                          |
-| API 方法名无 HTTP 后缀               | `getListByGet`、`createByPost`、`updateByPut`、`deleteByDelete`                                                               |
-| 跨模块用 `../`                       | `src/` 路径别名                                                                                                               |
-| `import { X }` 导入纯类型            | `import type { X }`                                                                                                           |
-| 硬编码枚举/options                   | 字典从 `useDictStore.dictMapData` 获取，sdesign 组件通过 SConfigProvider 自动消费                                             |
-| 旧代码的常量在新页面中不存在就"修复" | 新组件可能已内置旧常量（分页/loading/配置等）。`Cannot find name` 报错 → 先判断新组件是否需要，不需要则删引用，不确定则问用户 |
-| 外部模块/工具函数实现未知时猜测代码  | PRD 未提供实现细节 → 用 `// TODO: 补充 {功能描述}` 占位，保证代码能通过 verify。禁止凭空猜测实现                              |
+| 禁止                                    | 正确做法                                                                                                                      |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `any` 类型                              | `Record<string, unknown>` 或具体 Entity 类型                                                                                  |
+| `import axios`                          | `import { createRequest } from 'src/plugins/request'`                                                                         |
+| `type: 'dependency'` (SForm)            | `SForm.useWatch(fieldName, form)` + 条件展开 items                                                                            |
+| `SConfirm`                              | `Modal.confirm()`                                                                                                             |
+| 父组件管理 Modal/Drawer 的 open 状态    | 使用 `createModal` / `createDrawer`（`@dalydb/sdesign`）工厂函数                                                              |
+| 未使用参数不加前缀                      | `(_, record) => ...`                                                                                                          |
+| API 方法名无 HTTP 后缀                  | `getListByGet`、`createByPost`、`updateByPut`、`deleteByDelete`                                                               |
+| 跨模块用 `../`                          | `src/` 路径别名                                                                                                               |
+| `import { X }` 导入纯类型               | `import type { X }`                                                                                                           |
+| 硬编码枚举/options                      | 字典从 `useDictStore.dictMapData` 获取，sdesign 组件通过 SConfigProvider 自动消费。枚举列/下拉通过 `dictKey` 指定字典编码     |
+| `columns` 缺类型注解                    | `columns` 必须显式类型注解 `SColumnsType<Entity>`                                                                             |
+| `paginationFields` 的 key 写 `pageNum`  | 改为 `current`。`PaginationFields` 只有四个 key：`current`/`pageSize`/`total`/`list`（P007）                                  |
+| SForm 写了 `type: 'group'`              | 分组表单用 `<SForm.Group groupItems={[...]}>` 组件包裹，不在 items 数组里写 `type: 'group'`（P010）                           |
+| SForm / SDetail 写了 `loading` 属性     | 不支持 loading prop，用 `<Spin spinning={loading}>` 包裹（P011/P014）                                                         |
+| SDetail.Group 顶层写 `groupItems`       | 顶层 prop 是 `items` 不是 `groupItems`：`<SDetail.Group items={[{ groupTitle, items }]}>`（P014）                             |
+| 表格操作列按钮无包裹                    | 用 `<SButton.Group items={[...]}>` 或 `<Space>` 包裹，`compact` 属性（t-link 样式）。禁止无包裹裸放（P018）                   |
+| 回调参数用单字母（`s`/`d`/`v`/`t`/`e`） | 禁止单字母变量名，用完整语义：`(state)` 非 `(s)`，`(date)` 非 `(d)`，`(event)` 非 `(e)`（P016）                               |
+| Zustand `set()` 内写 for/if/filter/map  | 数据处理必须在 set 外纯函数完成，set 内只做 `draft.x = result` 赋值（P017）                                                   |
+| 旧代码的常量在新页面中不存在就"修复"    | 新组件可能已内置旧常量（分页/loading/配置等）。`Cannot find name` 报错 → 先判断新组件是否需要，不需要则删引用，不确定则问用户 |
+| 外部模块/工具函数实现未知时猜测代码     | PRD 未提供实现细节 → 用 `// TODO: 补充 {功能描述}` 占位，保证代码能通过 verify。禁止凭空猜测实现                              |
 
 ### 字典使用
 
 > 字典已通过 SConfigProvider 全局注入，sdesign 组件通过 `dictKey` 属性消费。**不需要自己在组件里发请求或写死映射。**
 
-**SSearchTable 枚举列** — 显式设置 `dictKey` 指定字典编码：
+**SProTable 枚举列** — 显式设置 `dictKey` 指定字典编码：
 
 ```tsx
-{ title: '状态', dataIndex: 'status', dictKey: 'statusCode' }
-// → STable 通过 dictKey 从 globalDict['statusCode'] 查值回显
+{ title: '状态', dataIndex: 'statusCode', dictKey: 'statusCode' }
+// → SProTable 通过 dictKey 从 SConfigProvider 全局字典查值回显
+// ⚠️ dataIndex 需与 dict code 同名，SConfigProvider 自动匹配回显
 ```
 
 **SForm / SForm.Search 下拉框** — 通过 `fieldProps.dictKey` 指定字典编码：
@@ -163,7 +202,10 @@ const dictMapData = useDictStore((state) => state.dictMapData);
 | `no-restricted-imports ... 'Table' from 'antd'`       | 换为 `STable` from `@dalydb/sdesign`                                                                             |
 | `no-restricted-imports ... 'Form' from 'antd'`        | 换为 `SForm` from `@dalydb/sdesign`                                                                              |
 | Prettier / 格式报错                                   | `pnpm verify:fix`                                                                                                |
-| `Type 'string' is not assignable to type...`          | 加显式类型注解，如 `const columns: SColumnsType<Entity> = [...]`                                                 |
+| `'headTitle' does not exist in type`                  | SProTable 用 `title` 不是 `headTitle`。改为 `title={{ children: '标题' }}`                                       |
+| `'formProps' does not exist in type`                  | SProTable 用 `searchProps` 不是 `formProps`。改为 `searchProps={{ items, columns }}`                             |
+| `'requestFn' does not exist in type`                  | SProTable 用 `request={{ service: apiFn, options }}` 不是 `requestFn`                                            |
+| `Type 'string' is not assignable to type...`          | `columns` 加显式类型注解 `SColumnsType<Entity>`；或 `searchItems` 去掉多余的 `: SFormItems[]` 类型注解（P006）   |
 | `'pageNum' does not exist in type 'PaginationFields'` | 改为 `current`。`PaginationFields` 只有 `current`/`pageSize`/`total`/`list` 四个 key                             |
 | `Cannot find name 'XXX'`                              | 检查 XXX 是否来自旧代码的常量/变量。若是且新组件已内置该功能 → 删除引用；不确定 → 问用户，不要盲目加回来         |
 | 修一轮后仍有错误                                      | **停止，问用户**。连续 2 轮 verify 错误数量不减少或累计 ≥5 轮 → 强制停止，报告：已修复清单 + 剩余错误 + 根因判断 |

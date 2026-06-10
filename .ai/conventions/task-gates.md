@@ -24,23 +24,23 @@
 
 ### 1.2 全局验收闸门（写代码时必须全部通过）
 
-| #   | 规则                                                         | 检查方式            |
-| --- | ------------------------------------------------------------ | ------------------- |
-| G1  | 零 `any` 类型（保底 `Record<string, unknown>`）              | eslint              |
-| G2  | 零 `import axios`（使用 `createRequest`）                    | eslint              |
-| G3  | 纯类型导入用 `import type { X }`                             | eslint              |
-| G4  | 跨模块导入用 `src/` 别名，禁止 `../`                         | review              |
-| G5  | API 方法名带 HTTP 后缀（`getListByGet` / `createByPost` 等） | review              |
-| G6  | 未使用参数加 `_` 前缀                                        | eslint              |
-| G7  | 无 SConfirm（用 `Modal.confirm`）                            | review              |
-| G8  | 弹层用 `createModal` / `createDrawer` 工厂函数               | review              |
-| G9  | SForm / SDetail 无 `loading` prop（用 `<Spin>` 包裹）        | review              |
-| G10 | 枚举列/下拉不硬编码 options（通过 `dictKey` 指定字典编码）   | review              |
-| G11 | `pnpm verify` 通过（0 error，warning 可忽略）                | tsc+eslint+prettier |
-| G12 | Task 验收后必须更新状态 + 写复盘，禁止连续执行后批量补填     | review              |
-| G13 | 圈复杂度 ≤ 10                                                | eslint `complexity` |
-| G14 | 嵌套深度 ≤ 3 层                                              | eslint `max-depth`  |
-| G15 | 函数参数 ≤ 3 个（超过用对象参数）                            | eslint `max-params` |
+| #   | 规则                                                                                                                  | 检查方式            |
+| --- | --------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| G1  | 零 `any` 类型（保底 `Record<string, unknown>`）                                                                       | eslint              |
+| G2  | 零 `import axios`（使用 `createRequest`）                                                                             | eslint              |
+| G3  | 纯类型导入用 `import type { X }`                                                                                      | eslint              |
+| G4  | 跨模块导入用 `src/` 别名，禁止 `../`                                                                                  | review              |
+| G5  | API 方法名带 HTTP 后缀（`getListByGet` / `createByPost` 等）                                                          | review              |
+| G6  | 未使用参数加 `_` 前缀                                                                                                 | eslint              |
+| G7  | 无 SConfirm（用 `Modal.confirm`）                                                                                     | review              |
+| G8  | 弹层用 `createModal` / `createDrawer` 工厂函数                                                                        | review              |
+| G9  | SForm / SDetail 无 `loading` prop（用 `<Spin>` 包裹）                                                                 | review              |
+| G10 | 枚举列/下拉不硬编码 options（通过 `dictKey` 指定字典编码）                                                            | review              |
+| G11 | `pnpm verify` 通过（0 error，warning 可忽略）                                                                         | tsc+eslint+prettier |
+| G12 | Task 验收后必须更新状态 + 回答复盘三问（Q1: verify 报错记录 Q2: 根因分类 Q3: 是否沉淀错题集），禁止连续执行后批量补填 | review              |
+| G13 | 圈复杂度 ≤ 10                                                                                                         | eslint `complexity` |
+| G14 | 嵌套深度 ≤ 3 层                                                                                                       | eslint `max-depth`  |
+| G15 | 函数参数 ≤ 3 个（超过用对象参数）                                                                                     | eslint `max-params` |
 
 ### 1.3 验证边界（❗关键）
 

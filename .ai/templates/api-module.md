@@ -1,6 +1,6 @@
 # API 模块代码模板
 
-> 规范 SSOT：`.ai/conventions/api-conventions.md`
+> 规范 SSOT：`.ai/conventions/conventions.md` §二
 
 ## 文件结构
 
@@ -18,10 +18,10 @@ const {module}Api = createRequest({
   prefix: '/api/{module}',
   dataKey: 'data',            // 响应自动拆包
 });
-// 多后端服务配置 → `.ai/conventions/api-conventions.md`
+// 多后端服务配置 → `.ai/conventions/conventions.md` §二
 ```
 
-> 配置项说明 → `.ai/conventions/api-conventions.md`「多后端服务配置」
+> 配置项说明 → `.ai/conventions/conventions.md` §二「多后端服务配置」
 
 ## 快速示例
 
@@ -70,4 +70,4 @@ export const delete{Entity}ByDelete = (id: string) =>
 
 ## useRequest 用法
 
-> 场景速查 SSOT → `.ai/conventions/api-conventions.md`「useRequest 规范」
+> 场景速查 SSOT → `.ai/conventions/conventions.md` §二「useRequest 规范」

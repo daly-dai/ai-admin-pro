@@ -118,8 +118,11 @@
   4. 填空生成
   4.1 后置任务 — 扫 .ai/recipes/index.md，命中则执行配方
   5. pnpm verify（最多 3 轮）
-  6. 标记 Task ✅ + 写复盘（禁止批量补填）
-     → 多 Task 时，调用 Skill: task-executor 逐 Task 推进
+  6. pnpm verify 通过后，标记 Task ✅ + 回答复盘三问（禁止跳过）：
+     Q1: verify 报过什么错？直接复制 terminal 输出，没报错写"0 error"
+     Q2: 报错的根因是什么？（缺类型定义 / 组件 API 用错 / 导入缺失 / 格式不齐 / 其他）
+     Q3: 需要沉淀到错题集吗？（无 / 有: 错误签名 + 修复方法）
+     → 三问答完才能进下一个 Task
 ```
 
 ---

@@ -34,7 +34,7 @@ cascader | table
 SDatePicker → datePicker | SDatePickerRange → datePickerRange | SCascader → cascader
 ```
 
-> 联动规则见 `pitfalls/index.md` P004。
+> 联动规则见 `conventions/conventions.md` §四 P004。
 
 ## 决策点
 

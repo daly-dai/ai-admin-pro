@@ -24,5 +24,5 @@
 1. 定义类型 Key（`{domain}-{pattern}` 格式）
 2. 列出触发关键词（中文+英文，覆盖用户常用表达）
 3. 确定数据模式 + 核心组件
-4. 映射 Task 类型（在 `task-gates.md` 中同步新增）
+4. 映射 Task 类型（在 `conventions/conventions.md` §五 中同步新增）
 5. 指定必读模板 → 创建或引用对应的 `.ai/templates/{name}.md`
