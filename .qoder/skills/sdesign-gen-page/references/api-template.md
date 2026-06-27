@@ -1,6 +1,7 @@
 # API 模块代码模板
 
 > 适用于所有页面类型（CRUD / 详情 / 表单）的接口层生成。
+> 规范 SSOT：`{project}/.ai/conventions/api-conventions.md`
 
 ## 文件结构
 
@@ -16,13 +17,11 @@ src/api/{module}/index.ts  — API 实现
 ```typescript
 import { createRequest } from 'src/plugins/request';
 
-export const {module}Api = createRequest({
-  prefix: '/api/{module}',    // URL 前缀
-  codeKey: 'code',            // 状态码字段名
-  successCode: 200,           // 成功状态码值
-  dataKey: '',                // 数据字段名（空则不解包）
-  msgKey: 'message',          // 消息字段名
+const {module}Api = createRequest({
+  prefix: '/api/{module}',
+  dataKey: 'data',            // 响应自动拆包
 });
+// codeKey='code' / successCode=200 / msgKey='message' 为默认值，无需显式配置
 ```
 
 | 配置          | 说明             | 默认值    |
@@ -88,39 +87,27 @@ import type { @FILL_Entity, @FILL_EntityQuery, @FILL_EntityFormData } from './ty
 // ✅ import type { PageData } from 'src/types';
 import type { PageData } from 'src/types';
 
-/** @FILL: 配置 createRequest，根据后端服务调整 */
-export const @FILL_moduleApi = createRequest({
-  prefix: '@FILL: URL前缀',
-  // 以下为默认值，如后端响应结构不同则修改
-  // codeKey: 'code',
-  // successCode: 200,
-  // dataKey: '',
-  // msgKey: 'message',
+const @FILL_moduleApi = createRequest({
+  prefix: '/api/@FILL_module',
+  dataKey: 'data',
 });
 
 /** 分页列表查询 */
 // ✅ 方法名 ByGet 后缀 + 返回 PageData<Entity>
 export const getListByGet = (params?: @FILL_EntityQuery) =>
-  @FILL_moduleApi.get<PageData<@FILL_Entity>>('@FILL: 列表路径', { params });
+  @FILL_moduleApi.get<PageData<@FILL_Entity>>('', { params });
 
-/** 根据 ID 查询详情 */
 export const getByIdByGet = (id: string) =>
-  @FILL_moduleApi.get<@FILL_Entity>(`@FILL: 详情路径/${id}`);
+  @FILL_moduleApi.get<@FILL_Entity>(`/${id}`);
 
-/** 新增 */
-// ✅ 方法名 ByPost 后缀
 export const createByPost = (data: @FILL_EntityFormData) =>
-  @FILL_moduleApi.post<@FILL_Entity>('@FILL: 新增路径', data);
+  @FILL_moduleApi.post<@FILL_Entity>('', data);
 
-/** 编辑 */
-// ✅ 方法名 ByPut 后缀
 export const updateByPut = (id: string, data: Partial<@FILL_EntityFormData>) =>
-  @FILL_moduleApi.put<@FILL_Entity>(`@FILL: 编辑路径/${id}`, data);
+  @FILL_moduleApi.put<@FILL_Entity>(`/${id}`, data);
 
-/** 删除 */
-// ✅ 方法名 ByDelete 后缀
 export const deleteByDelete = (id: string) =>
-  @FILL_moduleApi.delete(`@FILL: 删除路径/${id}`);
+  @FILL_moduleApi.delete(`/${id}`);
 ```
 
 ### 按需裁剪
@@ -130,15 +117,20 @@ export const deleteByDelete = (id: string) =>
 | CRUD 列表页 | `getListByGet` + `deleteByDelete`               | `createByPost` + `updateByPut` + `getByIdByGet`（如有弹层编辑） |
 | 详情页      | `getByIdByGet`                                  | —                                                               |
 | 表单页      | `createByPost` + `updateByPut` + `getByIdByGet` | —                                                               |
+| 查询列表页  | `getListByGet`                                  | —                                                               |
 
 > 不需要的方法直接删除，不要保留空实现。
 
 ---
 
-## 特殊字段处理
+## 字段类型映射
 
-| 字段类型 | 关键配置                                            |
-| -------- | --------------------------------------------------- |
-| 状态枚举 | `valueEnum: { key: { text, status } }`              |
-| 时间日期 | `valueType: 'dateTime', search: false`              |
-| 操作列   | `valueType: 'option', render: (_, record) => [...]` |
+| 后端类型      | TS 类型       | SForm 控件  |
+| ------------- | ------------- | ----------- |
+| string        | string        | input       |
+| string(long)  | string        | textarea    |
+| number        | number        | inputNumber |
+| boolean       | boolean       | switch      |
+| date/datetime | string        | datePicker  |
+| enum          | string/number | select      |
+| array         | T[]           | checkbox    |

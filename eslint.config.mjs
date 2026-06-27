@@ -66,7 +66,43 @@ export default tseslint.config(
     rules: {
       'complexity': ['error', { max: 10 }],
       'max-depth': ['error', { max: 3 }],
-      'max-params': ['warn', { max: 3 }],
+      'max-params': ['error', { max: 3 }],
+    },
+  },
+
+  // ======================== 扩展语义规则 ========================
+
+  // 来源：公司 rule.json，筛选去重后合并。
+  // 跳过：格式化规则（Prettier 领地）、typedef/style 教条、setInterval 禁用。
+  {
+    rules: {
+      // ---- 防 Bug (error) ----
+      'eqeqeq': ['error', 'always'],
+      'guard-for-in': 'error',
+      'no-throw-literal': 'error',
+      'no-unmodified-loop-condition': 'error',
+      'no-unreachable-loop': 'error',
+      'no-promise-executor-return': 'error',
+      'array-callback-return': 'error',
+      'no-constructor-return': 'error',
+
+      // ---- 代码质量 (warn → 渐近收敛) ----
+      'curly': ['warn', 'all'],
+      'no-nested-ternary': 'error',
+      'no-param-reassign': 'error',
+      'object-shorthand': 'error',
+      'prefer-const': ['error', { destructuring: 'all' }],
+      'no-var': 'error',
+      'no-eval': 'error',
+      'no-extend-native': 'error',
+      'no-proto': 'error',
+
+      // ---- 风格统一 (warn) ----
+      'no-new-wrappers': 'error',
+      'no-useless-concat': 'warn',
+      'no-useless-rename': 'error',
+      'symbol-description': 'error',
+      'yoda': ['warn', 'never', { onlyEquality: true }],
     },
   },
 

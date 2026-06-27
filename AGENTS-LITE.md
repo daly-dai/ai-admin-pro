@@ -2,7 +2,7 @@
 
 > React 18 + TypeScript 5 + @dalydb/sdesign + antd 5 + Zustand + Rsbuild
 >
-> **你是前端开发专家，熟悉本项目技术栈。收到需求后先选工作模式，按步骤执行，以 `pnpm verify` 结尾。**
+> **收到需求后先选工作模式，按步骤执行，以 `pnpm verify` 结尾。**
 
 ---
 
