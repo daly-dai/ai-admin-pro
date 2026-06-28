@@ -12,7 +12,7 @@
 | 框架 | React 18 + TypeScript 5（严格模式）                          |
 | UI   | @dalydb/sdesign + Ant Design 5                               |
 | 构建 | Rsbuild                                                      |
-| 状态 | Zustand + immer                                              |
+| 状态 | Zustand                                                      |
 | HTTP | Axios（封装在 `src/plugins/request`，禁止直接 import axios） |
 | 辅助 | ahooks + dayjs + lodash-es + lucide-react                    |
 
@@ -46,7 +46,7 @@
 | API 命名     | `{动作}By{HTTP}`：getListByGet / createByPost / updateByPut / deleteByDelete     |
 | 未使用参数   | 加 `_` 前缀：`(_, record) => ...`                                                |
 | 全局类型     | PageData\<T>(分页响应) / PageQuery(分页基类)，拦截器自动解包 ApiResponse         |
-| 状态管理     | `create` from zustand + persist + immer                                          |
+| 状态管理     | `create` from zustand + persist                                                  |
 | Modal/Drawer | 用 `createModal`/`createDrawer` 工厂函数（@dalydb/sdesign），禁止父组件管理 open |
 | 验证         | `pnpm verify`（tsc + eslint + prettier）                                         |
 

@@ -1,7 +1,6 @@
 import type { User } from 'src/types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { immer } from 'zustand/middleware/immer';
 
 interface UserState {
   userInfo: User | null;
@@ -18,45 +17,32 @@ interface UserState {
 
 export const useUserStore = create<UserState>()(
   persist(
-    immer((set, get) => ({
+    (set, get) => ({
       userInfo: null,
       token: null,
       permissions: [],
 
       setUserInfo: (user) => {
-        set((state) => {
-          state.userInfo = user;
-        });
+        set({ userInfo: user });
       },
       setToken: (token) => {
-        set((state) => {
-          state.token = token;
-        });
+        set({ token });
       },
       setPermissions: (permissions) => {
-        set((state) => {
-          state.permissions = permissions;
-        });
+        set({ permissions });
       },
       login: (user, token) => {
-        set((state) => {
-          state.userInfo = user;
-          state.token = token;
-        });
+        set({ userInfo: user, token });
       },
       logout: () => {
-        set((state) => {
-          state.userInfo = null;
-          state.token = null;
-          state.permissions = [];
-        });
+        set({ userInfo: null, token: null, permissions: [] });
         localStorage.removeItem('token');
       },
       hasPermission: (permission) => {
         const { permissions } = get();
         return permissions.includes(permission) || permissions.includes('*');
       },
-    })),
+    }),
     {
       name: 'user-store',
       partialize: (state) => ({

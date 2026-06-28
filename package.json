@@ -38,7 +38,6 @@
     "chart.js": "^4.5.1",
     "dayjs": "^1.11.0",
     "echarts": "^6.1.0",
-    "immer": "^11.1.4",
     "lodash-es": "^4.17.0",
     "lucide-react": "^0.577.0",
     "mermaid": "^11.14.0",

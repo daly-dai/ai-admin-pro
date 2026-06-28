@@ -8,7 +8,7 @@
 构建工具: RSBuild ^1.7.0
 框架: React ^18.3.0 + TypeScript ^5.5.0
 UI库: @dalydb/sdesign + Ant Design ^5.29.3
-状态管理: Zustand ^5.0.11 + immer ^11.1.4
+状态管理: Zustand ^5.0.11
 路由: React Router ^6.26.0
 HTTP: Axios ^1.7.0
 Hooks: ahooks ^3.8.0

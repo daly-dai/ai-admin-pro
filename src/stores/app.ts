@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { immer } from 'zustand/middleware/immer';
 
 interface AppState {
   // State
@@ -17,35 +16,27 @@ interface AppState {
 
 export const useAppStore = create<AppState>()(
   persist(
-    immer((set) => ({
+    (set) => ({
       sidebarCollapsed: false,
       theme: 'light',
       language: 'zh-CN',
 
       toggleSidebar: () => {
-        set((state) => {
-          state.sidebarCollapsed = !state.sidebarCollapsed;
-        });
+        set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed }));
       },
 
       setSidebarCollapsed: (collapsed) => {
-        set((state) => {
-          state.sidebarCollapsed = collapsed;
-        });
+        set({ sidebarCollapsed: collapsed });
       },
 
       setTheme: (theme) => {
-        set((state) => {
-          state.theme = theme;
-        });
+        set({ theme });
       },
 
       setLanguage: (language) => {
-        set((state) => {
-          state.language = language;
-        });
+        set({ language });
       },
-    })),
+    }),
     {
       name: 'app-store',
       partialize: (state) => ({

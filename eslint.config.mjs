@@ -38,10 +38,7 @@ export default tseslint.config(
         { argsIgnorePattern: '^_' },
       ],
 
-      'id-length': [
-        'error',
-        { min: 2, exceptions: ['_', 'i', 'j', 'k'] },
-      ],
+      'id-length': ['error', { min: 2, exceptions: ['_', 'i', 'j', 'k'] }],
 
       'no-restricted-imports': [
         'error',
@@ -64,7 +61,7 @@ export default tseslint.config(
   // JSX 行数 ≠ 逻辑复杂度，行数用 code review 管。
   {
     rules: {
-      'complexity': ['error', { max: 10 }],
+      complexity: ['error', { max: 10 }],
       'max-depth': ['error', { max: 3 }],
       'max-params': ['error', { max: 3 }],
     },
@@ -77,7 +74,7 @@ export default tseslint.config(
   {
     rules: {
       // ---- 防 Bug (error) ----
-      'eqeqeq': ['error', 'always'],
+      eqeqeq: ['error', 'always'],
       'guard-for-in': 'error',
       'no-throw-literal': 'error',
       'no-unmodified-loop-condition': 'error',
@@ -86,10 +83,13 @@ export default tseslint.config(
       'array-callback-return': 'error',
       'no-constructor-return': 'error',
       'consistent-return': 'error',
-      'no-use-before-define': ['error', { functions: false, classes: true, variables: true }],
+      'no-use-before-define': [
+        'error',
+        { functions: false, classes: true, variables: true },
+      ],
 
       // ---- 代码质量 (warn → 渐近收敛) ----
-      'curly': ['warn', 'all'],
+      curly: ['warn', 'all'],
       'no-nested-ternary': 'error',
       'no-param-reassign': 'error',
       'object-shorthand': 'error',
@@ -104,7 +104,7 @@ export default tseslint.config(
       'no-useless-concat': 'warn',
       'no-useless-rename': 'error',
       'symbol-description': 'error',
-      'yoda': ['warn', 'never', { onlyEquality: true }],
+      yoda: ['warn', 'never', { onlyEquality: true }],
     },
   },
 

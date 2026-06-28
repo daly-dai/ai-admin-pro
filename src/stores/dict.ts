@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { immer } from 'zustand/middleware/immer';
 
 import { transformDictList } from 'src/api/dict';
 import type { Dictionary } from 'src/api/dict/types';
@@ -13,31 +12,26 @@ interface DictState {
   reset: () => void;
 }
 
-export const useDictStore = create<DictState>()(
-  immer((set) => ({
-    dictMapData: {},
+export const useDictStore = create<DictState>()((set) => ({
+  dictMapData: {},
 
-    setDict: (code, data) =>
-      set((state) => {
-        state.dictMapData[code] = data;
-      }),
+  setDict: (code, data) =>
+    set((state) => ({
+      dictMapData: { ...state.dictMapData, [code]: data },
+    })),
 
-    setDictMap: (data) =>
-      set((state) => {
-        state.dictMapData = { ...state.dictMapData, ...data };
-      }),
+  setDictMap: (data) =>
+    set((state) => ({
+      dictMapData: { ...state.dictMapData, ...data },
+    })),
 
-    setDictMapFromList: (list) =>
-      set((state) => {
-        state.dictMapData = {
-          ...state.dictMapData,
-          ...transformDictList(list),
-        };
-      }),
+  setDictMapFromList: (list) =>
+    set((state) => ({
+      dictMapData: {
+        ...state.dictMapData,
+        ...transformDictList(list),
+      },
+    })),
 
-    reset: () =>
-      set((state) => {
-        state.dictMapData = {};
-      }),
-  })),
-);
+  reset: () => set({ dictMapData: {} }),
+}));
