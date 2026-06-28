@@ -1,24 +1,13 @@
+import type { User } from 'src/types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  nickname: string;
-  avatar: string;
-  status: string;
-  createTime: string;
-}
-
 interface UserState {
-  // State
   userInfo: User | null;
   token: string | null;
   permissions: string[];
 
-  // Actions
   setUserInfo: (user: User | null) => void;
   setToken: (token: string | null) => void;
   setPermissions: (permissions: string[]) => void;
@@ -39,26 +28,22 @@ export const useUserStore = create<UserState>()(
           state.userInfo = user;
         });
       },
-
       setToken: (token) => {
         set((state) => {
           state.token = token;
         });
       },
-
       setPermissions: (permissions) => {
         set((state) => {
           state.permissions = permissions;
         });
       },
-
       login: (user, token) => {
         set((state) => {
           state.userInfo = user;
           state.token = token;
         });
       },
-
       logout: () => {
         set((state) => {
           state.userInfo = null;
@@ -67,7 +52,6 @@ export const useUserStore = create<UserState>()(
         });
         localStorage.removeItem('token');
       },
-
       hasPermission: (permission) => {
         const { permissions } = get();
         return permissions.includes(permission) || permissions.includes('*');

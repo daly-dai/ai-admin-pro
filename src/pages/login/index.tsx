@@ -1,4 +1,3 @@
-import type { User } from '@/stores/user';
 import {
   BugOutlined,
   CodeOutlined,
@@ -11,6 +10,7 @@ import { useRequest } from 'ahooks';
 import { Button, Form, Input, message } from 'antd';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { loginByPost } from 'src/api/user';
 import { useUserStore } from 'src/stores';
 
 interface LoginForm {
@@ -20,22 +20,10 @@ interface LoginForm {
 }
 
 const loginApi = (data: { username: string; password: string }) => {
-  return new Promise<{ user: User; token: string }>((resolve) => {
-    setTimeout(() => {
-      resolve({
-        user: {
-          id: '1',
-          username: data.username,
-          nickname: '管理员',
-          email: 'admin@example.com',
-          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
-          status: 'active',
-          createTime: new Date().toISOString(),
-        },
-        token: 'mock-token-12345',
-      });
-    }, 500);
-  });
+  return loginByPost(data).then((user) => ({
+    user,
+    token: 'token-' + user.id + '-' + Date.now(),
+  }));
 };
 
 const featureHighlights = [
@@ -60,6 +48,15 @@ const featureHighlights = [
     desc: 'Claude 原生代码生成管线',
   },
 ];
+
+const FEATURE_GRADIENTS = [
+  'linear-gradient(135deg, #dbeafe, #bfdbfe)',
+  'linear-gradient(135deg, #fce7f3, #fbcfe8)',
+  'linear-gradient(135deg, #d1fae5, #a7f3d0)',
+  'linear-gradient(135deg, #fef3c7, #fde68a)',
+];
+
+const FEATURE_COLORS = ['#2563eb', '#db2777', '#059669', '#d97706'];
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -326,26 +323,12 @@ const LoginPage: React.FC = () => {
                       width: 38,
                       height: 38,
                       borderRadius: 10,
-                      background:
-                        i === 0
-                          ? 'linear-gradient(135deg, #dbeafe, #bfdbfe)'
-                          : i === 1
-                            ? 'linear-gradient(135deg, #fce7f3, #fbcfe8)'
-                            : i === 2
-                              ? 'linear-gradient(135deg, #d1fae5, #a7f3d0)'
-                              : 'linear-gradient(135deg, #fef3c7, #fde68a)',
+                      background: FEATURE_GRADIENTS[i] ?? FEATURE_GRADIENTS[3],
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontSize: 16,
-                      color:
-                        i === 0
-                          ? '#2563eb'
-                          : i === 1
-                            ? '#db2777'
-                            : i === 2
-                              ? '#059669'
-                              : '#d97706',
+                      color: FEATURE_COLORS[i] ?? FEATURE_COLORS[3],
                       flexShrink: 0,
                     }}
                   >
@@ -503,7 +486,7 @@ const LoginPage: React.FC = () => {
                   color: 'rgba(148,163,184,0.6)',
                 }}
               >
-                演示环境 · 输入任意用户名密码即可登录
+                演示账号：admin / admin123
               </div>
             </div>
           </div>

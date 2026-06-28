@@ -31,10 +31,15 @@ export interface ApiError {
 
 /** 用户 */
 export interface User {
-  id: string;
-  name: string;
-  username?: string;
-  nickname?: string;
-  avatar?: string;
-  email?: string;
+  id: number;
+  username: string;
+  realName: string;
+  email: string;
+  phone: string;
+  avatar: string;
+  status: number;
+  roleIds: string;
+  remark: string;
+  createTime: string;
+  updateTime: string;
 }

@@ -20,7 +20,7 @@ const HomePage: React.FC = () => {
         <div>
           <h1 className={styles.greeting}>
             {getGreeting()}
-            {userInfo?.nickname ? `，${userInfo.nickname}` : ''}
+            {userInfo?.realName ? `，${userInfo.realName}` : ''}
           </h1>
           <p className={styles.greetingSub}>AI 工程化管线 — 架构蓝图</p>
         </div>

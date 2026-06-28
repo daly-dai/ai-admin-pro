@@ -178,7 +178,7 @@ const MainLayout: React.FC = () => {
                 <Avatar src={userInfo?.avatar} icon={<UserOutlined />} />
                 {!sidebarCollapsed && (
                   <span>
-                    {userInfo?.nickname || userInfo?.username || '用户'}
+                    {userInfo?.realName || userInfo?.username || '用户'}
                   </span>
                 )}
               </div>
@@ -188,8 +188,8 @@ const MainLayout: React.FC = () => {
 
         <Content
           style={{
-            margin: 24,
-            padding: 24,
+            margin: 16,
+            // padding: 24,
             background: token.colorBgContainer,
             borderRadius: token.borderRadiusLG,
             minHeight: 280,

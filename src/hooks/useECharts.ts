@@ -64,7 +64,9 @@ export interface UseEChartsReturn {
 
 /** 将 Error | string | unknown 统一转为 Error 实例 */
 function normalizeError(err: unknown): Error {
-  if (err instanceof Error) return err;
+  if (err instanceof Error) {
+    return err;
+  }
   return new Error(String(err));
 }
 
@@ -123,7 +125,9 @@ export function useECharts(options: UseEChartsOptions): UseEChartsReturn {
   // ===================== 1. 初始化 & 销毁（动态加载 echarts） =====================
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) {
+      return;
+    }
 
     let cancelled = false;
     let instance: ECharts | null = null;
@@ -131,9 +135,11 @@ export function useECharts(options: UseEChartsOptions): UseEChartsReturn {
     let rafId: number | null = null;
     let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-    loadECharts()
+    void loadECharts()
       .then((echarts) => {
-        if (cancelled || !containerRef.current) return;
+        if (cancelled || !containerRef.current) {
+          return;
+        }
 
         // 创建实例
         instance = echarts.init(containerRef.current, theme, {
@@ -154,10 +160,14 @@ export function useECharts(options: UseEChartsOptions): UseEChartsReturn {
             const delay = resizeDebounce;
 
             if (delay > 0) {
-              if (debounceTimer !== null) clearTimeout(debounceTimer);
+              if (debounceTimer !== null) {
+                clearTimeout(debounceTimer);
+              }
               debounceTimer = setTimeout(handleResize, delay);
             } else {
-              if (rafId !== null) cancelAnimationFrame(rafId);
+              if (rafId !== null) {
+                cancelAnimationFrame(rafId);
+              }
               rafId = requestAnimationFrame(() => {
                 handleResize();
                 rafId = null;
@@ -177,10 +187,16 @@ export function useECharts(options: UseEChartsOptions): UseEChartsReturn {
         }
       });
 
+    // consistent-return 假阳性：表达式语句后必然到达此 return
+    // eslint-disable-next-line consistent-return
     return () => {
       cancelled = true;
-      if (rafId !== null) cancelAnimationFrame(rafId);
-      if (debounceTimer !== null) clearTimeout(debounceTimer);
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+      if (debounceTimer !== null) {
+        clearTimeout(debounceTimer);
+      }
       observer?.disconnect();
       if (instance && !instance.isDisposed()) {
         instance.dispose();
@@ -194,8 +210,12 @@ export function useECharts(options: UseEChartsOptions): UseEChartsReturn {
   // ===================== 2. 设置配置项 =====================
   useEffect(() => {
     const instance = instanceRef.current;
-    if (!instance || instance.isDisposed()) return;
-    if (!option) return;
+    if (!instance || instance.isDisposed()) {
+      return;
+    }
+    if (!option) {
+      return;
+    }
 
     try {
       instance.setOption(option, {
@@ -211,7 +231,9 @@ export function useECharts(options: UseEChartsOptions): UseEChartsReturn {
   // eslint-disable-next-line complexity
   useEffect(() => {
     const instance = instanceRef.current;
-    if (!instance || instance.isDisposed()) return;
+    if (!instance || instance.isDisposed()) {
+      return;
+    }
 
     const cfg = loadingConfigRef.current;
 
@@ -238,7 +260,9 @@ export function useECharts(options: UseEChartsOptions): UseEChartsReturn {
   // ===================== 4. 事件绑定 =====================
   useEffect(() => {
     const instance = instanceRef.current;
-    if (!instance || instance.isDisposed()) return;
+    if (!instance || instance.isDisposed()) {
+      return undefined;
+    }
 
     const prevEvents = eventsRef.current ?? {};
     const nextEvents = events ?? {};

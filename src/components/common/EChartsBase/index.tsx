@@ -212,7 +212,7 @@ const ChartContent = ({
   wrapperStyle,
 }: ChartContentProps) => {
   const showEmpty = empty && !loading;
-  const showLoadingText = loading && loadingText != null && loadingText !== '';
+  const showLoadingText = loading && loadingText !== null && loadingText !== '';
 
   return (
     <div

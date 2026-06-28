@@ -7,7 +7,9 @@ export const formatDate = (
   date: string | number | Date,
   format = 'YYYY-MM-DD',
 ): string => {
-  if (!date) return '-';
+  if (!date) {
+    return '-';
+  }
   return dayjs(date).format(format);
 };
 
@@ -22,7 +24,9 @@ export const formatDateTime = (date: string | number | Date): string => {
  * 格式化金额
  */
 export const formatMoney = (amount: number, decimals = 2): string => {
-  if (amount === null || amount === undefined) return '-';
+  if (amount === null || amount === undefined) {
+    return '-';
+  }
   return `¥${amount.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 };
 
@@ -30,7 +34,9 @@ export const formatMoney = (amount: number, decimals = 2): string => {
  * 格式化数字
  */
 export const formatNumber = (num: number): string => {
-  if (num === null || num === undefined) return '-';
+  if (num === null || num === undefined) {
+    return '-';
+  }
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
@@ -62,7 +68,9 @@ export const debounce = <T extends (...args: unknown[]) => unknown>(
 ): ((...args: Parameters<T>) => void) => {
   let timer: ReturnType<typeof setTimeout> | null = null;
   return function (this: unknown, ...args: Parameters<T>) {
-    if (timer) clearTimeout(timer);
+    if (timer) {
+      clearTimeout(timer);
+    }
     timer = setTimeout(() => {
       fn.apply(this, args);
     }, delay);
@@ -97,9 +105,17 @@ export const generateId = (): string => {
  * 判断空值
  */
 export const isEmpty = (value: unknown): boolean => {
-  if (value === null || value === undefined) return true;
-  if (typeof value === 'string') return value.trim() === '';
-  if (Array.isArray(value)) return value.length === 0;
-  if (typeof value === 'object') return Object.keys(value).length === 0;
+  if (value === null || value === undefined) {
+    return true;
+  }
+  if (typeof value === 'string') {
+    return value.trim() === '';
+  }
+  if (Array.isArray(value)) {
+    return value.length === 0;
+  }
+  if (typeof value === 'object') {
+    return Object.keys(value).length === 0;
+  }
   return false;
 };

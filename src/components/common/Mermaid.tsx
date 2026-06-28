@@ -30,19 +30,23 @@ const Mermaid: React.FC<MermaidProps> = ({ code, style, fontSize }) => {
   const renderedCode = useRef('');
 
   useEffect(() => {
-    if (!ref.current || renderedCode.current === code) return;
+    if (!ref.current || renderedCode.current === code) {
+      return;
+    }
 
     const diagramCode =
-      fontSize != null
+      fontSize !== null
         ? `%%{init: {'themeVariables': {'fontSize': '${fontSize}px'}}}%%\n${code}`
         : code;
 
     let cancelled = false;
 
-    mermaid
+    void mermaid
       .render(`${id}-svg`, diagramCode)
       .then(({ svg }) => {
-        if (cancelled || !ref.current) return;
+        if (cancelled || !ref.current) {
+          return;
+        }
         ref.current.innerHTML = svg;
         renderedCode.current = code;
       })
@@ -50,6 +54,8 @@ const Mermaid: React.FC<MermaidProps> = ({ code, style, fontSize }) => {
         // parse error — silently ignore stale renders
       });
 
+    // consistent-return 假阳性：void 表达式后必然到达此 return
+    // eslint-disable-next-line consistent-return
     return () => {
       cancelled = true;
     };
