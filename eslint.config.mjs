@@ -85,6 +85,8 @@ export default tseslint.config(
       'no-promise-executor-return': 'error',
       'array-callback-return': 'error',
       'no-constructor-return': 'error',
+      'consistent-return': 'error',
+      'no-use-before-define': ['error', { functions: false, classes: true, variables: true }],
 
       // ---- 代码质量 (warn → 渐近收敛) ----
       'curly': ['warn', 'all'],

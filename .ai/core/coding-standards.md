@@ -14,19 +14,111 @@
 | 容器组件 | `{Entity}{Layer}`     | `ProductFormModal`, `ProductDetailDrawer` |
 | Hooks    | `use` + `PascalCase`  | `useProductList`                          |
 
-### 变量名最小长度
+### 语义化命名
+
+> ⛔ 变量名必须自解释——读名字就知道它是什么，不需要看上下文猜。以下**直接禁止**：
+
+#### 禁止缩写
+
+除以下**白名单**外，所有缩写一律展开为完整单词：
+
+> `id` `url` `api` `ctx` `req` `res` `err` `props` `ref` `dom` `ui` `db` `io` `max` `min` `len`
 
 ```typescript
-// 正确：有意义的名字
-users.filter((user) => user.active);
-roles.map((role) => role.name);
+// ❌ 禁止
+const usr = user;
+const btn = <Button />;
+const cfg = { ... };
+const dt = new Date();
+const vl = data.value;
+const nm = user.name;
 
-// 错误：单字母（eslint id-length 会报错）
-users.filter((u) => u.active);
-roles.map((r) => r.name);
+// ✅ 正确
+const user = currentUser;
+const button = <Button />;
+const config = { ... };
+const date = new Date();
+const value = data.value;
+const name = user.name;
 ```
 
-> 例外：`_`（未使用参数）、`i`/`j`/`k`（循环下标）
+#### 禁止拼音
+
+```typescript
+// ❌ 禁止
+const shuju = response.data;
+const yonghu = currentUser;
+const zhuangtai = 'active';
+
+// ✅ 正确
+const data = response.data;
+const user = currentUser;
+const status = 'active';
+```
+
+#### 禁止编号命名
+
+```typescript
+// ❌ 禁止
+const item1 = list[0];
+const data2 = secondResult;
+const typeA = primaryType;
+
+// ✅ 正确
+const firstItem = list[0];
+const secondResult = alternateData;
+const primaryType = preferredType;
+```
+
+#### 禁止无意义占位
+
+```typescript
+// ❌ 禁止
+const foo = calculate();
+const bar = fetchUsers();
+const baz = transform(data);
+const temp = currentValue;
+const tmp = intermediateState;
+
+// ✅ 正确
+const total = calculate();
+const users = fetchUsers();
+const transformed = transform(data);
+const currentValue = input;
+const intermediateState = pending;
+```
+
+#### 禁止回调参数缩写
+
+```typescript
+// ❌ 禁止
+users.map((u) => u.name);
+items.filter((i) => i.active);
+onChange((e) => e.target.value);
+useEffect((s) => s.fetch());
+
+// ✅ 正确
+users.map((user) => user.name);
+items.filter((item) => item.active);
+onChange((event) => event.target.value);
+useEffect((store) => store.fetch());
+```
+
+#### 禁止布尔值无前缀
+
+```typescript
+// ❌ 禁止
+const active = true;
+const visible = false;
+const loading = isLoading;
+
+// ✅ 正确
+const isActive = true;
+const isVisible = false;
+const isLoading = loading;
+```
+
+> ⚠️ 例外：`_`（未使用参数）、`i`/`j`/`k`（循环下标）。数组回调参数用完整单数名：`users.map((user) => ...)`。
 
 ### 命名冲突处理
 

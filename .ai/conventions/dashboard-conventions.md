@@ -60,3 +60,69 @@
 | D4   | 加筛选条件        | `store.ts` → `index.tsx`           | Store filter 字段 → 页面 FilterBar    |
 | D5   | 加/减指标卡片     | `pages/{module}/index.tsx`         | 指标卡 Grid 区域                      |
 | D6   | 改数据源/接口字段 | `types.ts` → `api/index.ts` → 组件 | Entity 字段 → API 签名 → 组件数据绑定 |
+
+## 八、Grid 布局对齐规约
+
+> **核心原则：同一大屏内，多行之间的列边界必须对齐。不允许每行独立选列宽。**
+
+### 为什么需要这个规约
+
+大屏最常见的布局是 2×2（两行两列）或 3×2（两行三列）。如果第一行左右分界在 37.5% 处（`lg={9}`），第二行分界在 33.3% 处（`lg={8}`），视觉上会产生明显的"错位感"——卡片边缘对不齐，看起来很乱。
+
+### 规则
+
+| #   | 规则                       | 说明                                                                                                          |
+| --- | -------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| G1  | **同屏同列宽**             | 同一大屏内，相同列数的 Row 必须使用相同的 `lg` 比例。Row2 用 `lg={9}+lg={15}`，Row3 也必须用 `lg={9}+lg={15}` |
+| G2  | **列宽用常量，不内联数字** | `lg` 值必须定义为页面级常量（如 `const LEFT = 9; const RIGHT = 15`），所有 Row 引用同一常量                   |
+| G3  | **推荐比例**               | 两列优先从以下比例选：`7:17`、`8:16`、`9:15`、`10:14`、`12:12`。选定后在整页内保持一致                        |
+| G4  | **不同列数不同行**         | 如果 Row2 是两列、Row3 是三列，列边界不必对齐（结构不同），但每个列数组内必须遵守 G1                          |
+
+### 正确示例
+
+```tsx
+// ✅ 列宽定义为语义化常量，所有 Row 引用
+const LEFT_COL = 9;
+const RIGHT_COL = 15;
+
+return (
+  <>
+    {/* Row 1: 两列，9:15 */}
+    <Row gutter={[16, 16]}>
+      <Col lg={LEFT_COL}>
+        <Chart1 />
+      </Col>
+      <Col lg={RIGHT_COL}>
+        <Chart2 />
+      </Col>
+    </Row>
+    {/* Row 2: 两列，同样 9:15 — 列边界对齐 */}
+    <Row gutter={[16, 16]}>
+      <Col lg={LEFT_COL}>
+        <Chart3 />
+      </Col>
+      <Col lg={RIGHT_COL}>
+        <Chart4 />
+      </Col>
+    </Row>
+  </>
+);
+```
+
+### 错误示例（禁止）
+
+```tsx
+// ❌ 每行独立选 lg 值 — 列边界不对齐
+<Row gutter={[16, 16]}>
+  <Col lg={9}><Chart1 /></Col>
+  <Col lg={15}><Chart2 /></Col>
+</Row>
+<Row gutter={[16, 16]}>
+  <Col lg={8}><Chart3 /></Col>   {/* ← 9→8，分界线偏移 */}
+  <Col lg={16}><Chart4 /></Col>
+</Row>
+```
+
+### CSS Grid 替代方案
+
+优先使用 `DashboardGrid` 组件（`src/components/common/DashboardGrid`）替代 antd Row/Col。该组件底层使用 CSS Grid，`grid-template-columns` 天然保证对齐，无需 G1-G4。
