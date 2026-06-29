@@ -1,6 +1,7 @@
 # 详情页代码模板
 
 > 组件库文档: `.ai/sdesign/components/SDetail.md`
+> 📋 可读性约束（R1-R5）→ `.ai/core/coding-standards.md`
 
 ## 核心组件
 

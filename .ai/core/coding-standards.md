@@ -124,6 +124,20 @@ const isLoading = loading;
 
 当实体类型名与 `src/types/` 下全局类型冲突时：使用模块前缀（如 `MgmtUser`、`SystemRole`），生成前先 `Grep: export interface [EntityName]` 确认。
 
+## 可读性约束
+
+> ⛔ 以下 5 条是全局硬约束，所有 Lane、所有模板通用。生成代码时必须遵守。
+
+| #   | 规则                  | 反例                                     | 正例                                                              |
+| --- | --------------------- | ---------------------------------------- | ----------------------------------------------------------------- |
+| R1  | 禁止 else 嵌套        | `if(a){...}else{if(b){...}else{...}}`    | 用 early return：`if(!a) return; if(!b) return; ...`              |
+| R2  | 禁止 JSX 内 transform | `{data.filter(x=>x.ok).map(x=><Card/>)}` | 提到 JSX 外赋给语义化变量：`const visibleData = data.filter(...)` |
+| R3  | 单文件单组件          | 一个文件 `export` 两个以上组件           | 一个文件 `export default` 一个组件 + 最多一个辅助组件             |
+| R4  | 逻辑函数 ≤ 40 行      | 80 行含条件/循环/变换的 useEffect        | 提取 `fetchData()`、`renderChart()` 等子函数                      |
+| R5  | 复杂逻辑必须注释      | 正则后面无说明                           | `// WHY: 匹配 ISO 8601 且允许毫秒省略`                            |
+
+> ⚠️ R4 例外：纯声明式配置不计入 40 行。ECharts `option`、Table `columns`、Form `items` 是数据声明，不含控制流，行数由数据量决定。
+
 ## 未使用参数处理
 
 ```typescript

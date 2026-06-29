@@ -11,6 +11,8 @@
 | 实时监控大屏 | CSS Grid 全屏 16:9  | 轮询 (5-30s)  | ECharts |
 | 交互式仪表盘 | 可折叠面板 + 下钻   | 按需加载      | ECharts |
 
+> 📋 可读性约束（R1-R5）→ `.ai/core/coding-standards.md`
+
 ## 文件结构
 
 ```
