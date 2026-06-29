@@ -1,11 +1,11 @@
 ---
 name: sdesign-gen-page
-description: 'Generates admin pages (CRUD list, detail, form) using @dalydb/sdesign component library. Includes full API layer (types.ts + api/index.ts) and page layer generation with built-in component rules, pitfall checks, and verification. Use when the user asks to generate pages, create CRUD pages, create list/detail/form pages, create new modules, or mentions sdesign page generation.'
+description: 'Generates admin pages (CRUD list, detail, form, dashboard) using @dalydb/sdesign component library. Includes full API layer (types.ts + api/index.ts) and page layer generation with built-in component rules, pitfall checks, and verification. Use when the user asks to generate pages, create CRUD pages, create list/detail/form/dashboard pages, create new modules, or mentions sdesign page generation.'
 ---
 
 # sdesign-gen-page — 页面生成 Skill
 
-> 适用：CRUD列表页 / 详情页 / 独立表单页
+> 适用：CRUD列表页 / 详情页 / 独立表单页 / 大屏仪表盘
 > 技术栈：React 18 + TypeScript 5 + @dalydb/sdesign + antd 5 + ahooks + zustand + Rsbuild
 
 ## 使用方式
@@ -75,6 +75,7 @@ description: 'Generates admin pages (CRUD list, detail, form) using @dalydb/sdes
 | 列表 / CRUD / 管理 / 增删改查                              | CRUD 列表页 | `crud-template.md` + `api-template.md`          | `SProTable.md` + `SButton.md`（报错按需）；涉及弹窗时 `SForm.md` + `SDetail.md` | `src/api/{module}/` + `src/pages/{module}/` + `specs/{feature}/`                                      |
 | 详情 / 查看 / detail                                       | 详情页      | `detail-template.md` + `api-template.md`        | `SDetail.md` + `SButton.md`（报错按需）                             | `src/api/{module}/` + `src/pages/{module}/detail.tsx`                                                 |
 | 表单 / 新增 / 编辑 / form                                  | 表单页      | `form-template.md` + `api-template.md`          | `SForm.md` + `SButton.md`（报错按需）                               | `src/api/{module}/` + `src/pages/{module}/create.tsx` + `edit.tsx`                                     |
+| 大屏 / 仪表盘 / 监控 / 统计 / dashboard                     | 大屏页      | `dashboard-template.md`                        | `EChartsBase` 内嵌模板无需额外读                                    | `src/api/{module}/` + `src/pages/{module}/` + `src/pages/{module}/components/`                         |
 
 > 判断规则：用户描述中无"新增/编辑/删除/增删改"等关键词 → 默认走查询列表页，不生成弹窗和操作列。模糊时向用户确认。
 
