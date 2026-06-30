@@ -2,6 +2,8 @@
 
 > 适用场景：数据大屏、实时监控大屏、统计仪表盘。
 > 目标：让 AI 生成的代码**好改、好删、好替换**——大屏的核心开发发生在迭代阶段（D1-D6），不在初始生成。
+>
+> **视觉设计委托：** 颜色变量在规格文档中定义，间距/字体/卡片/图表美化等视觉细节由 `frontend-design` + `web-design-guidelines` skill 接管。本文件不重复定义视觉 token。
 
 ---
 
@@ -30,6 +32,7 @@
 - 统一使用 `src/components/EChartsBase`，**禁止直接 import echarts-for-react**
 - 基座提供：loading / error / empty 三态 + resize 自适应
 - 图表组件基于基座封装，传入 option 配置即可
+- **Drawer 内含 ECharts 时**：禁止 `destroyOnClose`，外部用 `{open && <Drawer>}` 条件渲染。抽屉关闭时组件保持挂载，ECharts 实例不销毁，避免重新初始化时容器尺寸为 0
 
 ## 五、数据流模式
 
@@ -48,7 +51,14 @@
 - 不存储派生/计算数据（在组件中通过 selector 派生）
 - Store 的 action 不包含 API 调用逻辑（API 调用在页面或 hooks 中）
 
-## 七、D1-D6 修改路径
+## 七、颜色管理
+
+- 页面级颜色常量统一定义在 `src/pages/{module}/constants/index.ts` 的 `THEME_COLORS` 对象中
+- 所有组件通过 `import { THEME_COLORS } from '../constants'` 引用，**禁止组件内硬编码色值**
+- `chartSeries` 数组长度 ≥10，覆盖 ECharts 环形图/柱状图的多系列场景
+- 切换主题只需修改 `THEME_COLORS` 一处（包括 `bgPrimary`/`bgCard`/`textPrimary`/`textSecondary`）
+
+## 八、D1-D6 修改路径
 
 > 匹配修改场景 → 定位锚点 → 按已有模式修改 → 不改变既定数据流方式。
 
@@ -126,3 +136,49 @@ return (
 ### CSS Grid 替代方案
 
 优先使用 `DashboardGrid` 组件（`src/components/common/DashboardGrid`）替代 antd Row/Col。该组件底层使用 CSS Grid，`grid-template-columns` 天然保证对齐，无需 G1-G4。
+
+## 九、组件拆分决策 — "这个东西要不要独立成一个文件"
+
+> **核心原则：不要凭感觉拆。** 每次犹豫"要不要拆文件"时，按以下决策表判断。满足任一条件即拆，都不满足则不拆。
+
+### 决策表
+
+| #   | 判断条件                                                                    | 拆成独立文件？        | 示例                                                   |
+| --- | --------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------ |
+| S1  | 有独立状态（`useState` / `useRef` / `useReducer`）或副作用（`useEffect`）？ | ✅ 拆                 | DualAxisChart 有内部 mode 状态 → 拆                    |
+| S2  | 被 ≥2 个父组件引用（复用）？                                                | ✅ 拆                 | StatCard 被 LeftModule 和 RightModule 共用 → 拆        |
+| S3  | Props ≥3 个且内部有非展示型逻辑（条件判断 / 数据转换 / 事件处理）？         | ✅ 拆                 | FilterBar 有 onChange 回调 + 多个搜索项 → 拆           |
+| S4  | 对应布局拓扑图中一个编号区域（§一）？                                       | ✅ 拆（模板规则）     | ①~⑬ 每个编号 → 一个组件文件                            |
+| S5  | 以上都不满足？                                                              | ❌ 不拆，内联在父组件 | StatCardRow（纯 flex 容器，~10行）→ 写在 LeftModule 里 |
+
+### 反例：不该拆的情况
+
+```tsx
+// ❌ 过度拆分：StatCardRow 只是一个 flex 容器，无状态、无逻辑、不跨组件复用
+const StatCardRow: React.FC<{ children: ReactNode }> = ({ children }) => (
+  <div style={{ display: 'flex', gap: 12 }}>{children}</div>
+);
+
+// ✅ 正确：直接内联在父组件
+<div style={{ display: 'flex', gap: 12 }}>
+  <StatCard title="EVA" ... />
+  <StatCard title="自营EVA" ... />
+  <StatCard title="代客EVA" ... />
+</div>
+```
+
+### 抽屉/弹窗内组件的处理
+
+抽屉（Drawer）和弹窗（Modal）**不在主页面拓扑图中**，但仍按 S1-S5 规则判断：
+
+| 抽屉内部区域           | 判断                                             | 理由                                        |
+| ---------------------- | ------------------------------------------------ | ------------------------------------------- |
+| 统计区（单指标详细版） | 复用 StatCard，不新增组件                        | S2：StatCard 已在主页复用                   |
+| 折线柱状图             | 复用 DualAxisChart（`showMetricDropdown=false`） | S2：与主页共用，通过 prop 控制差异          |
+| 环形图                 | 新增 DonutChart.tsx                              | S1：有内部联动状态（一级→二级）             |
+| 表格                   | 新增 DetailTable.tsx                             | S3：列定义随 indicatorType 变化，有转换逻辑 |
+| 抽屉容器               | 新增 DetailDrawer.tsx                            | S1：管理 open/close + indicatorType 状态    |
+
+### 判据优先级
+
+按 S1 → S2 → S3 → S4 → S5 顺序判断。一旦命中 S1-S4 中任一条件，立即拆分，不再继续判断后续条件。
