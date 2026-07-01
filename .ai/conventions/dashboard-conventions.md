@@ -58,7 +58,16 @@
 - `chartSeries` 数组长度 ≥10，覆盖 ECharts 环形图/柱状图的多系列场景
 - 切换主题只需修改 `THEME_COLORS` 一处（包括 `bgPrimary`/`bgCard`/`textPrimary`/`textSecondary`）
 
-## 八、D1-D6 修改路径
+## 八、option 构造规范
+
+> 图表组件的 ECharts option 不自由发挥，严格按 sdesign-gen-page 的「option 构造流程」生成：
+> 确定坐标系 → 组装 xAxis → 组装 yAxis[] → 组装 series[] → 填充通用默认值 → 填颜色 → 写数据转换。
+>
+> 数据来源从蓝图的「图表需求卡」取，不自行推断。需求卡没写的配置项使用通用默认值。
+>
+> 图表 option 必须抽取为独立变量或函数，**禁止内联在 JSX 中**。
+
+## 九、D1-D6 修改路径
 
 > 匹配修改场景 → 定位锚点 → 按已有模式修改 → 不改变既定数据流方式。
 
@@ -71,7 +80,7 @@
 | D5   | 加/减指标卡片     | `pages/{module}/index.tsx`         | 指标卡 Grid 区域                      |
 | D6   | 改数据源/接口字段 | `types.ts` → `api/index.ts` → 组件 | Entity 字段 → API 签名 → 组件数据绑定 |
 
-## 八、Grid 布局对齐规约
+## 十、Grid 布局对齐规约
 
 > **核心原则：同一大屏内，多行之间的列边界必须对齐。不允许每行独立选列宽。**
 
@@ -137,7 +146,7 @@ return (
 
 优先使用 `DashboardGrid` 组件（`src/components/common/DashboardGrid`）替代 antd Row/Col。该组件底层使用 CSS Grid，`grid-template-columns` 天然保证对齐，无需 G1-G4。
 
-## 九、组件拆分决策 — "这个东西要不要独立成一个文件"
+## 十一、组件拆分决策 — "这个东西要不要独立成一个文件"
 
 > **核心原则：不要凭感觉拆。** 每次犹豫"要不要拆文件"时，按以下决策表判断。满足任一条件即拆，都不满足则不拆。
 

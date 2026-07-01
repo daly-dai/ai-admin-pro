@@ -43,15 +43,43 @@
 
 ---
 
+## 大屏蓝图 Lane
+
+**适用**：复杂大屏需求（组件 >5 或含双Y轴/联动/抽屉/非标图表），先出蓝图再看效果。
+
+**输入**：零散需求 + 接口文档（可选）+ 布局草图（可选）
+
+**流程**：
+
+1. 加载 skill: `blueprint-gen`
+2. 逐章生成 §一~§九 → 完备性检查 → 硬验证
+3. 产出 `specs/{feature}-blueprint.md`
+4. 自动续接大屏 Lane（`sdesign-gen-page` 读蓝图生成代码）
+
+> 简单大屏（KPI卡片+趋势图+饼图，≤5组件，无自定义图表类型）不需要蓝图，直接走下方大屏 Lane。
+
+---
+
 ## 大屏 Lane
 
 **适用**：数据大屏、仪表盘、实时监控。
 
+**复杂度判断（生成前先评估）：**
+
+```
+组件数 ≤5 且 无自定义图表类型（双Y轴/雷达/漏斗/地图/下钻联动）且 无抽屉
+  → 🔵 轻量路径：跳过蓝图，直接 sdesign-gen-page 大屏路由
+  → 图表需求卡内联在编码步骤中填写
+
+不满足以上条件
+  → 🟠 完整路径：先走大屏蓝图 Lane 生成蓝图，再走本 Lane
+```
+
 **硬约束**：`echarts` → `EChartsBase`（`src/components/`），禁止直接 import echarts-for-react。
 
-**模板**：`.ai/templates/dashboard-page.md` — 页面结构 + Grid 布局 + 数据流模式（查表确定）
+**模板**：`.ai/templates/dashboard-page.md` — 页面结构 + Grid 布局 + 数据流模式
 
-**规约**：图表组件不互相 import、数据与展示分离、option 外提为独立变量、颜色集中在 theme → `.ai/conventions/dashboard-conventions.md`
+**规约**：图表组件不互相 import、数据与展示分离、option 按 option 构造流程生成（不自由发挥）、颜色集中在 theme → `.ai/conventions/dashboard-conventions.md`
 
 ---
 
