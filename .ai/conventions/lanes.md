@@ -83,6 +83,23 @@
 
 ---
 
+## 大屏 Lane（dashboard-gen）⭐ 新
+
+**适用**：数据大屏、仪表盘、实时监控。蓝图+代码+自检端到端。
+
+**流程**：
+
+1. 复杂度判断：组件 ≤5 且无自定义图表/抽屉 → 🔵 轻量路径（跳过蓝图）；否则 → 🟠 完整路径（蓝图 + 代码）
+2. 加载 skill: `dashboard-gen`
+3. 🟠 完整路径：Skill §2 蓝图阶段 → 矛盾检测（原始需求 vs 推导 → 当场 [待确认]）→ 用户确认后 lock
+4. Skill §3 代码阶段 → 逐 Task 生成（内置 Store 拆分闸门 + 语法防错）
+5. Skill §4 生成后自检 → 交互事件覆盖检查 + Store 拆分检查 + 常量接线检查 + 蓝图遗漏项检查
+6. 第三方验证 → `pnpm verify` → 交付
+
+> ⚠️ **此 Lane 与上方「大屏 Lane（sdesign-gen-page）」二选一。** dashboard-gen 为推荐方案（蓝图+代码一体，消除阶段间信息丢失）。老 pipeline（blueprint-gen → sdesign-gen-page）仍可用作为 fallback。
+
+---
+
 ## 多Tab详情 Lane
 
 **适用**：主实体详情页 + 多 Tab。

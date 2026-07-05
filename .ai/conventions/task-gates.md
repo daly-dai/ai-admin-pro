@@ -179,6 +179,38 @@ pnpm verify 报错时：
 - [ ] 全局闸门 G1-G12 全部通过
 - [ ] `pnpm verify` 0 error（仅本Task输出锁内文件）
 
+### page-dashboard — 大屏仪表盘
+
+**输出锁**:
+
+- `src/api/{module}/types.ts` (新建/修改)
+- `src/api/{module}/index.ts` (新建/修改)
+- `src/pages/{module}/index.tsx` (新建/修改)
+- `src/pages/{module}/components/` (新建/修改)
+- `src/pages/{module}/constants/index.ts` (新建/修改)
+- `src/pages/{module}/store.ts` (新建/修改)
+- `src/pages/{module}/utils.ts` (新建/修改)
+- `src/pages/{module}/mock.ts` (新建/修改)
+- `specs/{feature}-blueprint.md` (新建)
+- `src/router/routes/index.tsx` (仅路由注册行)
+
+**验收闸门**:
+
+- [ ] 布局使用 DashboardGrid（非 antd Row/Col）
+- [ ] 图表统一通过 EChartsBase 渲染（非 echarts-for-react）
+- [ ] 图表 option 抽取为独立函数/变量（非内联 JSX）
+- [ ] 颜色/主题集中在 constants（非硬编码）
+- [ ] Store action 不含 API 调用逻辑
+- [ ] N 个独立控制实例 → N 个 Store 数据字段（禁止合并）
+- [ ] 组件间不互相 import（只能被 page 引用）
+- [ ] 抽屉使用 createDrawer 工厂（非手动管理 open）
+- [ ] 蓝图 E1-En 所有交互事件有代码实现（配合 dashboard-gen Skill §4）
+- [ ] constants 所有导出常量被引用（配合 constant-wiring-check Recipe）
+- [ ] 蓝图矛盾清单已逐条确认
+- [ ] D1-D6 语法防错规则通过
+- [ ] 全局闸门 G1-G15 全部通过
+- [ ] `pnpm verify` 0 error（仅本Task输出锁内文件）
+
 ### 非标准类型 — 兜底
 
 > page-dashboard / page-workflow / page-landing / page-custom 等非常规页面类型，其 Task 闸门由用户按实际情况逐 Task 定义，遵循全局闸门 G1-G12 + 用户指定验收项。
