@@ -25,6 +25,7 @@
   │     → §1 修改路径（不经过 Lane，不走 skill）
   │
   ├─ 命中 Lane（匹配下表）→ 走对应流程
+  │     ├─ 大屏 → skill: dashboard-gen（蓝图+代码+自检，端到端）⭐ 新
   │     ├─ 大屏蓝图 → skill: blueprint-gen（生成蓝图）→ 自动续接大屏 Lane
   │     ├─ CRUD / 大屏 / 多Tab详情 → skill: sdesign-gen-page
   │     │     执行完毕后 → 扫配方表 → 命中则执行配方 → pnpm verify
@@ -43,11 +44,12 @@
 | 新建/新模块 + 列表/CRUD/增删改查     | CRUD      | skill: sdesign-gen-page（填空模板）         |
 | 大屏 + 蓝图/设计/规划/先出方案       | 大屏蓝图  | skill: blueprint-gen → 自动续接大屏 Lane    |
 | 大屏 + 生成代码/写页面               | 大屏      | skill: sdesign-gen-page（读蓝图，骨架模板） |
+| 大屏（端到端，蓝图+代码一体）        | 大屏      | skill: dashboard-gen ⭐ 新                  |
 | 新建 + 详情（含多Tab）               | 多Tab详情 | skill: sdesign-gen-page（增量追加）         |
 | 无法匹配任何场景                     | 非标      | 扫配方 → PRD 兜底                           |
 
 > Lane 详细流程（CRUD/大屏/多Tab/非标各自 SOP）→ 外部读 `.ai/conventions/lanes.md`
-> 🛑 **Skill 会话状态**：同一会话中 Skill 只挂载一次。若已执行过 sdesign-gen-page，不要重新挂载或重读 Skill 文件，直接继续当前步骤。
+> 🛑 **Skill 会话状态**：同一会话中 Skill 只挂载一次。若已执行过 sdesign-gen-page 或 dashboard-gen，不要重新挂载或重读 Skill 文件，直接继续当前步骤。
 
 ### 配方匹配表（Lane 执行后 / 不命中 Lane 时必扫）
 
@@ -77,11 +79,12 @@
 
 ### 🔒 输出锁（只允许写这些文件，其余禁止修改）
 
-| 工作模式         | 输出锁范围                                                       |
-| ---------------- | ---------------------------------------------------------------- |
-| sdesign-gen-page | 由 Skill 内部定义（`src/api/{module}/` + `src/pages/{module}/`） |
-| 修改路径         | 仅用户指定的目标文件 + 其关联的 `src/api/{module}/types.ts`      |
-| 模板参考         | `src/api/{module}/` + `src/pages/{module}/`                      |
+| 工作模式         | 输出锁范围                                                                                        |
+| ---------------- | ------------------------------------------------------------------------------------------------- |
+| sdesign-gen-page | 由 Skill 内部定义（`src/api/{module}/` + `src/pages/{module}/`）                                  |
+| dashboard-gen    | 由 Skill 内部定义（`src/api/{module}/` + `src/pages/{module}/` + `specs/{feature}-blueprint.md`） |
+| 修改路径         | 仅用户指定的目标文件 + 其关联的 `src/api/{module}/types.ts`                                       |
+| 模板参考         | `src/api/{module}/` + `src/pages/{module}/`                                                       |
 
 > ⛔ **`pnpm verify` 报错时：只修输出锁范围内文件的错误。范围外的报错 → 跳过，不修，不提。**
 

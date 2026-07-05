@@ -67,6 +67,14 @@ export default tseslint.config(
     },
   },
 
+  // 组件文件放宽复杂度——JSX 条件渲染天然多分支，不代表逻辑复杂
+  {
+    files: ['src/**/*.tsx'],
+    rules: {
+      complexity: ['error', { max: 15 }],
+    },
+  },
+
   // ======================== 扩展语义规则 ========================
 
   // 来源：公司 rule.json，筛选去重后合并。

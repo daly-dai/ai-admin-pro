@@ -80,9 +80,9 @@ const MainLayout: React.FC = () => {
       label: '首页',
     },
     {
-      key: '/dashboard',
+      key: '/business-analysis',
       icon: <DashboardOutlined />,
-      label: '仪表盘',
+      label: '综合经营分析',
     },
     {
       key: '/system',

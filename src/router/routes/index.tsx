@@ -24,6 +24,10 @@ export const routes = [
         path: 'home',
         element: lazyPage(() => import('@/pages/home')),
       },
+      {
+        path: 'business-analysis',
+        element: lazyPage(() => import('@/pages/dashboard')),
+      },
     ],
   },
   ...errorRoutes,
