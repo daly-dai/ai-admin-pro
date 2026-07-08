@@ -7,31 +7,69 @@ import type {
 import { memo } from 'react';
 
 import { SButton, SErrorBoundary } from '@dalydb/sdesign';
-import { useECharts } from 'src/hooks/useECharts';
 
 import styles from './index.module.css';
+import type { ChartEventHandler, LoadingConfig } from './types';
+import { useECharts } from './useECharts';
 
-/**
- * ECharts 事件处理器类型
- * ECharts 内部使用 Function 类型，此处用宽松签名兼容各事件类型
- */
-type ChartEventHandler = (...args: unknown[]) => void;
+// ==================== 子组件 ====================
 
-/** showLoading 配置 */
-interface LoadingConfig {
-  text?: string;
-  color?: string;
-  textColor?: string;
-  maskColor?: string;
-  zlevel?: number;
-  fontSize?: number;
-  showSpinner?: boolean;
-  spinnerRadius?: number;
-  lineWidth?: number;
-  fontWeight?: 'normal' | 'bold' | 'bolder' | 'lighter' | number;
-  fontStyle?: 'normal' | 'italic' | 'oblique';
-  fontFamily?: string;
-}
+/** 加载遮罩 */
+const LoadingOverlay = ({ text }: { text: string }) => (
+  <div className={`${styles.stateOverlay} ${styles['stateOverlay--dimmed']}`}>
+    <Spin tip={text} />
+  </div>
+);
+
+/** 空数据遮罩 */
+const EmptyOverlay = ({ text }: { text: string }) => (
+  <div className={`${styles.stateOverlay} ${styles['stateOverlay--dimmed']}`}>
+    <div className={styles.emptyContent}>
+      <Empty description={text} />
+    </div>
+  </div>
+);
+
+/** 错误状态 */
+const ErrorState = ({
+  error,
+  errorTitle,
+  onRetry,
+  wrapperStyle,
+  className,
+}: {
+  error: Error | string;
+  errorTitle: string;
+  onRetry?: () => void;
+  wrapperStyle: React.CSSProperties;
+  className?: string;
+}) => {
+  const message = error instanceof Error ? error.message : String(error);
+
+  return (
+    <div
+      className={`${styles.wrapper} ${className ?? ''}`}
+      style={wrapperStyle}
+    >
+      <div className={styles.stateOverlay}>
+        <Result
+          status="error"
+          title={errorTitle}
+          subTitle={message}
+          extra={
+            onRetry ? (
+              <SButton type="primary" onClick={onRetry}>
+                重试
+              </SButton>
+            ) : undefined
+          }
+        />
+      </div>
+    </div>
+  );
+};
+
+// ==================== 主组件 ====================
 
 /**
  * ECharts 基座组件 Props
@@ -97,65 +135,6 @@ interface EChartsProps {
   height?: number | string;
 }
 
-// ==================== 子组件 ====================
-
-/** 加载遮罩 */
-const LoadingOverlay = ({ text }: { text: string }) => (
-  <div className={`${styles.stateOverlay} ${styles['stateOverlay--dimmed']}`}>
-    <Spin tip={text} />
-  </div>
-);
-
-/** 空数据遮罩 */
-const EmptyOverlay = ({ text }: { text: string }) => (
-  <div className={`${styles.stateOverlay} ${styles['stateOverlay--dimmed']}`}>
-    <div className={styles.emptyContent}>
-      <Empty description={text} />
-    </div>
-  </div>
-);
-
-/** 错误状态 */
-const ErrorState = ({
-  error,
-  errorTitle,
-  onRetry,
-  wrapperStyle,
-  className,
-}: {
-  error: Error | string;
-  errorTitle: string;
-  onRetry?: () => void;
-  wrapperStyle: React.CSSProperties;
-  className?: string;
-}) => {
-  const message = error instanceof Error ? error.message : String(error);
-
-  return (
-    <div
-      className={`${styles.wrapper} ${className ?? ''}`}
-      style={wrapperStyle}
-    >
-      <div className={styles.stateOverlay}>
-        <Result
-          status="error"
-          title={errorTitle}
-          subTitle={message}
-          extra={
-            onRetry ? (
-              <SButton type="primary" onClick={onRetry}>
-                重试
-              </SButton>
-            ) : undefined
-          }
-        />
-      </div>
-    </div>
-  );
-};
-
-// ==================== 主组件 ====================
-
 /**
  * ECharts 基座组件
  *
@@ -169,7 +148,7 @@ const ErrorState = ({
  *
  * @example
  * ```tsx
- * import EChartsBase from '@/components/common/EChartsBase';
+ * import EChartsBase from '@/components/EChartsBase';
  *
  * function MyChart() {
  *   const [loading, setLoading] = useState(false);
@@ -188,70 +167,6 @@ const ErrorState = ({
  * }
  * ```
  */
-interface ChartContentProps {
-  containerRef: React.RefObject<HTMLDivElement>;
-  loading: boolean;
-  loadingText?: string;
-  empty: boolean;
-  emptyText?: string;
-  errorTitle?: string;
-  onRetry?: () => void;
-  className?: string;
-  wrapperStyle: React.CSSProperties;
-}
-
-const ChartContent = ({
-  containerRef,
-  loading,
-  loadingText,
-  empty,
-  emptyText,
-  errorTitle = '图表渲染出错',
-  onRetry,
-  className,
-  wrapperStyle,
-}: ChartContentProps) => {
-  const showEmpty = empty && !loading;
-  const showLoadingText = loading && loadingText !== null && loadingText !== '';
-
-  return (
-    <div
-      className={`${styles.wrapper} ${className ?? ''}`}
-      style={wrapperStyle}
-    >
-      <SErrorBoundary
-        fallbackRender={({ error: boundaryError, resetErrorBoundary }) => (
-          <div className={styles.stateOverlay}>
-            <Result
-              status="error"
-              title={errorTitle}
-              subTitle={boundaryError?.message ?? '未知错误'}
-              extra={
-                <SButton
-                  type="primary"
-                  onClick={() => {
-                    resetErrorBoundary();
-                    onRetry?.();
-                  }}
-                >
-                  重试
-                </SButton>
-              }
-            />
-          </div>
-        )}
-      >
-        <div
-          ref={containerRef as React.RefObject<HTMLDivElement>}
-          className={styles.chart}
-        />
-        {showLoadingText && <LoadingOverlay text={loadingText!} />}
-        {showEmpty && <EmptyOverlay text={emptyText!} />}
-      </SErrorBoundary>
-    </div>
-  );
-};
-
 // eslint-disable-next-line complexity
 const EChartsBase = (props: EChartsProps) => {
   const {
@@ -306,6 +221,8 @@ const EChartsBase = (props: EChartsProps) => {
     width: style?.width ?? '100%',
   };
 
+  // ---- 渲染 ----
+
   if (error) {
     return (
       <ErrorState
@@ -318,18 +235,42 @@ const EChartsBase = (props: EChartsProps) => {
     );
   }
 
+  const showEmpty = empty && !loading;
+  const showLoadingOverlay =
+    loading && loadingText !== null && loadingText !== '';
+
   return (
-    <ChartContent
-      containerRef={containerRef}
-      loading={loading}
-      loadingText={loadingText}
-      empty={empty}
-      emptyText={emptyText}
-      errorTitle={errorTitle}
-      onRetry={onRetry}
-      className={className}
-      wrapperStyle={wrapperStyle}
-    />
+    <div
+      className={`${styles.wrapper} ${className ?? ''}`}
+      style={wrapperStyle}
+    >
+      <SErrorBoundary
+        fallbackRender={({ error: boundaryError, resetErrorBoundary }) => (
+          <div className={styles.stateOverlay}>
+            <Result
+              status="error"
+              title={errorTitle}
+              subTitle={boundaryError?.message ?? '未知错误'}
+              extra={
+                <SButton
+                  type="primary"
+                  onClick={() => {
+                    resetErrorBoundary();
+                    onRetry?.();
+                  }}
+                >
+                  重试
+                </SButton>
+              }
+            />
+          </div>
+        )}
+      >
+        <div ref={containerRef} className={styles.chart} />
+        {showLoadingOverlay && <LoadingOverlay text={loadingText} />}
+        {showEmpty && <EmptyOverlay text={emptyText} />}
+      </SErrorBoundary>
+    </div>
   );
 };
 
