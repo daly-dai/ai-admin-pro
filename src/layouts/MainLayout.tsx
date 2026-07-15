@@ -23,7 +23,7 @@ import {
 import React from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
-import { useAppStore, useUserStore } from '@/stores';
+import { useAppStore, useUserStore } from 'src/stores';
 
 const { Header, Sider, Content } = Layout;
 

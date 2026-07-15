@@ -8,10 +8,10 @@ import { RouterProvider } from 'react-router-dom';
 
 import 'dayjs/locale/zh-cn';
 
-import { router } from '@/router';
-import { useDictStore } from '@/stores';
+import { router } from 'src/router';
+import { useDictStore } from 'src/stores';
 
-import '@/styles/global.css';
+import 'src/styles/global.css';
 
 /**
  * 文件上传地址配置

@@ -148,7 +148,7 @@ interface EChartsProps {
  *
  * @example
  * ```tsx
- * import EChartsBase from '@/components/EChartsBase';
+ * import EChartsBase from 'src/components/EChartsBase';
  *
  * function MyChart() {
  *   const [loading, setLoading] = useState(false);

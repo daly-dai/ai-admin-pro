@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, type To } from 'react-router-dom';
 
-import { useUserStore } from '@/stores';
+import { useUserStore } from 'src/stores';
 
 interface RequireAuthProps {
   children: React.ReactNode;

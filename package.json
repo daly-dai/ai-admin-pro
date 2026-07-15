@@ -9,6 +9,7 @@
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "mock": "node mock/server.cjs",
+    "pitfall:review": "tsx .ai/tools/pitfall-reviewer/index.ts",
     "pitfall:scan": "tsx .ai/tools/pitfall-scan.ts",
     "prepare": "husky",
     "prettier": "prettier -c --write . --cache",

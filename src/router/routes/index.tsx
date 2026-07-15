@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 
-import { MainLayout } from '@/layouts';
+import { MainLayout } from 'src/layouts';
 import { RequireAuth } from '../guards';
 import { lazyPage } from '../utils/lazyPage';
 import authRoutes from './auth';
@@ -22,11 +22,7 @@ export const routes = [
       },
       {
         path: 'home',
-        element: lazyPage(() => import('@/pages/home')),
-      },
-      {
-        path: 'business-analysis',
-        element: lazyPage(() => import('@/pages/dashboard')),
+        element: lazyPage(() => import('src/pages/home')),
       },
     ],
   },
