@@ -1,4 +1,4 @@
-import type { User } from 'src/types';
+import type { User } from 'src/api/user/types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -36,7 +36,6 @@ export const useUserStore = create<UserState>()(
       },
       logout: () => {
         set({ userInfo: null, token: null, permissions: [] });
-        localStorage.removeItem('token');
       },
       hasPermission: (permission) => {
         const { permissions } = get();

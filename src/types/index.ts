@@ -1,45 +1,13 @@
 // 全局类型定义
 
-/** 分页数据 */
-export interface PageData<T> {
-  dataList: T[];
-  totalSize: number;
-  pageNum: number;
-  pageSize: number;
-}
-
 /** 分页查询参数 */
 export interface PageQuery {
-  pageNum?: number;
+  pageIndex?: number;
   pageSize?: number;
 }
 
-/** API响应 */
-export interface ApiResponse<T = unknown> {
-  code: number;
-  data: T;
-  message: string;
-  success: boolean;
-}
-
-/** API错误 */
-export interface ApiError {
-  code: string;
-  message: string;
-  details?: unknown;
-}
-
-/** 用户 */
-export interface User {
-  id: number;
-  username: string;
-  realName: string;
-  email: string;
-  phone: string;
-  avatar: string;
-  status: number;
-  roleIds: string;
-  remark: string;
-  createTime: string;
-  updateTime: string;
+/** 分页响应结果（拦截器已解包，request.get<T> 直接返回 T） */
+export interface PageResult<T> {
+  list: T[];
+  total: number;
 }

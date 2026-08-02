@@ -24,6 +24,22 @@ export const routes = [
         path: 'home',
         element: lazyPage(() => import('src/pages/home')),
       },
+      {
+        path: 'system/user',
+        element: lazyPage(() => import('src/pages/system/user')),
+      },
+      {
+        path: 'system/role',
+        element: lazyPage(() => import('src/pages/system/role')),
+      },
+      {
+        path: 'system/permission',
+        element: lazyPage(() => import('src/pages/system/permission')),
+      },
+      {
+        path: 'system/dict',
+        element: lazyPage(() => import('src/pages/system/dict')),
+      },
     ],
   },
   ...errorRoutes,

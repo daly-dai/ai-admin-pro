@@ -8,23 +8,17 @@ import {
 } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Button, Form, Input, message } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginByPost } from 'src/api/user';
 import { useUserStore } from 'src/stores';
+import ResetPasswordModal from './components/ResetPasswordModal';
 
 interface LoginForm {
   username: string;
   password: string;
   remember: boolean;
 }
-
-const loginApi = (data: { username: string; password: string }) => {
-  return loginByPost(data).then((user) => ({
-    user,
-    token: 'token-' + user.id + '-' + Date.now(),
-  }));
-};
 
 const featureHighlights = [
   {
@@ -61,13 +55,21 @@ const FEATURE_COLORS = ['#2563eb', '#db2777', '#059669', '#d97706'];
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const login = useUserStore((state) => state.login);
+  const [loginForm] = Form.useForm();
+  const [resetPwdOpen, setResetPwdOpen] = useState(false);
+  const [resetPwdUserId, setResetPwdUserId] = useState<number>(0);
 
-  const { loading, run: handleLogin } = useRequest(loginApi, {
+  const { loading, run: handleLogin } = useRequest(loginByPost, {
     manual: true,
     onSuccess: (data) => {
-      message.success('登录成功');
-      login(data.user, data.token);
-      navigate('/');
+      if (data.isFirstLogin) {
+        setResetPwdUserId(data.user.id);
+        setResetPwdOpen(true);
+      } else {
+        message.success('登录成功');
+        login(data.user, data.token);
+        navigate('/');
+      }
     },
   });
 
@@ -407,6 +409,7 @@ const LoginPage: React.FC = () => {
 
             <div className="login-form">
               <Form
+                form={loginForm}
                 name="login"
                 initialValues={{ remember: true }}
                 onFinish={onFinish}
@@ -492,6 +495,17 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
       </div>
+      <ResetPasswordModal
+        open={resetPwdOpen}
+        userId={resetPwdUserId}
+        onSuccess={() => {
+          setResetPwdOpen(false);
+          // 清空密码让用户重新输入
+          if (loginForm) {
+            loginForm.resetFields(['password']);
+          }
+        }}
+      />
     </>
   );
 };

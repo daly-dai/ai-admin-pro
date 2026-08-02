@@ -1,14 +1,17 @@
 import {
   BellOutlined,
-  DashboardOutlined,
+  DatabaseOutlined,
   HomeOutlined,
+  IdcardOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  SafetyOutlined,
   SettingOutlined,
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import type { ModalContainerRef } from '@dalydb/sdesign';
 import { SErrorBoundary } from '@dalydb/sdesign';
 import {
   Avatar,
@@ -20,10 +23,16 @@ import {
   Result,
   theme,
 } from 'antd';
-import React from 'react';
+import React, { useRef } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
+import { useRequest } from 'ahooks';
+
 import { useAppStore, useUserStore } from 'src/stores';
+import UserInfoModal from './components/UserInfoModal';
+
+import { getAllDictByGet } from 'src/api/dict';
+import { useDictStore } from 'src/stores';
 
 const { Header, Sider, Content } = Layout;
 
@@ -34,20 +43,26 @@ const MainLayout: React.FC = () => {
 
   const { sidebarCollapsed, toggleSidebar } = useAppStore();
   const { userInfo, logout } = useUserStore();
+  const dictMapData = useDictStore((state) => state.dictMapData);
+  const setDictMapFromList = useDictStore((state) => state.setDictMapFromList);
+  const resetDict = useDictStore((state) => state.reset);
+
+  const userInfoModalRef =
+    useRef<ModalContainerRef<Record<string, never>>>(null);
+
+  useRequest(getAllDictByGet, {
+    debounceWait: 100,
+    ready: Object.keys(dictMapData).length === 0,
+    onSuccess: (list) => setDictMapFromList(list),
+  });
 
   // 用户菜单
   const userMenuItems = [
     {
-      key: 'profile',
-      icon: <UserOutlined />,
-      label: '个人中心',
+      key: 'userInfo',
+      icon: <IdcardOutlined />,
+      label: '用户信息',
     },
-    {
-      key: 'settings',
-      icon: <SettingOutlined />,
-      label: '系统设置',
-    },
-    { type: 'divider' as const },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
@@ -59,14 +74,12 @@ const MainLayout: React.FC = () => {
   // 处理用户菜单点击
   const handleUserMenuClick = ({ key }: { key: string }) => {
     switch (key) {
-      case 'profile':
-        navigate('/profile');
-        break;
-      case 'settings':
-        navigate('/settings');
+      case 'userInfo':
+        userInfoModalRef.current?.open({});
         break;
       case 'logout':
         logout();
+        resetDict();
         navigate('/login');
         break;
     }
@@ -78,11 +91,6 @@ const MainLayout: React.FC = () => {
       key: '/home',
       icon: <HomeOutlined />,
       label: '首页',
-    },
-    {
-      key: '/business-analysis',
-      icon: <DashboardOutlined />,
-      label: '综合经营分析',
     },
     {
       key: '/system',
@@ -98,6 +106,16 @@ const MainLayout: React.FC = () => {
           key: '/system/role',
           icon: <TeamOutlined />,
           label: '角色管理',
+        },
+        {
+          key: '/system/permission',
+          icon: <SafetyOutlined />,
+          label: '权限管理',
+        },
+        {
+          key: '/system/dict',
+          icon: <DatabaseOutlined />,
+          label: '字典管理',
         },
       ],
     },
@@ -149,12 +167,16 @@ const MainLayout: React.FC = () => {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            {React.createElement(
-              sidebarCollapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-              {
-                style: { fontSize: 18, cursor: 'pointer' },
-                onClick: toggleSidebar,
-              },
+            {sidebarCollapsed ? (
+              <MenuUnfoldOutlined
+                style={{ fontSize: 18, cursor: 'pointer' }}
+                onClick={toggleSidebar}
+              />
+            ) : (
+              <MenuFoldOutlined
+                style={{ fontSize: 18, cursor: 'pointer' }}
+                onClick={toggleSidebar}
+              />
             )}
           </div>
 
@@ -189,7 +211,7 @@ const MainLayout: React.FC = () => {
         <Content
           style={{
             margin: 16,
-            // padding: 24,
+            padding: 24,
             background: token.colorBgContainer,
             borderRadius: token.borderRadiusLG,
             minHeight: 280,
@@ -214,6 +236,8 @@ const MainLayout: React.FC = () => {
           </SErrorBoundary>
         </Content>
       </Layout>
+
+      <UserInfoModal ref={userInfoModalRef} />
     </Layout>
   );
 };

@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 
 import { transformDictList } from 'src/api/dict';
-import type { Dictionary } from 'src/api/dict/types';
+import type { Dict, DictMapData } from 'src/api/dict/types';
 
 interface DictState {
-  dictMapData: Record<string, Record<string, string>>;
+  dictMapData: DictMapData;
 
   setDict: (code: string, data: Record<string, string>) => void;
-  setDictMap: (data: Record<string, Record<string, string>>) => void;
-  setDictMapFromList: (list: Dictionary[]) => void;
+  setDictMap: (data: DictMapData) => void;
+  setDictMapFromList: (list: Dict[]) => void;
   reset: () => void;
 }
 

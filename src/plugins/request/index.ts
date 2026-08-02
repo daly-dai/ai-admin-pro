@@ -5,6 +5,7 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios';
+import { useUserStore } from 'src/stores';
 
 /** 请求实例配置 */
 export interface RequestConfig {
@@ -53,7 +54,7 @@ function createAxiosInstance(config: Required<RequestConfig>): AxiosInstance {
   // 请求拦截器 - 添加 token
   instance.interceptors.request.use(
     (cfg: InternalAxiosRequestConfig) => {
-      const token = localStorage.getItem('token');
+      const token = useUserStore.getState().token;
       if (token) {
         cfg.headers.Authorization = `Bearer ${token}`;
       }
@@ -92,7 +93,7 @@ function createAxiosInstance(config: Required<RequestConfig>): AxiosInstance {
         switch (response.status) {
           case 401:
             message.error('登录已过期，请重新登录');
-            localStorage.removeItem('token');
+            useUserStore.getState().logout();
             window.location.href = '/login';
             break;
           case 403:

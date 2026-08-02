@@ -1,3 +1,5 @@
+import type { PageQuery } from 'src/types';
+
 export interface User {
   id: number;
   username: string;
@@ -7,13 +9,29 @@ export interface User {
   phone: string;
   avatar: string;
   status: number;
-  roleIds: string;
+  isFirstLogin: number;
+  roleIds: number[];
   remark: string;
   createTime: string;
   updateTime: string;
 }
 
-export interface UserQuery {
+export interface UserQuery extends PageQuery {
   keyword?: string;
   status?: number;
+}
+
+export interface UserFormData {
+  username: string;
+  realName: string;
+  email?: string;
+  phone?: string;
+  status?: number;
+  remark?: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  user: User;
+  isFirstLogin: boolean;
 }

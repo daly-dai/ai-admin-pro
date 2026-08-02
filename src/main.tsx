@@ -13,12 +13,6 @@ import { useDictStore } from 'src/stores';
 
 import 'src/styles/global.css';
 
-/**
- * 文件上传地址配置
- * 可通过环境变量 VITE_UPLOAD_URL 配置不同环境的上传地址
- */
-// const uploadUrl = import.meta.env.VITE_UPLOAD_URL || '/api/upload';
-
 // 设置dayjs语言
 dayjs.locale('zh-cn');
 
