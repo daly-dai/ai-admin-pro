@@ -26,7 +26,7 @@
 | `src/api/{module}/index.ts`      | 模块 API：{module}Api 对象，5 个标准方法                                       |
 | `src/pages/{module}/index.tsx`   | 页面组件                                                                       |
 | `src/pages/{module}/components/` | 页面私有组件（Modal/Drawer 封装）                                              |
-| `src/types/index.ts`             | 全局类型：PageData\<T> / PageQuery（拦截器已解包，request.get\<T> 直接返回 T） |
+| `src/types/index.ts`             | 全局类型：PageResult<T> / PageQuery（拦截器已解包，request.get<T> 直接返回 T） |
 | `src/plugins/request/`           | HTTP 封装（禁止直接修改）                                                      |
 
 完整目录树 → `.ai/core/architecture.md`
@@ -45,7 +45,7 @@
 | 路径别名     | 跨模块用 `src/` 别名，禁止 `../`                                                 |
 | API 命名     | `{动作}By{HTTP}`：getListByGet / createByPost / updateByPut / deleteByDelete     |
 | 未使用参数   | 加 `_` 前缀：`(_, record) => ...`                                                |
-| 全局类型     | PageData\<T>(分页响应) / PageQuery(分页基类)，拦截器自动解包 ApiResponse         |
+| 全局类型     | PageResult<T>(分页响应) / PageQuery(分页基类)，拦截器自动解包 ApiResponse        |
 | 状态管理     | `create` from zustand + persist                                                  |
 | Modal/Drawer | 用 `createModal`/`createDrawer` 工厂函数（@dalydb/sdesign），禁止父组件管理 open |
 | 验证         | `pnpm verify`（tsc + eslint + prettier）                                         |
@@ -75,7 +75,7 @@ useRequest 模式：列表 → SProTable request.service 直传 | 写操作 → 
 | P007 | 分页配置 `paginationFields` 用 `current`，非 `pageNum`         |
 | P008 | 枚举列/下拉 → 禁止硬编码，用 `dictKey` 指定字典                |
 
-完整 17 条 → `.ai/pitfalls/index.md`
+完整 18 条 → `.ai/pitfalls/index.md`
 
 ## 7. Lane 速览
 

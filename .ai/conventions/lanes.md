@@ -116,7 +116,7 @@
 
 **流程**：
 
-1. 加载 `.ai/templates/prd/prd-fallback.md`
+1. 加载 PRD 模板：页面/接口导向 → `prd-standard.md`；流程/交互导向（工作流/审批流等）→ `prd-fallback.md`
 2. 逐项提取 → 标 `[待补充]` → 暂停等人工补齐
 3. 产出 `specs/{feature}/prd.md`
 4. prd.md → Task 拆解（尽量匹配已有模板；无匹配走规约 + 闸门兜底）

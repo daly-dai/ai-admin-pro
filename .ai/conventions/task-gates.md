@@ -87,7 +87,7 @@ pnpm verify 报错时：
 - [ ] 5 个标准方法齐全（按需：getListByGet / getByIdByGet / createByPost / updateByPut / deleteByDelete）
 - [ ] 非标准方法名也带 HTTP 后缀
 - [ ] 方法签名类型正确（泛型返回值 + params/data 参数）
-- [ ] 全局闸门 G1-G12 全部通过
+- [ ] 全局闸门 G1-G15 全部通过
 - [ ] `pnpm verify` 0 error（仅本Task输出锁内文件）
 
 ### page-list — CRUD 列表页
@@ -108,7 +108,7 @@ pnpm verify 报错时：
 - [ ] 删除确认使用 Modal.confirm
 - [ ] API 请求通过 SProTable request.service 或 useRequest
 - [ ] 写操作 useRequest 配置了 onSuccess（提示 + 刷新）
-- [ ] 全局闸门 G1-G12 全部通过
+- [ ] 全局闸门 G1-G15 全部通过
 - [ ] `pnpm verify` 0 error（仅本Task输出锁内文件）
 
 ### page-form — 新增/编辑表单页
@@ -130,7 +130,7 @@ pnpm verify 报错时：
 - [ ] 编辑模式正确回填数据（通过 open({ id }) 传入）
 - [ ] 分组表单使用 SForm.Group + groupItems（非 type:'group'）
 - [ ] 无 loading prop（用 Spin 包裹）
-- [ ] 全局闸门 G1-G12 全部通过
+- [ ] 全局闸门 G1-G15 全部通过
 - [ ] `pnpm verify` 0 error（仅本Task输出锁内文件）
 
 ### page-detail — 详情展示页
@@ -148,7 +148,7 @@ pnpm verify 报错时：
 - [ ] 分组使用 SDetail.Group + items（非 groupItems）
 - [ ] 无 loading prop（用 Spin 包裹）
 - [ ] 时间字段使用 `rangeTime` 渲染类型
-- [ ] 全局闸门 G1-G12 全部通过
+- [ ] 全局闸门 G1-G15 全部通过
 - [ ] `pnpm verify` 0 error（仅本Task输出锁内文件）
 
 ### component — 业务组件
@@ -162,7 +162,7 @@ pnpm verify 报错时：
 - [ ] Props 类型完整定义（interface 或 type）
 - [ ] 无 any 类型
 - [ ] 组件声明式命名（非匿名导出）
-- [ ] 全局闸门 G1-G12 全部通过
+- [ ] 全局闸门 G1-G15 全部通过
 - [ ] `pnpm verify` 0 error（仅本Task输出锁内文件）
 
 ### store — Zustand 状态管理
@@ -176,7 +176,7 @@ pnpm verify 报错时：
 - [ ] 使用 `create` from zustand
 - [ ] Store 接口类型完整定义
 - [ ] 如有持久化需求，使用 `persist` middleware
-- [ ] 全局闸门 G1-G12 全部通过
+- [ ] 全局闸门 G1-G15 全部通过
 - [ ] `pnpm verify` 0 error（仅本Task输出锁内文件）
 
 ### page-dashboard — 大屏仪表盘
@@ -213,7 +213,7 @@ pnpm verify 报错时：
 
 ### 非标准类型 — 兜底
 
-> page-dashboard / page-workflow / page-landing / page-custom 等非常规页面类型，其 Task 闸门由用户按实际情况逐 Task 定义，遵循全局闸门 G1-G12 + 用户指定验收项。
+> page-dashboard / page-workflow / page-landing / page-custom 等非常规页面类型，其 Task 闸门由用户按实际情况逐 Task 定义，遵循全局闸门 G1-G15 + 用户指定验收项。
 
 ---
 
@@ -225,7 +225,7 @@ pnpm verify 报错时：
 
 1. **输出锁** → 填入 Task 的 `**输出锁**` 字段，替换 `{module}` 为实际模块名
 2. **验收闸门** → 填入 Task 的 `**验收闸门**` 字段，保留 checklist 格式
-3. 全局闸门不需要逐 Task 重复列出，Task 闸门中已包含 `全局闸门 G1-G12 全部通过` 一项
+3. 全局闸门不需要逐 Task 重复列出，Task 闸门中已包含 `全局闸门 G1-G15 全部通过` 一项
 
 ### Task 执行时
 

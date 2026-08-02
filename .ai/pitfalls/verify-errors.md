@@ -26,15 +26,16 @@
 
 > 表中未匹配到错误签名时，按报错涉及的关键词定位要读的文件：
 
-| 报错涉及的关键词                                                                                      | 读取的组件文档                                                                             |
-| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `SProTable` / `STable` / `columns` / `SColumnsType` / `paginationFields` / `request`                  | `.ai/sdesign/components/SProTable.md`                                                      |
-| `SForm` / `formItems` / `SFormItems` / `SForm.Group` / `useWatch` / `GroupItemsType` / `FormItemType` | `.ai/sdesign/components/SForm.md`                                                          |
-| `SDetail` / `SDetailItem` / `SDetail.Group` / `SDetailGroupProps`                                     | `.ai/sdesign/components/SDetail.md`                                                        |
-| `SButton` / `actionType`                                                                              | `.ai/sdesign/components/SButton.md`                                                        |
-| `createRequest` / API 方法签名 / `getListByGet` / `createByPost` 等                                   | `src/plugins/request/`（查源码）                                                           |
-| `PageQuery` / `PageData` / 全局类型                                                                   | `src/types/index.ts`                                                                       |
-| `createModal` / `createDrawer` / `ModalChildProps` / `DrawerChildProps`                               | `.ai/sdesign/components/SForm.md`（Modal）或 `.ai/sdesign/components/SDetail.md`（Drawer） |
+| 报错涉及的关键词                                                                                      | 读取的组件文档                               |
+| ----------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `SProTable` / `STable` / `columns` / `SColumnsType` / `paginationFields` / `request`                  | `.ai/sdesign/components/SProTable.md`        |
+| `SForm` / `formItems` / `SFormItems` / `SForm.Group` / `useWatch` / `GroupItemsType` / `FormItemType` | `.ai/sdesign/components/SForm.md`            |
+| `SDetail` / `SDetailItem` / `SDetail.Group` / `SDetailGroupProps`                                     | `.ai/sdesign/components/SDetail.md`          |
+| `SButton` / `actionType`                                                                              | `.ai/sdesign/components/SButton.md`          |
+| `createRequest` / API 方法签名 / `getListByGet` / `createByPost` 等                                   | `src/plugins/request/`（查源码）             |
+| `PageQuery` / `PageResult` / 全局类型                                                                 | `src/types/index.ts`                         |
+| `createModal` / `ModalChildProps`                                                                     | `.ai/sdesign/components/SModalContainer.md`  |
+| `createDrawer` / `DrawerChildProps`                                                                   | `.ai/sdesign/components/SDrawerContainer.md` |
 
 > ⛔ **禁止跳过此表直接改代码**。先按关键词定位文件 → 读取 → 理解正确 API → 修复。
 

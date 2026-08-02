@@ -8,7 +8,7 @@
 
 ```
 公共底盘（所有路径共享）
-  pitfalls / G1-G12 / api-conventions / dict-conventions / 硬约束
+  pitfalls / G1-G15 / api-conventions / dict-conventions / 硬约束
   ↓
 需求 → Lane 匹配（见 AGENTS.md §一）
   │

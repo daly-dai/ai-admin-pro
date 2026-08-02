@@ -29,27 +29,25 @@
 │   ├── task-gates.md             # Task 闸门 + 输出锁
 │   └── verification.md           # 验证三级体系
 ├── templates/                    # 代码模板（填空式）
-│   ├── prd/                      # PRD 模板
-│   │   ├── prd-standard.md       # 标准场景 PRD（CRUD/表单/详情）
-│   │   └── prd-fallback.md       # 兜底 PRD（非标场景）
 │   ├── api-module.md             # API 模块模板
 │   ├── crud-page.md              # CRUD 列表页模板
 │   ├── form-page.md              # 表单页模板
 │   ├── detail-page.md            # 详情页模板
 │   ├── dashboard-page.md         # 大屏页面骨架模板
 │   ├── editable-table.md         # 可编辑表格模板
-│   └── page-classification.md    # 页面类型分类目录
+│   ├── page-classification.md    # 页面类型分类目录
+│   ├── recipe.md                 # 配方书写模板
+│   └── prd/                      # PRD 模板
+│       ├── prd-standard.md       # 标准 PRD 模板
+│       └── prd-fallback.md       # 非标场景 PRD 兜底模板
 ├── pitfalls/                     # 错题集
-│   ├── index.md                  # 全局索引（P001-P006+）
+│   ├── index.md                  # 全局索引（P001-P018）
 │   ├── verify-errors.md          # 错误速查表
 │   └── *.md                      # 各错题详情
-├── sdesign/                      # 组件库文档（自动同步）
+├── sdesign/                      # 组件库文档（手动维护）
 │   └── components/
 └── tools/                        # 工具脚本
-    ├── gen-task-prompt.ts        # 跨会话 Task 提示词生成
     ├── pitfall-scan.ts           # 高频错误聚合
-    ├── sync-sdesign-docs.ts      # 组件文档同步
-    ├── verify-scope.ts           # 输出锁范围检查
     └── verify-wrapper.ts         # verify 增强包装器
 ```
 
@@ -67,6 +65,5 @@
 ```bash
 pnpm verify        # tsc + eslint + prettier
 pnpm verify:fix    # 自动修复
-pnpm verify:scope  # 跨模块修改范围检查
 pnpm pitfall:scan  # 高频错误聚合 → 生成 pitfall 草稿
 ```

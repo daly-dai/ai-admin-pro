@@ -25,9 +25,9 @@
   │     → §1 修改路径（不经过 Lane，不走 skill）
   │
   ├─ 命中 Lane（匹配下表）→ 走对应流程
-  │     ├─ 大屏 → skill: dashboard-gen（蓝图+代码+自检，端到端）⭐ 新
-  │     ├─ 大屏蓝图 → skill: blueprint-gen（生成蓝图）→ 自动续接大屏 Lane
-  │     ├─ CRUD / 大屏 / 多Tab详情 → skill: sdesign-gen-page
+  │  ├─ 大屏 → skill: dashboard-gen（蓝图+代码+自检，端到端）⭐ 推荐
+  │  ├─ 大屏蓝图 → skill: blueprint-gen（生成蓝图）→ 自动续接大屏 Lane
+  │  ├─ CRUD / 多Tab详情 → skill: sdesign-gen-page（大屏 fallback）
   │     │     执行完毕后 → 扫配方表 → 命中则执行配方 → pnpm verify
   │     └─ 非标 → 先扫配方表 → 命中则执行配方
   │            → 不命中 → PRD 兜底（读 `.ai/templates/prd/prd-fallback.md`）
@@ -38,28 +38,22 @@
 
 ### Lane 匹配表（不推理，纯关键词匹配）
 
-| 用户意图                             | Lane      | 处理方式                                    |
-| ------------------------------------ | --------- | ------------------------------------------- |
-| 小修改（改字段/修bug/调样式，≤20行） | 修改路径  | → §1                                        |
-| 新建/新模块 + 列表/CRUD/增删改查     | CRUD      | skill: sdesign-gen-page（填空模板）         |
-| 大屏 + 蓝图/设计/规划/先出方案       | 大屏蓝图  | skill: blueprint-gen → 自动续接大屏 Lane    |
-| 大屏 + 生成代码/写页面               | 大屏      | skill: sdesign-gen-page（读蓝图，骨架模板） |
-| 大屏（端到端，蓝图+代码一体）        | 大屏      | skill: dashboard-gen ⭐ 新                  |
-| 新建 + 详情（含多Tab）               | 多Tab详情 | skill: sdesign-gen-page（增量追加）         |
-| 无法匹配任何场景                     | 非标      | 扫配方 → PRD 兜底                           |
+| 用户意图                             | Lane      | 处理方式                                                   |
+| ------------------------------------ | --------- | ---------------------------------------------------------- |
+| 小修改（改字段/修bug/调样式，≤20行） | 修改路径  | → §1                                                       |
+| 新建/新模块 + 列表/CRUD/增删改查     | CRUD      | skill: sdesign-gen-page（填空模板）                        |
+| 大屏 + 蓝图/设计/规划/先出方案       | 大屏蓝图  | skill: blueprint-gen → 自动续接大屏 Lane                   |
+| 大屏 + 生成代码/写页面（含端到端）   | 大屏      | skill: dashboard-gen ⭐ 推荐；sdesign-gen-page 作 fallback |
+| 新建 + 详情（含多Tab）               | 多Tab详情 | skill: sdesign-gen-page（增量追加）                        |
+| 无法匹配任何场景                     | 非标      | 扫配方 → PRD 兜底                                          |
 
 > Lane 详细流程（CRUD/大屏/多Tab/非标各自 SOP）→ 外部读 `.ai/conventions/lanes.md`
 > 🛑 **Skill 会话状态**：同一会话中 Skill 只挂载一次。若已执行过 sdesign-gen-page 或 dashboard-gen，不要重新挂载或重读 Skill 文件，直接继续当前步骤。
 
 ### 配方匹配表（Lane 执行后 / 不命中 Lane 时必扫）
 
-| 关键词                                       | 配方           | 说明                                                                                   |
-| -------------------------------------------- | -------------- | -------------------------------------------------------------------------------------- |
-| 关键词                                       | 配方           | 说明                                                                                   |
-| -------------------------------------------- | ----           | ----                                                                                   |
-| 大屏 + Mock / 模拟数据                       | dashboard-mock | 大屏生成后：若 mock.ts 不存在，按 dashboard-template.md §步骤 1.5 机械映射规则自动生成 |
-
-> 配方是 Lane 和非标 Lane 之间的缓冲层——命中就执行，不命中才走非标 Lane 重流程。
+> 配方实时索引 → `.ai/recipes/index.md`。命中就执行，不命中才走非标 Lane 重流程。
+> 大屏 Mock 由 dashboard-gen skill 内置处理（Task 2 生成 mock.ts），不再走配方。
 
 ### Task 拆解
 
