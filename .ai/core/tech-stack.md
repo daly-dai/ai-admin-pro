@@ -5,14 +5,14 @@
 ## 当前技术栈
 
 ```yaml
-构建工具: RSBuild ^1.7.0
+构建工具: Rsbuild (@rsbuild/core ^2.1.9, Rspack 驱动)
 框架: React ^18.3.0 + TypeScript ^5.5.0
 UI库: @dalydb/sdesign + Ant Design ^5.29.3
 状态管理: Zustand ^5.0.11
 路由: React Router ^6.26.0
 HTTP: Axios ^1.7.0
 Hooks: ahooks ^3.8.0
-图表: Chart.js ^4.5.1 + react-chartjs-2 ^5.3.1
+图表: ECharts ^6.1.0（经 src/components/EChartsBase 封装）
 图标: lucide-react ^0.577.0 + @ant-design/icons ^5.4.0
 工具库: dayjs ^1.11.0, lodash-es ^4.17.0
 ```

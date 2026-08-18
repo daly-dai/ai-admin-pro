@@ -10,56 +10,44 @@
 
 ```
 src/
-├── api/                   # API层
-│   ├── index.ts          # 统一导出
-│   └── [module]/         # 按模块组织
-│       ├── index.ts      # 模块API
-│       └── types.ts      # 模块类型
-├── assets/               # 静态资源
-│   ├── images/           # 图片资源
-│   ├── fonts/            # 字体文件
-│   └── icons/            # 图标资源
+├── api/                   # API 层
+│   └── [module]/         # 按模块组织（user/role/permission/dict）
+│       ├── index.ts      # 模块 API（{module}Api = createRequest()）
+│       └── types.ts      # 模块类型（Entity + EntityQuery + EntityFormData）
 ├── components/            # 组件层
-│   ├── business/         # 业务组件
-│   ├── common/           # 通用组件
-│   └── layout/           # 布局组件
-├── constants/            # 常量定义
-│   ├── index.ts          # 统一导出
-│   ├── enum.ts           # 枚举常量
-│   └── config.ts         # 配置常量
-├── hooks/                 # 自定义Hooks
+│   ├── common/           # 通用业务组件（MacaronTag 等）
+│   ├── [Name]/           # 独立封装组件（EChartsBase / DashboardGrid / ...）
 │   └── index.ts          # 统一导出
-├── layouts/               # 布局组件（复数命名）
+├── layouts/               # 布局层
+│   ├── components/       # 布局私有组件
 │   ├── index.ts          # 统一导出
 │   └── MainLayout.tsx    # 主布局
 ├── pages/                 # 页面层
-│   └── [page-name]/      # 页面目录
-│       ├── index.tsx     # 页面组件
-│       └── components/   # 页面私有组件
+│   ├── login/            # 登录页
+│   ├── home/             # 首页
+│   ├── error/            # 错误页（404）
+│   └── system/           # 系统管理模块
+│       └── [module]/     # user / role / permission / dict
+│           ├── index.tsx # 页面组件
+│           └── components/ # 页面私有组件（Modal 等）
 ├── plugins/              # 插件层
 │   ├── index.ts          # 统一导出
-│   ├── request/          # 请求插件（HTTP封装）
-│   └── tracker/          # 埋点插件
-├── router/                # 路由配置
-│   ├── guards/            # 路由守卫目录
-│   │   ├── RequireAuth.tsx  # 认证守卫
-│   │   └── index.ts        # 守卫导出
-│   ├── routes/            # 路由配置目录
-│   │   ├── auth.tsx        # 认证相关路由
-│   │   ├── error.tsx       # 错误页面路由
-│   │   └── index.tsx       # 路由配置整合
-│   ├── utils/             # 工具目录
-│   │   └── index.tsx       # 懒加载工具
-│   └── index.tsx          # 主路由配置
-├── stores/                # 状态管理
+│   └── request/          # HTTP 封装（createRequest）
+├── router/                # 路由
+│   ├── guards/           # 路由守卫（RequireAuth）
+│   ├── routes/           # 路由配置（auth/error/index）
+│   ├── utils/            # 懒加载工具（lazyPage）
+│   └── index.tsx         # 主路由
+├── stores/                # 状态管理（Zustand + persist）
 │   ├── index.ts          # 统一导出
-│   └── [store-name].ts   # 具体store
+│   └── [store-name].ts   # app / user / dict
 ├── styles/                # 全局样式
 │   └── global.css
-├── types/                 # 全局类型
+├── types/                 # 全局类型（PageQuery / PageResult）
 │   └── index.ts
-└── utils/                 # 工具函数
-    └── index.ts          # 通用工具
+├── utils/                 # 工具函数
+│   └── index.ts          # 通用工具
+└── main.tsx               # 应用入口
 ```
 
 ## 核心约定
@@ -72,7 +60,7 @@ src/
 
 ### 2. API 层规范
 
-API 模块采用 `types.ts`（类型定义）+ `index.ts`（API 对象）双文件结构，导出 `{module}Api` 对象，包含 5 个标准方法。
+API 模块采用 `types.ts`（类型定义）+ `index.ts`（API 方法）双文件结构，导出以 `{Entity}{action}By{HTTP}` 命名的标准方法（写操作一律 `ByPost`）。
 
 > 完整类型模板和 API 对象模板 → `.ai/conventions/api-conventions.md`
 

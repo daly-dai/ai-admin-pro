@@ -146,28 +146,28 @@
 
 ### 禁止模式
 
-| 禁止                                    | 正确做法                                                                                                                      |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `any` 类型                              | `Record<string, unknown>` 或具体 Entity 类型                                                                                  |
-| `import axios`                          | `import { createRequest } from 'src/plugins/request'`                                                                         |
-| `type: 'dependency'` (SForm)            | `SForm.useWatch(fieldName, form)` + 条件展开 items                                                                            |
-| `SConfirm`                              | `Modal.confirm()`                                                                                                             |
-| 父组件管理 Modal/Drawer 的 open 状态    | 使用 `createModal` / `createDrawer`（`@dalydb/sdesign`）工厂函数                                                              |
-| 未使用参数不加前缀                      | `(_, record) => ...`                                                                                                          |
-| API 方法名无 HTTP 后缀                  | `getListByGet`、`createByPost`、`updateByPut`、`deleteByDelete`                                                               |
-| 跨模块用 `../`                          | `src/` 路径别名                                                                                                               |
-| `import { X }` 导入纯类型               | `import type { X }`                                                                                                           |
-| 硬编码枚举/options                      | 字典从 `useDictStore.dictMapData` 获取，sdesign 组件通过 SConfigProvider 自动消费。枚举列/下拉通过 `dictKey` 指定字典编码     |
-| `columns` 缺类型注解                    | `columns` 必须显式类型注解 `SColumnsType<Entity>`                                                                             |
-| `paginationFields` 的 key 写 `pageNum`  | 改为 `current`。`PaginationFields` 只有四个 key：`current`/`pageSize`/`total`/`list`（P007）                                  |
-| SForm 写了 `type: 'group'`              | 分组表单用 `<SForm.Group groupItems={[...]}>` 组件包裹，不在 items 数组里写 `type: 'group'`（P010）                           |
-| SForm / SDetail 写了 `loading` 属性     | 不支持 loading prop，用 `<Spin spinning={loading}>` 包裹（P011/P014）                                                         |
-| SDetail.Group 顶层写 `groupItems`       | 顶层 prop 是 `items` 不是 `groupItems`：`<SDetail.Group items={[{ groupTitle, items }]}>`（P014）                             |
-| 表格操作列按钮无包裹                    | 用 `<SButton.Group items={[...]}>` 或 `<Space>` 包裹，`compact` 属性（t-link 样式）。禁止无包裹裸放（P018）                   |
-| 回调参数用单字母（`s`/`d`/`v`/`t`/`e`） | 禁止单字母变量名，用完整语义：`(state)` 非 `(s)`，`(date)` 非 `(d)`，`(event)` 非 `(e)`（P016）                               |
-| Zustand `set()` 内写 for/if/filter/map  | 数据处理必须在 set 外纯函数完成，set 内只做 `draft.x = result` 赋值（P017）                                                   |
-| 旧代码的常量在新页面中不存在就"修复"    | 新组件可能已内置旧常量（分页/loading/配置等）。`Cannot find name` 报错 → 先判断新组件是否需要，不需要则删引用，不确定则问用户 |
-| 外部模块/工具函数实现未知时猜测代码     | PRD 未提供实现细节 → 用 `// TODO: 补充 {功能描述}` 占位，保证代码能通过 verify。禁止凭空猜测实现                              |
+| 禁止                                     | 正确做法                                                                                                                      |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `any` 类型                               | `Record<string, unknown>` 或具体 Entity 类型                                                                                  |
+| `import axios`                           | `import { createRequest } from 'src/plugins/request'`                                                                         |
+| `type: 'dependency'` (SForm)             | `SForm.useWatch(fieldName, form)` + 条件展开 items                                                                            |
+| `SConfirm`                               | `Modal.confirm()`                                                                                                             |
+| 父组件管理 Modal/Drawer 的 open 状态     | 使用 `createModal` / `createDrawer`（`@dalydb/sdesign`）工厂函数                                                              |
+| 未使用参数不加前缀                       | `(_, record) => ...`                                                                                                          |
+| API 方法名缺实体前缀 / 用 ByPut·ByDelete | `get{Entity}ListByPost`、`create{Entity}ByPost`、`update{Entity}ByPost`、`delete{Entity}ByPost`                               |
+| 跨模块用 `../`                           | `src/` 路径别名                                                                                                               |
+| `import { X }` 导入纯类型                | `import type { X }`                                                                                                           |
+| 硬编码枚举/options                       | 字典从 `useDictStore.dictMapData` 获取，sdesign 组件通过 SConfigProvider 自动消费。枚举列/下拉通过 `dictKey` 指定字典编码     |
+| `columns` 缺类型注解                     | `columns` 必须显式类型注解 `SColumnsType<Entity>`                                                                             |
+| `paginationFields` 的 key 写 `pageNum`   | 改为 `current`。`PaginationFields` 只有四个 key：`current`/`pageSize`/`total`/`list`（P007）                                  |
+| SForm 写了 `type: 'group'`               | 分组表单用 `<SForm.Group groupItems={[...]}>` 组件包裹，不在 items 数组里写 `type: 'group'`（P010）                           |
+| SForm / SDetail 写了 `loading` 属性      | 不支持 loading prop，用 `<Spin spinning={loading}>` 包裹（P011/P014）                                                         |
+| SDetail.Group 顶层写 `groupItems`        | 顶层 prop 是 `items` 不是 `groupItems`：`<SDetail.Group items={[{ groupTitle, items }]}>`（P014）                             |
+| 表格操作列按钮无包裹                     | 用 `<SButton.Group items={[...]}>` 或 `<Space>` 包裹，`compact` 属性（t-link 样式）。禁止无包裹裸放（P018）                   |
+| 回调参数用单字母（`s`/`d`/`v`/`t`/`e`）  | 禁止单字母变量名，用完整语义：`(state)` 非 `(s)`，`(date)` 非 `(d)`，`(event)` 非 `(e)`（P016）                               |
+| Zustand `set()` 内写 for/if/filter/map   | 数据处理必须在 set 外纯函数完成，set 内只做 `draft.x = result` 赋值（P017）                                                   |
+| 旧代码的常量在新页面中不存在就"修复"     | 新组件可能已内置旧常量（分页/loading/配置等）。`Cannot find name` 报错 → 先判断新组件是否需要，不需要则删引用，不确定则问用户 |
+| 外部模块/工具函数实现未知时猜测代码      | PRD 未提供实现细节 → 用 `// TODO: 补充 {功能描述}` 占位，保证代码能通过 verify。禁止凭空猜测实现                              |
 
 ### 字典使用
 

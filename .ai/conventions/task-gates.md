@@ -84,7 +84,7 @@ pnpm verify 报错时：
 - [ ] EntityFormData 类型定义（新增/编辑表单字段）
 - [ ] 枚举类型单独定义（如有）
 - [ ] API 对象使用 `createRequest()` 创建
-- [ ] 5 个标准方法齐全（按需：getListByGet / getByIdByGet / createByPost / updateByPut / deleteByDelete）
+- [ ] 5 个标准方法齐全（按需：get{Entity}ListByPost / get{Entity}ByIdByGet / create{Entity}ByPost / update{Entity}ByPost / delete{Entity}ByPost）
 - [ ] 非标准方法名也带 HTTP 后缀
 - [ ] 方法签名类型正确（泛型返回值 + params/data 参数）
 - [ ] 全局闸门 G1-G15 全部通过

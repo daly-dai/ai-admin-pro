@@ -1,0 +1,27 @@
+/* ---- 非编辑态：模拟 DisguiseTextarea 的外部盒模型 ----
+   关键：通过 var() 引用跟 overlay 同一套 CSS 变量，
+   让非编辑态 div 和编辑态 overlay 的内容区精确对齐 */
+.diffView {
+  box-sizing: border-box;
+  padding: var(--diff-padding-v) var(--diff-padding-h);
+  line-height: var(--diff-line-height);
+  font-size: var(--diff-font-size);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow: hidden;
+  border: var(--diff-border);
+  border-radius: var(--diff-radius);
+  background: #fafafa;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.diffView:hover {
+  border-color: #1677ff;
+}
+
+/* 键盘 focus 时保持 hover 同款高亮 */
+.diffView:focus-visible {
+  outline: 2px solid #1677ff;
+  outline-offset: -2px;
+}

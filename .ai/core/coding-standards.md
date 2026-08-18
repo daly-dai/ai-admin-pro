@@ -153,25 +153,26 @@ render: (text, record) => <SButton onClick={() => edit(record.id)}>编辑</SButt
 
 ```typescript
 import { createRequest } from 'src/plugins/request';
-import type { PageData } from 'src/types';
+import type { PageResult } from 'src/types';
 import type { Product, ProductFormData, ProductQuery } from './types';
 
 const productApi = createRequest();
 
-export const getListByGet = (
+export const getProductListByPost = (
   params?: ProductQuery,
-): Promise<PageData<Product>> =>
-  productApi.get<PageData<Product>>('/api/TODO/product', { params });
-export const getByIdByGet = (id: string): Promise<Product> =>
+): Promise<PageResult<Product>> =>
+  productApi.post<PageResult<Product>>('/api/TODO/product/list', params);
+export const getProductByIdByGet = (id: string): Promise<Product> =>
   productApi.get<Product>(`/api/TODO/product/${id}`);
-export const createByPost = (data: ProductFormData): Promise<Product> =>
+export const createProductByPost = (data: ProductFormData): Promise<Product> =>
   productApi.post<Product>('/api/TODO/product', data);
-export const updateByPut = (
+export const updateProductByPost = (
   id: string,
   data: Partial<ProductFormData>,
-): Promise<Product> => productApi.put<Product>(`/api/TODO/product/${id}`, data);
-export const deleteByDelete = (id: string): Promise<void> =>
-  productApi.delete<void>(`/api/TODO/product/${id}`);
+): Promise<Product> =>
+  productApi.post<Product>(`/api/TODO/product/${id}/update`, data);
+export const deleteProductByPost = (id: string): Promise<void> =>
+  productApi.post<void>(`/api/TODO/product/${id}/delete`, { id });
 ```
 
 > 完整 API 规范 SSOT → `.ai/conventions/api-conventions.md`

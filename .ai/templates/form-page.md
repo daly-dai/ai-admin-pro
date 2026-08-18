@@ -35,12 +35,12 @@ cascader | table
 SDatePicker → datePicker | SDatePickerRange → datePickerRange | SCascader → cascader
 ```
 
-> 联动规则见 `conventions/conventions.md` §四 P004。
+> 联动规则见 `.ai/pitfalls/index.md` P005。
 
 ## 决策点
 
-- **新增页**：调用 `createByPost`
-- **编辑页**：`getByIdByGet` 加载 + `updateByPut` 提交
+- **新增页**：调用 `create{Entity}ByPost`
+- **编辑页**：`get{Entity}ByIdByGet` 加载 + `update{Entity}ByPost` 提交
 - **分组表单**：`SForm.Group` + `groupItems`
 - **字段联动**：`SForm.useWatch(fieldName, form)` + 条件展开 items
 

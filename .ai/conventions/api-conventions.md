@@ -2,23 +2,24 @@
 
 ## 命名约定
 
-| 对象     | 规则                     | 示例               |
-| -------- | ------------------------ | ------------------ |
-| API对象  | `[module]Api`            | `productApi`       |
-| 实体类型 | `[Entity]`               | `Product`          |
-| 查询参数 | `[Entity]Query`          | `ProductQuery`     |
-| 表单数据 | `[Entity]FormData`       | `ProductFormData`  |
-| 接口方法 | `{Entity}{name}By{HTTP}` | `getDictListByGet` |
+| 对象     | 规则                     | 示例                |
+| -------- | ------------------------ | ------------------- |
+| API对象  | `[module]Api`            | `productApi`        |
+| 实体类型 | `[Entity]`               | `Product`           |
+| 查询参数 | `[Entity]Query`          | `ProductQuery`      |
+| 表单数据 | `[Entity]FormData`       | `ProductFormData`   |
+| 接口方法 | `{Entity}{name}By{HTTP}` | `getUserListByPost` |
 
 ## 方法命名规则
 
-| HTTP   | 后缀       | 示例                  |
-| ------ | ---------- | --------------------- |
-| GET    | `ByGet`    | `getListByGet`        |
-| POST   | `ByPost`   | `createByPost`        |
-| PUT    | `ByPut`    | `updateByPut`         |
-| DELETE | `ByDelete` | `deleteByDelete`      |
-| PATCH  | `ByPatch`  | `updateStatusByPatch` |
+> ⚠️ 方法名**必须带实体前缀**（`{Entity}{name}By{HTTP}`），否则排查时无法定位是哪个模块的代码。
+
+| HTTP | 后缀     | 适用场景                                     | 示例                                                                               |
+| ---- | -------- | -------------------------------------------- | ---------------------------------------------------------------------------------- |
+| GET  | `ByGet`  | 仅「按 ID 查单条」                           | `getUserByIdByGet` / `getRoleByIdByGet`                                            |
+| POST | `ByPost` | 其余全部（列表 / 搜索 / 新增 / 更新 / 删除） | `getUserListByPost` / `createUserByPost` / `updateUserByPost` / `deleteUserByPost` |
+
+> ⚠️ 本项目后端**统一 POST**：列表查询、模糊搜索、增、改、删均走 POST。**禁止 `ByPut` / `ByDelete` / `ByPatch`**——后端不提供对应 HTTP 方法，用了会与真实代码脱节。
 
 ## useRequest 规范
 

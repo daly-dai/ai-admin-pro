@@ -80,3 +80,15 @@ body,
 .h-full {
   height: 100%;
 }
+
+/* ===== Diff 组件共享变量 =====
+   两个 CSS Module 通过 var() 引用，
+   修改时确保 DisguiseTextarea 和 EleCompareTextArea 同步 */
+:root {
+  --diff-padding-v: 4px;
+  --diff-padding-h: 11px;
+  --diff-line-height: 1.5714285714285714;
+  --diff-font-size: 14px;
+  --diff-border: 1px solid #d9d9d9;
+  --diff-radius: 6px;
+}

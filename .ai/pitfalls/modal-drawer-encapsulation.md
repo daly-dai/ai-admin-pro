@@ -61,13 +61,13 @@ const {Entity}FormModal = createModal<Params>(({ params, onClose, onSuccess }) =
   const [fileList, setFileList] = useState([]); // ✅ 关闭自动销毁
   const { mode, id } = params;
 
-  useRequest(() => getByIdByGet(id!), {
+  useRequest(() => get{Entity}ByIdByGet(id!), {
     ready: mode === 'edit' && !!id,
     onSuccess: (data) => form.setFieldsValue(data),
   });
 
   const { run, loading } = useRequest(
-    mode === 'create' ? createByPost : (v) => updateByPut(id!, v),
+    mode === 'create' ? create{Entity}ByPost : (v) => update{Entity}ByPost(id!, v),
     { manual: true, onSuccess: () => { message.success('操作成功'); onSuccess(); } },
   );
 

@@ -1,0 +1,14 @@
+.deletion {
+  background-color: #ffccc7;
+  text-decoration: line-through;
+}
+
+.addition {
+  background-color: #b7eb8f;
+}
+
+.textAreaContainer {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow: hidden;
+}

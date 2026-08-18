@@ -54,13 +54,13 @@ const FormContent = ({ params, onClose, onSuccess }: ModalChildProps<Params>) =>
   const [form] = SForm.useForm();
   const isEdit = params.mode === 'edit';
 
-  useRequest(() => getByIdByGet(params.id!), {
+  useRequest(() => get{Entity}ByIdByGet(params.id!), {
     ready: isEdit && !!params.id,
     onSuccess: (data) => form.setFieldsValue(data),
   });
 
   const { run, loading } = useRequest(
-    (values) => isEdit ? updateByPut(params.id!, values) : createByPost(values),
+    (values) => isEdit ? update{Entity}ByPost(params.id!, values) : create{Entity}ByPost(values),
     { manual: true, onSuccess: () => { message.success('操作成功'); onSuccess?.(); } },
   );
 
@@ -202,7 +202,7 @@ const tableRef = useRef<SProTableRef>(null);
 const formRef = useRef<ModalContainerRef<{ mode: 'create' | 'edit'; id?: string }>>(null);
 const detailRef = useRef<ModalContainerRef<{ id: string }>>(null);
 
-const { run: handleDelete } = useRequest(deleteByDelete, {
+const { run: handleDelete } = useRequest(delete{Entity}ByPost, {
   manual: true,
   onSuccess: () => { message.success('删除成功'); tableRef.current?.refresh(); },
 });
@@ -210,7 +210,7 @@ const { run: handleDelete } = useRequest(deleteByDelete, {
 <SProTable
   ref={tableRef}
   title={{ children: '{模块}管理' }}
-  request={{ service: getListByGet, options: { paginationFields: { list: 'dataList', total: 'totalSize' } } }}
+  request={{ service: get{Entity}ListByPost, options: { paginationFields: { list: 'dataList', total: 'totalSize' } } }}
   tableTitle={{ actionNode: <SButton actionType="create" onClick={() => formRef.current?.open({ mode: 'create' })} /> }}
   searchProps={{ items: searchItems, columns: 4 }}
   tableProps={{ columns, rowKey: 'id' }}
@@ -224,7 +224,7 @@ const { run: handleDelete } = useRequest(deleteByDelete, {
 
 ```tsx
 // 删除操作
-const { run: handleDelete } = useRequest(deleteByDelete, {
+const { run: handleDelete } = useRequest(delete{Entity}ByPost, {
   manual: true,
   onSuccess: () => {
     message.success('删除成功');
@@ -233,7 +233,7 @@ const { run: handleDelete } = useRequest(deleteByDelete, {
 });
 
 // 新增
-const { run: handleCreate } = useRequest(createByPost, {
+const { run: handleCreate } = useRequest(create{Entity}ByPost, {
   manual: true,
   onSuccess: () => {
     message.success('创建成功');
@@ -242,8 +242,8 @@ const { run: handleCreate } = useRequest(createByPost, {
 });
 
 // 编辑（加载详情 + 提交）
-const { data: detail } = useRequest(() => getByIdByGet(id!), { ready: !!id });
-const { run: handleUpdate } = useRequest((values) => updateByPut(id!, values), {
+const { data: detail } = useRequest(() => get{Entity}ByIdByGet(id!), { ready: !!id });
+const { run: handleUpdate } = useRequest((values) => update{Entity}ByPost(id!, values), {
   manual: true,
   onSuccess: () => {
     message.success('更新成功');
@@ -256,7 +256,7 @@ const { run: handleUpdate } = useRequest((values) => updateByPut(id!, values), {
 
 ## SForm 控件类型
 
-> 完整列表见 `sdesign/components/SForm.md`。联动规则见 `conventions/conventions.md` §四 P004。
+> 完整列表见 `sdesign/components/SForm.md`。联动规则见 `.ai/pitfalls/index.md` P005。
 
 ```
 input | inputNumber | password | textarea | select | slider |
@@ -271,7 +271,7 @@ SDatePicker → datePicker | SDatePickerRange → datePickerRange | SCascader �
 
 ## 确认弹窗
 
-> 删除、批量操作等危险操作使用 antd `Modal.confirm`。详见 `conventions/conventions.md` §四 P004。
+> 删除、批量操作等危险操作使用 antd `Modal.confirm`。详见 `.ai/pitfalls/index.md` P004。
 
 ## 操作按钮组
 

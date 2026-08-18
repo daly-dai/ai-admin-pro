@@ -1,4 +1,4 @@
-﻿# AI Frontend App
+# AI Frontend App
 
 > React 18 + TypeScript 5 + @dalydb/sdesign + antd 5 + Zustand + Rsbuild
 >
@@ -52,13 +52,14 @@
 
 ## 一、场景匹配（不推理，纯匹配）
 
-| 用户意图                             | 走什么                                            |
-| ------------------------------------ | ------------------------------------------------- | ---------------------- | -------------------------------------------------------------------- |
-| 小修改（改字段/修bug/调样式，≤20行） | → 修改路径，见 `.ai/conventions/modify-paths.md`  |
-| 新建/新模块 + 列表/CRUD/增删改查     | → CRUD Lane（模板填空，不生成 PRD）               |
-| 大屏 + 先出蓝图/设计方案/规划        | → 大屏蓝图 Lane（生成蓝图 → 自动续接大屏 Lane）\n | 大屏 + 生成代码/写页面 | → 大屏 Lane（先评估复杂度：简单走轻量路径跳过蓝图，复杂走蓝图 Lane） |
-| 新建 + 详情（含多Tab）               | → 多Tab详情 Lane（增量追加）                      |
-| 无法匹配任何场景                     | → 非标 Lane（PRD 兜底）                           |
+| 用户意图                             | 走什么                                                               |
+| ------------------------------------ | -------------------------------------------------------------------- |
+| 小修改（改字段/修bug/调样式，≤20行） | → 修改路径，见 `.ai/conventions/modify-paths.md`                     |
+| 新建/新模块 + 列表/CRUD/增删改查     | → CRUD Lane（模板填空，不生成 PRD）                                  |
+| 大屏 + 先出蓝图/设计方案/规划        | → 大屏蓝图 Lane（生成蓝图 → 自动续接大屏 Lane）                      |
+| 大屏 + 生成代码/写页面               | → 大屏 Lane（先评估复杂度：简单走轻量路径跳过蓝图，复杂走蓝图 Lane） |
+| 新建 + 详情（含多Tab）               | → 多Tab详情 Lane（增量追加）                                         |
+| 无法匹配任何场景                     | → 非标 Lane（PRD 兜底）                                              |
 
 > Lane 详细流程 → `.ai/conventions/lanes.md`
 
@@ -91,7 +92,7 @@
 ### 类型
 
 - 零 `any`（保底 `Record<string, unknown>`）
-- 全局类型 `PageData<T>` / `PageQuery` 在 `src/types/index.ts`，禁止重复定义
+- 全局类型 `PageResult<T>` / `PageQuery` 在 `src/types/index.ts`，禁止重复定义
 - 模块 types.ts 只定义：`{Entity}` + `{Entity}Query extends PageQuery` + `{Entity}FormData`
 - TS 详细规约 → `.ai/conventions/typescript-conventions.md`
 

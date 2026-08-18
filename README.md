@@ -94,7 +94,7 @@ pnpm verify 失败  →  错误追加 raw.jsonl  →  pitfall:scan 聚合（≥3
 | 构建工具 | Rsbuild                      | 基于 Rspack 的高性能构建                                   |
 | 框架     | React 18 + TypeScript 5      | 严格类型约束                                               |
 | 组件库   | **@dalydb/sdesign** + antd 5 | sdesign 封装常用模式（SSearchTable/SForm/SButton/SDetail） |
-| 状态管理 | Zustand + immer              | 轻量零样板代码                                             |
+| 状态管理 | Zustand (+ persist 中间件)   | 轻量零样板代码                                             |
 | 路由     | React Router 6               | SPA 路由                                                   |
 | HTTP     | 自定义 createRequest         | 统一拦截/鉴权/错误处理                                     |
 | Hooks    | ahooks                       | useRequest 等                                              |
@@ -131,8 +131,6 @@ sdesign-gen-page Skill                 Skill 集群（按协议组装）
                                       （代码提交 → 识别模式 → 自动生成 Skill）
 ```
 
-详见 [`architecture-evolution.md`](./architecture-evolution.md) 阶段 G 和 [`docs/ai-architecture-overview.md`](./docs/ai-architecture-overview.md) 第十四节。
-
 ---
 
 ## 快速开始
@@ -160,14 +158,14 @@ pnpm pitfall:scan
 
 ```
 ai-admin-pro/
-├── AGENTS.md                    # 强模型入口（244 行）
-├── AGENTS-LITE.md               # 弱模型入口（~120 行）
+├── AGENTS.md                    # 强模型入口
+├── AGENTS-LITE.md               # 弱模型入口
 ├── .ai/                         # AI 配置中心（人工维护，唯一可信源）
 │   ├── core/                    # 核心规范
 │   ├── conventions/             # 开发规约（API/大屏/字典/闸门/验证）
 │   ├── templates/               # 页面模板
-│   ├── pitfalls/                # 错题集（P001-P006+）
-│   ├── sdesign/                 # 组件库文档（自动同步）
+│   ├── pitfalls/                # 错题集（P001-P018）
+│   ├── sdesign/                 # 组件库文档（手动维护）
 │   ├── specs/                   # 功能规格书
 │   ├── tools/                   # 工具脚本
 │   ├── project-brief.md         # 项目认知底座
@@ -175,10 +173,6 @@ ai-admin-pro/
 ├── .qoder/skills/sdesign-gen-page/  # Skill 编译产物（脚本自动生成）
 │   ├── SKILL.md                     # 路由表 + 固定步骤表
 │   └── references/                  # 自包含 bundle 模板
-├── docs/                        # 架构文档
-│   ├── ai-architecture-overview.md  # 认知全景（14 节）
-│   └── ai-engineering-principles/   # 三原则详解
-├── architecture-evolution.md    # 架构演进史（阶段 A→G）
 ├── src/                         # 源码
 │   ├── api/                     # API 层
 │   ├── pages/                   # 页面
@@ -197,26 +191,10 @@ ai-admin-pro/
 | 想了解什么        | 读哪个                                                                               |
 | :---------------- | :----------------------------------------------------------------------------------- |
 | AI 入口和工作方式 | [`AGENTS.md`](./AGENTS.md)（强模型）/ [`AGENTS-LITE.md`](./AGENTS-LITE.md)（弱模型） |
-| 完整演进历史      | [`architecture-evolution.md`](./architecture-evolution.md)                           |
-| 全子系统认知地图  | [`docs/ai-architecture-overview.md`](./docs/ai-architecture-overview.md)             |
-| 设计哲学          | [`docs/ai-engineering-principles/`](./docs/ai-engineering-principles/)               |
+| 设计哲学          | [`.ai/core/ai-engineering-principles.md`](./.ai/core/ai-engineering-principles.md)   |
 | 如何生成代码      | `.qoder/skills/sdesign-gen-page/SKILL.md`                                            |
 | 组件使用文档      | `.ai/sdesign/components/`                                                            |
 | 错题集            | `.ai/pitfalls/index.md`                                                              |
-
----
-
-## 关键数据
-
-| 指标           | 数值                                                         |
-| :------------- | :----------------------------------------------------------- |
-| 总提交数       | 74 次                                                        |
-| 核心提示词修改 | 36 次                                                        |
-| 净删除 AI 文档 | ~50,000 行                                                   |
-| 废弃完整方案   | 4 套（repowiki / 迁移分析 / V1-V3 生命周期 / JSON scaffold） |
-| 当前 AGENTS.md | 244 行（从峰值 305 行收敛）                                  |
-| 错题沉淀       | P001-P006                                                    |
-| 蒸馏追踪组     | 19 组（G01-G19）                                             |
 
 ---
 

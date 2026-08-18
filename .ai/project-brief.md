@@ -37,24 +37,24 @@
 
 ## 4. 代码规约
 
-| 规约         | 规则                                                                             |
-| ------------ | -------------------------------------------------------------------------------- |
-| HTTP 请求    | `import { createRequest } from 'src/plugins/request'`                            |
-| 类型安全     | 禁止 any，保底 `Record<string, unknown>`，优先实体推导                           |
-| 类型导入     | 纯类型用 `import type { X }`，重导出用 `export type { X }`                       |
-| 路径别名     | 跨模块用 `src/` 别名，禁止 `../`                                                 |
-| API 命名     | `{动作}By{HTTP}`：getListByGet / createByPost / updateByPut / deleteByDelete     |
-| 未使用参数   | 加 `_` 前缀：`(_, record) => ...`                                                |
-| 全局类型     | PageResult<T>(分页响应) / PageQuery(分页基类)，拦截器自动解包 ApiResponse        |
-| 状态管理     | `create` from zustand + persist                                                  |
-| Modal/Drawer | 用 `createModal`/`createDrawer` 工厂函数（@dalydb/sdesign），禁止父组件管理 open |
-| 验证         | `pnpm verify`（tsc + eslint + prettier）                                         |
+| 规约         | 规则                                                                                                 |
+| ------------ | ---------------------------------------------------------------------------------------------------- |
+| HTTP 请求    | `import { createRequest } from 'src/plugins/request'`                                                |
+| 类型安全     | 禁止 any，保底 `Record<string, unknown>`，优先实体推导                                               |
+| 类型导入     | 纯类型用 `import type { X }`，重导出用 `export type { X }`                                           |
+| 路径别名     | 跨模块用 `src/` 别名，禁止 `../`                                                                     |
+| API 命名     | `{Entity}{动作}By{HTTP}`：getUserListByPost / createUserByPost / updateUserByPost / deleteUserByPost |
+| 未使用参数   | 加 `_` 前缀：`(_, record) => ...`                                                                    |
+| 全局类型     | PageResult<T>(分页响应) / PageQuery(分页基类)，拦截器自动解包 ApiResponse                            |
+| 状态管理     | `create` from zustand + persist                                                                      |
+| Modal/Drawer | 用 `createModal`/`createDrawer` 工厂函数（@dalydb/sdesign），禁止父组件管理 open                     |
+| 验证         | `pnpm verify`（tsc + eslint + prettier）                                                             |
 
 ## 5. API 层模式
 
 ```
 实例: const {module}Api = createRequest()  // 可传 config 配置多后端
-方法: getListByGet(params?) / getByIdByGet(id) / createByPost(data) / updateByPut(id, data) / deleteByDelete(id)
+方法: get{Entity}ListByPost(params?) / get{Entity}ByIdByGet(id) / create{Entity}ByPost(data) / update{Entity}ByPost(id, data) / delete{Entity}ByPost(id)
 类型: {Entity} + {Entity}Query extends PageQuery + {Entity}FormData
 ```
 
@@ -69,8 +69,8 @@ useRequest 模式：列表 → SProTable request.service 直传 | 写操作 → 
 | P001 | 弹层 → `createModal`/`createDrawer`，禁止父组件管 open 状态    |
 | P002 | 可编辑表格 → `EditableProTable`，非 SForm type:'table'         |
 | P003 | 未用参数 → 加 `_` 前缀，禁止 void / eslint-disable             |
-| P004 | 字段联动 → `SForm.useWatch` + 条件展开，禁止 type:'dependency' |
-| P005 | 确认弹窗 → `Modal.confirm`，禁止 SConfirm                      |
+| P004 | 确认弹窗 → `Modal.confirm`，禁止 SConfirm                      |
+| P005 | 字段联动 → `SForm.useWatch` + 条件展开，禁止 type:'dependency' |
 | P006 | searchItems 禁止类型注解，columns 必须注解                     |
 | P007 | 分页配置 `paginationFields` 用 `current`，非 `pageNum`         |
 | P008 | 枚举列/下拉 → 禁止硬编码，用 `dictKey` 指定字典                |

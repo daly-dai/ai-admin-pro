@@ -1,0 +1,30 @@
+.wrapper {
+  position: relative;
+}
+
+/* ---- 覆盖层：跟 textarea 内容区精确对齐 ---- */
+.overlay {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  padding: var(--diff-padding-v) var(--diff-padding-h);
+  line-height: var(--diff-line-height);
+  font-size: var(--diff-font-size);
+  /* font-family 不设，继承全局 -apple-system ...，跟 antd TextArea 一致 */
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow: hidden;
+  pointer-events: none; /* 点击穿透 */
+  border: var(--diff-border);
+  border-color: transparent !important; /* 占位但不可见，确保盒模型对齐 */
+  z-index: 1;
+}
+
+/* ---- 透明 textarea ---- */
+.transparentTextarea {
+  color: transparent !important;
+  caret-color: #1677ff; /* antd 默认光标色 */
+  background-color: transparent !important;
+  position: relative;
+  z-index: 0;
+}
