@@ -1,6 +1,7 @@
 import {
   BellOutlined,
   DatabaseOutlined,
+  EnvironmentOutlined,
   HomeOutlined,
   IdcardOutlined,
   LogoutOutlined,
@@ -116,6 +117,18 @@ const MainLayout: React.FC = () => {
           key: '/system/dict',
           icon: <DatabaseOutlined />,
           label: '字典管理',
+        },
+      ],
+    },
+    {
+      key: 'tree',
+      icon: <EnvironmentOutlined />,
+      label: '古树管理',
+      children: [
+        {
+          key: '/tree/archive',
+          icon: <EnvironmentOutlined />,
+          label: '古树档案',
         },
       ],
     },

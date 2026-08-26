@@ -40,6 +40,10 @@ export const routes = [
         path: 'system/dict',
         element: lazyPage(() => import('src/pages/system/dict')),
       },
+      {
+        path: 'tree/archive',
+        element: lazyPage(() => import('src/pages/tree/archive')),
+      },
     ],
   },
   ...errorRoutes,
