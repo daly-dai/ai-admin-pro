@@ -298,6 +298,11 @@ const MockEditorPage = () => {
     };
   }, [handleInit, handleSaveRequest]);
 
+  // 挂载即上报就绪：父页收到此 ready 后下发 init（防 iframe 懒加载与父页 onLoad 的竞态）
+  useEffect(() => {
+    post({ type: 'ready' });
+  }, [post]);
+
   const renderCellContent = (
     cell: ExcelCell,
     row: number,
