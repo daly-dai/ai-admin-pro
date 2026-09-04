@@ -63,6 +63,13 @@
   margin: 0 auto;
 }
 
+/* 信纸内表格自适应宽度：固定布局 + 铺满容器，列按 Excel 原始列宽等比缩放，
+ * 既不撑出横向滚动轴，也不被压成极窄竖排；极端超宽时由 .paper 内部横向滚动兜底 */
+.paper :global(table) {
+  width: 100%;
+  table-layout: fixed;
+}
+
 .loadingWrap {
   min-height: 40vh;
   display: flex;
