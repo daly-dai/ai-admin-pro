@@ -1,270 +1,34 @@
-.workspace {
-  /* ---- 页面级设计令牌 ---- */
-  --paper: #ffffff;
-  --ink: #1f2430;
-  --muted: #667085;
-  --hairline: #e4e7ec;
-  --accent: #2563eb;
-  --canvas: #eef2f7;
-  --canvas-dot: rgba(31, 41, 55, 0.09);
-  --panel-radius: 12px;
+/* mail-template v2 列表页 + 新增/编辑弹窗样式 */
 
-  width: 100%;
-  max-width: 1520px;
-  margin: 0 auto;
-  font-family:
-    -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,
-    sans-serif;
-}
-
-/* ---- 顶栏 ---- */
-.header {
+.toolbar {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
   gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: 0.01em;
-  color: var(--ink);
-}
-
-.subtitle {
-  margin-top: 4px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.dividerV {
-  width: 1px;
-  height: 20px;
-  background: var(--hairline);
-  margin: 0 2px;
-}
-
-/* ---- 主栅格：左撰写台 / 右信纸预览 ---- */
-.mainGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 20px;
-}
-
-@media (min-width: 1240px) {
-  .mainGrid {
-    grid-template-columns: minmax(0, 1fr) 664px;
-    align-items: start;
-  }
-}
-
-/* ---- 面板基础 ---- */
-.panel {
-  background: var(--paper);
-  border: 1px solid var(--hairline);
-  border-radius: var(--panel-radius);
-  padding: 16px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-}
-
-.panelHead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
   margin-bottom: 12px;
 }
 
-.panelTitle {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.panelHint {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-/* ---- 左栏：正文编辑器 ---- */
-.editorShell {
-  border: 1px solid #dfe5ee;
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--paper);
-}
-
-.editorShell :global(.w-e-toolbar) {
-  border-bottom-color: #e8ebf1 !important;
-}
-
-.editorShell :global(.w-e-text-container) {
-  background: var(--paper);
-}
-
-.utilityBar {
+.editorHead {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 12px;
-}
-
-.mono {
-  font-family:
-    ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
-  font-size: 12px;
-}
-
-/* ---- 已注入表格插槽 ---- */
-.slotBar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-
-.slotPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid #dbe4f0;
-  background: #f7f9fc;
-  border-radius: 999px;
-  padding: 2px 6px 2px 10px;
-  font-size: 12px;
-  color: var(--ink);
-}
-
-.slotPillName {
-  font-size: 12px;
-  color: var(--muted);
-  max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* ---- 左栏：数据素材 ---- */
-.sourceBlock {
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px dashed var(--hairline);
-}
-
-.sourceEmpty {
-  border: 1px dashed #c9d4e3;
-  border-radius: 10px;
-  padding: 18px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  background: #fbfcfe;
-}
-
-.sourceEmptyText {
-  flex: 1;
-  min-width: 200px;
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.7;
-}
-
-.fileMeta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.fileName {
-  font-weight: 600;
-  color: var(--ink);
-  font-size: 13px;
-}
-
-.sheetChips {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-
-.sheetChip {
-  font-size: 12px;
-  color: #374151;
-  background: #eef3fb;
-  border-radius: 6px;
-  padding: 2px 8px;
-}
-
-.parsedAlert {
-  margin-top: 10px;
-}
-
-/* ---- 右栏：信纸预览 ---- */
-.previewStage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 620px;
-  padding: 24px 20px;
-  border: 1px solid #dfe5ee;
-  border-radius: var(--panel-radius);
-  /* WHY: 点阵底暗示“画布/工作区”，同时让白色信纸跳出来 */
-  background-color: var(--canvas);
-  background-image: radial-gradient(
-    circle,
-    var(--canvas-dot) 1px,
-    transparent 1px
-  );
-  background-size: 18px 18px;
-}
-
-.letter {
-  width: 664px;
-  max-width: 100%;
-  background: var(--paper);
-  border-radius: 8px;
-  box-shadow:
-    0 10px 32px rgba(15, 23, 42, 0.1),
-    0 1px 3px rgba(15, 23, 42, 0.06);
-  overflow: hidden;
-}
-
-.letterFrame {
-  display: block;
-  width: 100%;
-  height: 560px;
-  border: 0;
-}
-
-.previewFoot {
-  display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 12px;
+  margin: 4px 0 8px;
 }
 
-.previewFootNote {
+.editorTitle {
+  font-weight: 600;
+}
+
+.editorHint {
   font-size: 12px;
-  color: var(--muted);
+}
+
+.editorShell {
+  overflow: hidden;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+}
+
+.bodyError {
+  display: block;
+  margin-top: 8px;
 }
