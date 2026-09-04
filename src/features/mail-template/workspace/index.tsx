@@ -163,19 +163,17 @@ const InfoBar = ({ template }: { template: MailTemplate }) => {
   );
 };
 
-/** iframe 阅读容器：工具栏（返回/报表名/编辑·发布占位） + 阅读画布 */
+/** iframe 阅读容器：工具栏（报表名/编辑·发布占位） + 阅读画布 */
 const ReaderPane = ({
   report,
   reading,
   readerDoc,
   readerError,
-  onBack,
 }: {
   report: ReportMeta;
   reading: boolean;
   readerDoc: string;
   readerError?: string;
-  onBack: () => void;
 }) => {
   let stageNode: ReactNode;
   if (reading && !readerDoc) {
@@ -206,9 +204,6 @@ const ReaderPane = ({
   return (
     <div className={styles.reader}>
       <div className={styles.readerToolbar}>
-        <SButton compact onClick={onBack}>
-          返回报表列表
-        </SButton>
         <span className={styles.readerName} title={report.name}>
           {report.name}
           {!report.canEdit && (
@@ -469,7 +464,6 @@ const WorkspacePage = () => {
         reading={reading}
         readerDoc={readerDoc}
         readerError={readerError}
-        onBack={() => setSelectedId(undefined)}
       />
     );
   } else if (reports.length === 0) {
