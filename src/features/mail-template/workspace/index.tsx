@@ -194,7 +194,8 @@ const ReaderPane = ({
 
 const WorkspacePage = () => {
   const navigate = useNavigate();
-  const { templateId } = useParams<{ templateId: string }>();
+  // 路由参数名为 :id（/mail/template/:id），useParams 须按 { id } 解构，否则取不到标识
+  const { id: templateId } = useParams<{ id: string }>();
   const [template, setTemplate] = useState<MailTemplate | null>(null);
   const [reports, setReports] = useState<ReportMeta[]>([]);
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
