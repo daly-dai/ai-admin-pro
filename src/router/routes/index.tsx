@@ -54,6 +54,11 @@ export const routes = [
       },
     ],
   },
+  // mock 在线编辑平台页：iframe 目标（顶层独立路由，不带后台布局，父页工作台以 iframe 嵌入）
+  {
+    path: 'mail/template/editor',
+    element: lazyPage(() => import('src/features/mail-template/mock-editor')),
+  },
   ...errorRoutes,
 ];
 

@@ -1,0 +1,91 @@
+/* mock 在线编辑平台页（iframe 目标）：全屏、无后台布局。 */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: #eef1f5;
+}
+
+.toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #fff;
+  border-bottom: 1px solid #eef0f4;
+}
+
+.fileName {
+  font-weight: 600;
+  color: #1d2939;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sheetName {
+  margin-left: auto;
+  font-size: 12px;
+  color: #667085;
+}
+
+.stage {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  background: #f6f8fa;
+}
+
+.center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.centerText {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #98a2b3;
+}
+
+.grid {
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.06);
+}
+
+.cellInput {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  box-sizing: border-box;
+}
+
+.cellInput:focus {
+  outline: 2px solid #1677ff;
+  outline-offset: -2px;
+  border-radius: 2px;
+}
+
+.cellText {
+  display: inline-block;
+  width: 100%;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.validateBar {
+  max-width: 960px;
+  margin-bottom: 12px;
+}

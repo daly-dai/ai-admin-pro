@@ -1,5 +1,5 @@
 /**
- * 邮件模板工作台（详情页 /mail/template/:id，Task 4 修订版）。
+ * 邮件模板工作台（详情页 /mail/template/:id，Task 4 修订 + Task 5 在线编辑接入）。
  *
  * 布局（按用户走查修订）：
  * - 页顶：返回模板列表 + 工作台标题 + 右上角「模板更新于 …」小字；
@@ -9,8 +9,10 @@
  *   与信息卡间留间隔；
  * - 权限演示开关收进左栏底部默认折叠的「演示权限」面板（界面角落），报表行回归干净：
  *   仅 图标/名称/时间 + hover 删除 + 选中高亮；
- * - 阅读区工具栏：报表名 + 「阅读⇄编辑/发布」为 Task 5/6 接入的占位（disabled + tooltip）；
- *   无「返回报表列表」（左栏报表明细常驻，点选即可切换）。
+ * - 阅读区（模块二右侧）：iframe 载入 mock 在线编辑页
+ *   （顶层路由 /mail/template/editor?reportId&mode，Task 5），跨 frame 走 postMessage 协议
+ *   （ready → init → save-request → saved/error）模拟跨域平台；工具栏 = 报表名 + 阅读⇄编辑
+ *   + 发布（编辑模式，发布=平台保存导出后存回报表）；无「返回报表列表」（左栏常驻，点选即切换）。
  * 说明：service 门面（mock localStorage，接口化）；纯函数逻辑走已测 seam，本页只做编排与 UI。
  */
 import { ArrowLeftOutlined, FileExcelOutlined } from '@ant-design/icons';
@@ -21,7 +23,6 @@ import {
   Empty,
   message,
   Modal,
-  Spin,
   Switch,
   Tag,
   Tooltip,
@@ -30,19 +31,20 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { parseExcelFile } from '../excel-to-html/parseExcel';
 import {
-  buildMailCanvasDocument,
-  buildSheetEmailHtml,
-} from '../excel-to-html/toEmailHtml';
+  parseFrameMessage,
+  type MockEditorMessage,
+  type MockEditorMode,
+} from '../mock-editor/communication';
 import { validateReportFile } from '../service/reportFileValidation';
 import {
   deleteReportByPost,
   downloadReportByPost,
   getReportListByPost,
+  triggerReportSaveByPost,
   updateReportPermissionByPost,
   uploadReportByPost,
 } from '../service/reportService';
@@ -87,19 +89,6 @@ function fileToBase64(file: File): Promise<string> {
     reader.onerror = () => reject(new Error('文件读取失败'));
     reader.readAsDataURL(file);
   });
-}
-
-/** base64 → File（阅读/预览渲染用：download 到的 fileBase64 还原为可解析 File） */
-function base64ToFile(base64: string, fileName: string): File {
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let index = 0; index < binary.length; index += 1) {
-    bytes[index] = binary.charCodeAt(index);
-  }
-  const blob = new Blob([bytes], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  });
-  return new File([blob], fileName, { type: blob.type });
 }
 
 /** 单行省略文本（收件人/抄送等长串），hover 展示全文 */
@@ -166,42 +155,83 @@ const InfoBar = ({ template }: { template: MailTemplate }) => {
   );
 };
 
-/** iframe 阅读容器：工具栏（报表名/编辑·发布占位） + 阅读画布 */
+/**
+ * iframe 阅读/编辑容器：工具栏（报表名/阅读⇄编辑/发布） + mock 在线编辑页。
+ * iframe 载入 /mail/template/editor?reportId&mode，跨 frame 走 postMessage 协议：
+ *   ready（子页就绪）→ 父发 init（报表文件/模式/权限）→ 子解析渲染；
+ *   发布（编辑模式）→ save-request → 子回 saved(fileBase64) → onSaved 存回；
+ *   无编辑权限等 → error(code) → 父提示兜底。
+ */
 const ReaderPane = ({
   report,
-  reading,
-  readerDoc,
-  readerError,
+  mode,
+  onToggleMode,
+  onSaved,
 }: {
   report: ReportMeta;
-  reading: boolean;
-  readerDoc: string;
-  readerError?: string;
+  mode: MockEditorMode;
+  onToggleMode: () => void;
+  onSaved: (fileBase64: string, updatedAt: number) => void;
 }) => {
-  let stageNode: ReactNode;
-  if (reading && !readerDoc) {
-    stageNode = (
-      <div className={styles.stageCenter}>
-        <Spin />
-      </div>
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  // 每次换报表/换模式都会重建 iframe，重置后等子页 ready 再发 init（防握手竞态）
+  const initSentRef = useRef(false);
+
+  const post = useCallback((message: MockEditorMessage) => {
+    iframeRef.current?.contentWindow?.postMessage(
+      message,
+      window.location.origin,
     );
-  } else if (readerError) {
-    stageNode = (
-      <div className={styles.stageCenter}>
-        <Empty description={readerError} />
-      </div>
-    );
-  } else if (readerDoc) {
-    stageNode = (
-      <iframe
-        className={styles.readerFrame}
-        title={`报表阅读：${report.name}`}
-        sandbox=""
-        srcDoc={readerDoc}
-      />
-    );
-  } else {
-    stageNode = null;
+  }, []);
+
+  useEffect(() => {
+    initSentRef.current = false;
+  }, [report.id, mode]);
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent<unknown>) => {
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+      const frameMessage = parseFrameMessage(event.data);
+      if (frameMessage?.type === 'ready') {
+        if (initSentRef.current) {
+          return;
+        }
+        const full = downloadReportByPost(report.id);
+        if (full) {
+          post({
+            type: 'init',
+            reportId: full.id,
+            fileBase64: full.fileBase64,
+            mode,
+            canEdit: full.canEdit,
+          });
+          initSentRef.current = true;
+        }
+      } else if (frameMessage?.type === 'saved') {
+        onSaved(frameMessage.fileBase64, frameMessage.updatedAt);
+      } else if (frameMessage?.type === 'error') {
+        if (frameMessage.code === 'NO_EDIT_PERMISSION') {
+          message.warning('该报表无编辑权限（平台已拦截编辑）');
+        } else if (frameMessage.code === 'PARSE_FAILED') {
+          message.error('报表解析失败，请检查文件后重试');
+        } else if (frameMessage.code === 'NOT_READY') {
+          message.warning('编辑页尚未就绪，请稍后重试');
+        }
+      }
+    };
+    window.addEventListener('message', onMessage);
+    return () => {
+      window.removeEventListener('message', onMessage);
+    };
+  }, [report.id, mode, post, onSaved]);
+
+  let publishHint = '发布：mock 平台保存编辑并导出最新文件';
+  if (mode === 'read') {
+    publishHint = '进入编辑模式后可修改单元格并发布';
+  } else if (!report.canEdit) {
+    publishHint = '该报表为只读（无编辑权限），不能发布';
   }
 
   return (
@@ -216,21 +246,42 @@ const ReaderPane = ({
           )}
         </span>
         <div className={styles.readerActions}>
-          <Tooltip title="mock 在线编辑平台在后续演示接入（Task 5）">
+          <Tooltip
+            title={
+              mode === 'read'
+                ? '切换到编辑模式（仅改单元格值）'
+                : '切换回阅读模式'
+            }
+          >
             <span>
-              <SButton disabled>阅读 ⇄ 编辑</SButton>
-            </span>
-          </Tooltip>
-          <Tooltip title="发布依赖在线编辑保存导出（Task 6 接入）">
-            <span>
-              <SButton type="primary" disabled>
-                发布
+              <SButton onClick={onToggleMode}>
+                {mode === 'read' ? '阅读 ⇄ 编辑' : '编辑 ⇄ 阅读'}
               </SButton>
             </span>
           </Tooltip>
+          {mode === 'edit' && (
+            <Tooltip title={publishHint}>
+              <span>
+                <SButton
+                  type="primary"
+                  disabled={!report.canEdit}
+                  onClick={() => post({ type: 'save-request' })}
+                >
+                  发布
+                </SButton>
+              </span>
+            </Tooltip>
+          )}
         </div>
       </div>
-      <div className={styles.readerStage}>{stageNode}</div>
+      <div className={styles.readerStage}>
+        <iframe
+          ref={iframeRef}
+          className={styles.readerFrame}
+          title={`报表${mode === 'edit' ? '编辑' : '阅读'}：${report.name}`}
+          src={`editor?reportId=${encodeURIComponent(report.id)}&mode=${mode}`}
+        />
+      </div>
     </div>
   );
 };
@@ -242,9 +293,7 @@ const WorkspacePage = () => {
   const [template, setTemplate] = useState<MailTemplate | null>(null);
   const [reports, setReports] = useState<ReportMeta[]>([]);
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
-  const [reading, setReading] = useState(false);
-  const [readerDoc, setReaderDoc] = useState('');
-  const [readerError, setReaderError] = useState<string | undefined>(undefined);
+  const [mode, setMode] = useState<MockEditorMode>('read');
   const [uploading, setUploading] = useState(false);
 
   const reload = useCallback(() => {
@@ -266,49 +315,9 @@ const WorkspacePage = () => {
     reload();
   }, [reload]);
 
-  /** 选中报表 → 解析并构建阅读文档（复用 excel→html 保真内核） */
+  // 换报表时回到阅读模式（进入编辑需手动切换；阅读/编辑交给 mock 编辑页 iframe 呈现）
   useEffect(() => {
-    if (!selectedId) {
-      setReaderDoc('');
-      setReaderError(undefined);
-      return undefined;
-    }
-    let cancelled = false;
-    const report = downloadReportByPost(selectedId);
-    if (!report) {
-      setReaderError('报表不存在或已无查看权限');
-      return undefined;
-    }
-    setReading(true);
-    void (async () => {
-      try {
-        const file = base64ToFile(report.fileBase64, report.name);
-        const result = await parseExcelFile(file);
-        if (cancelled) {
-          return;
-        }
-        const sheet = result.sheets[0];
-        if (!sheet) {
-          setReaderError('报表中没有可展示的工作表');
-          return;
-        }
-        setReaderDoc(buildMailCanvasDocument(buildSheetEmailHtml(sheet).html));
-        setReaderError(undefined);
-      } catch (error) {
-        if (!cancelled) {
-          setReaderError(
-            error instanceof Error ? error.message : '报表解析失败',
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setReading(false);
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    setMode('read');
   }, [selectedId]);
 
   const finishUpload = (result: UploadReportResult) => {
@@ -418,6 +427,20 @@ const WorkspacePage = () => {
     navigate('/mail/template');
   };
 
+  const toggleMode = () => {
+    setMode((current) => (current === 'read' ? 'edit' : 'read'));
+  };
+
+  /** mock 编辑页发布完成：回传最新文件 → 存回报表（覆盖存储、刷新更新时间） */
+  const handleSaved = (fileBase64: string, _updatedAt: number) => {
+    if (!selectedId) {
+      return;
+    }
+    triggerReportSaveByPost(selectedId, fileBase64);
+    message.success('已发布，报表内容已更新');
+    reload();
+  };
+
   const selected = reports.find((report) => report.id === selectedId);
 
   if (!templateId) {
@@ -464,9 +487,9 @@ const WorkspacePage = () => {
     contentPane = (
       <ReaderPane
         report={selected}
-        reading={reading}
-        readerDoc={readerDoc}
-        readerError={readerError}
+        mode={mode}
+        onToggleMode={toggleMode}
+        onSaved={handleSaved}
       />
     );
   } else if (reports.length === 0) {
