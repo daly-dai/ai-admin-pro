@@ -2,10 +2,11 @@
  * localStorage 适配器（薄壳）：持久化整个 db 快照。
  * WHY(不单测): 纯 IO 薄壳，无业务逻辑；门面集成测试以 stub localStorage 覆盖其行为。
  * 容量守卫：写入失败（超限等）转可读错误，由调用方/页面提示换小文件。
+ * 版本：v2 → v3（Task 3 修订：收件人语义由邮箱改为通讯录 userInfo，旧 v2 数据含邮箱不再兼容，升级即弃用重来）。
  */
 import type { MailDbState } from './types';
 
-export const STORAGE_KEY = 'mail-template-db:v2';
+export const STORAGE_KEY = 'mail-template-db:v3';
 
 function isDbState(value: unknown): value is MailDbState {
   if (typeof value !== 'object' || value === null) {

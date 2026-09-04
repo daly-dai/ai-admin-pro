@@ -245,6 +245,7 @@ const TemplateFormContent = ({
       label: '收件人',
       name: 'recipients',
       type: 'select' as const,
+      rules: [{ required: true, message: '收件人不能为空，至少选择一名用户' }],
       fieldProps: {
         mode: 'multiple',
         options: USER_OPTIONS,

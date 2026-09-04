@@ -106,17 +106,17 @@ const MailTemplateListPage = () => {
     {
       title: '收件人',
       dataIndex: 'recipients',
-      width: 240,
+      width: 260,
       ellipsis: true,
-      render: (_text, record) => record.recipients.join('、'),
+      render: (_text, record) => record.recipients.join(','),
     },
     {
       title: '抄送',
       dataIndex: 'cc',
-      width: 160,
+      width: 200,
       ellipsis: true,
       render: (_text, record) =>
-        record.cc.length > 0 ? record.cc.join('、') : '-',
+        record.cc.length > 0 ? record.cc.join(',') : '-',
     },
     { title: '报表数', dataIndex: 'reportCount', width: 80 },
     {
