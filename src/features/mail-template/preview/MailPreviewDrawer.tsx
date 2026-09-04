@@ -239,6 +239,7 @@ const MailPreviewDrawer = createDrawer<MailPreviewParams>(
         title="预览结合效果：发送前检查"
         width="100%"
         onClose={onClose}
+        styles={{ body: { overflowX: 'hidden' } }}
         footer={
           <Space style={{ float: 'right' }}>
             <SButton onClick={onClose}>关闭</SButton>
