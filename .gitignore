@@ -56,3 +56,9 @@ lerna-debug.log*
 .codegraph/
 
 reasonix.toml
+
+.dsh/
+
+# Excel 临时锁文件（编辑占用时生成）
+~$*.xlsx
+~$*.xls
