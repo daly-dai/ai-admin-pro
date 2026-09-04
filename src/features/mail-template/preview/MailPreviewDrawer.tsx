@@ -16,6 +16,7 @@ import {
   Empty,
   message,
   Modal,
+  Segmented,
   Select,
   Space,
   Spin,
@@ -97,6 +98,8 @@ const MailPreviewDrawer = createDrawer<MailPreviewParams>(
       'loading',
     );
     const [loadError, setLoadError] = useState('');
+    /** 宽度模式：full=贴合公司邮件全宽正文（默认）；mail=通用邮件客户端 600px 内容区 */
+    const [widthMode, setWidthMode] = useState<'full' | 'mail'>('full');
 
     /** 结合报表变化 → 取最新文件 → 解析 → 注入 {{table}} → 信纸 */
     useEffect(() => {
@@ -125,9 +128,10 @@ const MailPreviewDrawer = createDrawer<MailPreviewParams>(
               if (cancelled) {
                 return;
               }
-              const tableHtml = buildSheetEmailHtml(sheet, {
-                preserveWidth: true,
-              }).html;
+              const tableHtml = buildSheetEmailHtml(
+                sheet,
+                widthMode === 'mail' ? undefined : { preserveWidth: true },
+              ).html;
               setCombinedHtml(injectTableHtml(template.bodyHtml, tableHtml));
               setLoadState('ready');
             } catch (error) {
@@ -144,7 +148,7 @@ const MailPreviewDrawer = createDrawer<MailPreviewParams>(
       return () => {
         cancelled = true;
       };
-    }, [selectedReportId, template]);
+    }, [selectedReportId, template, widthMode]);
 
     const readPaperBody = (): string => {
       const node = paperRef.current;
@@ -211,12 +215,16 @@ const MailPreviewDrawer = createDrawer<MailPreviewParams>(
               suppressContentEditableWarning
               spellCheck={false}
               dangerouslySetInnerHTML={{ __html: combinedHtml }}
-              className={styles.paper}
+              className={`${styles.paper}${
+                widthMode === 'mail' ? ` ${styles.paperMail}` : ''
+              }`}
             />
           </div>
           <div style={{ marginTop: 12 }}>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              信纸为整封邮件效果，点按文字/表格可直接微调；表格按原始列宽展示，超宽可横向滚动。
+              {widthMode === 'mail'
+                ? '邮件宽（600px）——通用邮件客户端内容区上限，超宽会被截断/滚动。'
+                : '全宽——贴合公司邮件正文宽度；表格按原始列宽展示，超宽可横向滚动。'}
             </Text>
           </div>
         </>
@@ -257,6 +265,15 @@ const MailPreviewDrawer = createDrawer<MailPreviewParams>(
               }))}
             />
             <span className={styles.hint}>下拉切换其他可查看报表</span>
+            <Segmented
+              value={widthMode}
+              onChange={(value) => setWidthMode(value as 'full' | 'mail')}
+              options={[
+                { label: '全宽', value: 'full' },
+                { label: '邮件宽 600px', value: 'mail' },
+              ]}
+              size="middle"
+            />
           </div>
         )}
         {stage}
