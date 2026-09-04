@@ -15,6 +15,11 @@ import type {
   UploadReportResult,
 } from './types';
 
+export interface UpdateReportPermissionInput {
+  canView?: boolean;
+  canEdit?: boolean;
+}
+
 function readDb(): MailDbState {
   return (
     loadDb() ?? {
@@ -56,6 +61,43 @@ export function getReportListByPost(templateId: string): ReportMeta[] {
   return filterViewableReports(listReportsOfTemplate(db.reports, templateId))
     .sort((left, right) => right.updatedAt - left.updatedAt)
     .map(toMeta);
+}
+
+/** 删除报表（= 删模板文件夹内文件；Demo 存副本，不触碰用户本机原文件） */
+export function deleteReportByPost(reportId: string): void {
+  const db = readDb();
+  if (!db.reports.some((report) => report.id === reportId)) {
+    throw new Error('报表不存在或已被删除');
+  }
+  saveDb({
+    templates: db.templates,
+    reports: db.reports.filter((report) => report.id !== reportId),
+  });
+}
+
+/**
+ * 演示权限开关：更新报表 canView / canEdit（PRD 功能五）。
+ * canView=false → 接口过滤语义（列表/下拉不再返回）；canEdit=false → 只读（编辑入口保留但平台侧拦截）。
+ */
+export function updateReportPermissionByPost(
+  reportId: string,
+  patch: UpdateReportPermissionInput,
+): ReportMeta {
+  const db = readDb();
+  const report = db.reports.find((item) => item.id === reportId);
+  if (!report) {
+    throw new Error('报表不存在或已被删除');
+  }
+  const updated: Report = {
+    ...report,
+    canView: patch.canView ?? report.canView,
+    canEdit: patch.canEdit ?? report.canEdit,
+  };
+  saveDb({
+    templates: db.templates,
+    reports: db.reports.map((item) => (item.id === reportId ? updated : item)),
+  });
+  return toMeta(updated);
 }
 
 /**

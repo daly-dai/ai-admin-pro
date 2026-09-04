@@ -85,6 +85,12 @@ export function getTemplateListByPost(query?: {
   );
 }
 
+/** 模板详情（按 id；不存在返回 undefined，工作台页做空态/404 提示） */
+export function getTemplateByIdByGet(id: string): MailTemplate | undefined {
+  const db = readDb();
+  return db.templates.find((template) => template.id === id);
+}
+
 export function createTemplateByPost(input: MailTemplateInput): MailTemplate {
   throwIfInvalidUserList(input.recipients, '收件人', true);
   throwIfInvalidUserList(input.cc, '抄送', false);

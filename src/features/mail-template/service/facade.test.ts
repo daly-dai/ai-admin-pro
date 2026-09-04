@@ -6,14 +6,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  deleteReportByPost,
   downloadReportByPost,
   getReportListByPost,
   triggerReportSaveByPost,
+  updateReportPermissionByPost,
   uploadReportByPost,
 } from './reportService';
 import {
   createTemplateByPost,
   deleteTemplateByPost,
+  getTemplateByIdByGet,
   getTemplateListByPost,
   SAMPLE_TEMPLATE_ID,
   updateTemplateByPost,
@@ -220,6 +223,58 @@ describe('报表：上传 / 冲突覆盖 / 权限过滤 / 发布回写', () => {
     saveDb(db);
     expect(() => triggerReportSaveByPost(uploaded.report.id, 'YYYY')).toThrow(
       '无编辑权限，无法发布',
+    );
+  });
+});
+
+describe('工作台支撑方法（T4）：模板详情 / 报表删除 / 权限开关', () => {
+  it('getTemplateByIdByGet：命中返回，未命中 undefined', () => {
+    const created = createTemplateByPost(validInput());
+    expect(getTemplateByIdByGet(created.id)?.name).toBe('月度经营报告');
+    expect(getTemplateByIdByGet('no-such-id')).toBeUndefined();
+  });
+
+  it('deleteReportByPost：删除文件副本；未命中抛错', () => {
+    const templateId = createTemplateByPost(validInput()).id;
+    const uploaded = uploadReportByPost({
+      templateId,
+      name: '删我.xlsx',
+      fileBase64: 'AAAA',
+    });
+    if (uploaded.status !== 'created') {
+      return;
+    }
+    deleteReportByPost(uploaded.report.id);
+    expect(getReportListByPost(templateId)).toHaveLength(0);
+    expect(downloadReportByPost(uploaded.report.id)).toBeUndefined();
+    expect(() => deleteReportByPost('no-such-id')).toThrow(
+      '报表不存在或已被删除',
+    );
+  });
+
+  it('updateReportPermissionByPost：canView=false 列表消失；canEdit=false 发布被拦截；复位恢复（行级开关演示闭环）', () => {
+    const templateId = createTemplateByPost(validInput()).id;
+    const uploaded = uploadReportByPost({
+      templateId,
+      name: '权限.xlsx',
+      fileBase64: 'AAAA',
+    });
+    if (uploaded.status !== 'created') {
+      return;
+    }
+    updateReportPermissionByPost(uploaded.report.id, { canView: false });
+    expect(getReportListByPost(templateId)).toEqual([]);
+    updateReportPermissionByPost(uploaded.report.id, {
+      canView: true,
+      canEdit: false,
+    });
+    expect(getReportListByPost(templateId)).toHaveLength(1);
+    expect(() => triggerReportSaveByPost(uploaded.report.id, 'ZZZZ')).toThrow(
+      '无编辑权限，无法发布',
+    );
+    updateReportPermissionByPost(uploaded.report.id, { canEdit: true });
+    expect(triggerReportSaveByPost(uploaded.report.id, 'YYYY').canEdit).toBe(
+      true,
     );
   });
 });

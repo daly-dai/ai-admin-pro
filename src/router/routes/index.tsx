@@ -48,6 +48,10 @@ export const routes = [
         path: 'mail/template',
         element: lazyPage(() => import('src/features/mail-template')),
       },
+      {
+        path: 'mail/template/:id',
+        element: lazyPage(() => import('src/features/mail-template/workspace')),
+      },
     ],
   },
   ...errorRoutes,
