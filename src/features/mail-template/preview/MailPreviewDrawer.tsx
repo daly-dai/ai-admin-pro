@@ -130,7 +130,9 @@ const MailPreviewDrawer = createDrawer<MailPreviewParams>(
               }
               const tableHtml = buildSheetEmailHtml(
                 sheet,
-                widthMode === 'mail' ? undefined : { preserveWidth: true },
+                widthMode === 'mail'
+                  ? undefined
+                  : { preserveWidth: true, stretchToWidth: true },
               ).html;
               setCombinedHtml(injectTableHtml(template.bodyHtml, tableHtml));
               setLoadState('ready');

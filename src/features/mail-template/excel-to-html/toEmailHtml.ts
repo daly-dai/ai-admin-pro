@@ -226,6 +226,9 @@ function renderRow(row: ExcelCell[], widths: number[]): string {
 export interface SheetRenderOptions {
   /** 保留 Excel 原始列宽（编辑/预览画布用），不压缩到 600px 邮件宽 */
   preserveWidth?: boolean;
+  /** 表格铺满容器（width:100% + table-layout:fixed）：列按原始列宽等比缩放自适应，
+   *  不横向溢出容器、也不被压成极窄竖排（画布宽表场景用） */
+  stretchToWidth?: boolean;
 }
 
 /** 工作表 → 邮件安全表格 HTML（options.preserveWidth 时保留原始列宽，供预览/编辑画布不挤压） */
@@ -254,9 +257,12 @@ export function buildSheetEmailHtml(
     };
   }
   const bodyRows = sheet.rows.map((row) => renderRow(row, widths)).join('');
+  const stretchCss = options?.stretchToWidth
+    ? ';width:100%;table-layout:fixed'
+    : '';
   const html =
     '<table role="presentation" cellpadding="0" cellspacing="0" border="0" ' +
-    `style="border-collapse:collapse;font-family:${FONT_FALLBACK};font-size:14px;line-height:1.4;">` +
+    `style="border-collapse:collapse;font-family:${FONT_FALLBACK};font-size:14px;line-height:1.4${stretchCss}">` +
     `<tbody>${bodyRows}</tbody></table>`;
   return { html, warnings };
 }
