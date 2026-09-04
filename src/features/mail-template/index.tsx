@@ -150,7 +150,6 @@ const MailTemplateListPage = () => {
     <Spin spinning={loading}>
       <STitle
         type="page"
-        desc="模板 CRUD · 名称即邮件主题 · 收件人/抄送为通讯录多选（userInfo）· 保存时正文须恰好包含 1 个占位符（Demo 数据存于浏览器 localStorage）"
         actionNode={<SButton actionType="create" onClick={openCreate} />}
       >
         邮件模板
