@@ -16,10 +16,17 @@
   gap: 8px;
 }
 
-.topbarTime {
+.topbarRight {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbarTime {
   font-size: 12px;
   color: #98a2b3;
+  flex: 0 0 auto;
 }
 
 /* ---------- 模块二：报表工作区（左列表 | 右内容，一体面板） ---------- */

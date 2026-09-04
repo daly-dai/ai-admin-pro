@@ -15,8 +15,12 @@
  *   + 发布（编辑模式，发布=平台保存导出后存回报表）；无「返回报表列表」（左栏常驻，点选即切换）。
  * 说明：service 门面（mock localStorage，接口化）；纯函数逻辑走已测 seam，本页只做编排与 UI。
  */
-import { ArrowLeftOutlined, FileExcelOutlined } from '@ant-design/icons';
-import type { SDetailItem } from '@dalydb/sdesign';
+import {
+  ArrowLeftOutlined,
+  EyeOutlined,
+  FileExcelOutlined,
+} from '@ant-design/icons';
+import type { DrawerContainerRef, SDetailItem } from '@dalydb/sdesign';
 import { SButton, SDetail, STitle } from '@dalydb/sdesign';
 import {
   Collapse,
@@ -39,6 +43,9 @@ import {
   type MockEditorMessage,
   type MockEditorMode,
 } from '../mock-editor/communication';
+import MailPreviewDrawer, {
+  type MailPreviewParams,
+} from '../preview/MailPreviewDrawer';
 import { validateReportFile } from '../service/reportFileValidation';
 import {
   deleteReportByPost,
@@ -441,6 +448,20 @@ const WorkspacePage = () => {
     reload();
   };
 
+  const previewRef = useRef<DrawerContainerRef<MailPreviewParams>>(null);
+
+  /** 预览结合效果：打开发送前检查抽屉（默认当前查看/最近发布的报表） */
+  const openPreview = () => {
+    if (!template) {
+      return;
+    }
+    previewRef.current?.open({
+      template,
+      reports,
+      defaultReportId: selectedId,
+    });
+  };
+
   const selected = reports.find((report) => report.id === selectedId);
 
   if (!templateId) {
@@ -614,9 +635,28 @@ const WorkspacePage = () => {
         <STitle type="page" hasBottomMargin={false}>
           工作台
         </STitle>
-        <Text type="secondary" className={styles.topbarTime}>
-          模板更新于 {dayjs(template.updatedAt).format('YYYY-MM-DD HH:mm')}
-        </Text>
+        <div className={styles.topbarRight}>
+          <Tooltip
+            title={
+              reports.length === 0
+                ? '暂无报表，无法预览结合效果'
+                : '模板正文 + 所选报表表格 → 整封邮件预览（发送前检查）'
+            }
+          >
+            <span>
+              <SButton
+                icon={<EyeOutlined />}
+                disabled={reports.length === 0}
+                onClick={openPreview}
+              >
+                预览结合效果
+              </SButton>
+            </span>
+          </Tooltip>
+          <Text type="secondary" className={styles.topbarTime}>
+            模板更新于 {dayjs(template.updatedAt).format('YYYY-MM-DD HH:mm')}
+          </Text>
+        </div>
       </div>
 
       <div className={styles.infoCard}>
@@ -684,6 +724,8 @@ const WorkspacePage = () => {
           <section className={styles.content}>{contentPane}</section>
         </div>
       </div>
+
+      <MailPreviewDrawer ref={previewRef} />
     </div>
   );
 };
