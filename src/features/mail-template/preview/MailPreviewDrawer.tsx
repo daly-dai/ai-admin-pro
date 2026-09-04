@@ -214,8 +214,7 @@ const MailPreviewDrawer = createDrawer<MailPreviewParams>(
           </div>
           <div style={{ marginTop: 12 }}>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              信纸为整封邮件效果（正文宽
-              600px）；点按文字/表格可直接微调，所见即发送内容。
+              信纸为整封邮件效果，点按文字/表格可直接微调，所见即发送内容。
             </Text>
           </div>
         </>
@@ -226,7 +225,7 @@ const MailPreviewDrawer = createDrawer<MailPreviewParams>(
       <Drawer
         open={open}
         title="预览结合效果：发送前检查"
-        width="min(1080px, 96vw)"
+        width="100%"
         onClose={onClose}
         footer={
           <Space style={{ float: 'right' }}>
