@@ -305,7 +305,6 @@ const TemplateFormContent = ({
         items={formItems}
         columns={1}
         onFinish={handleFinish}
-        labelWidth={88}
       />
       <div className={styles.editorHead}>
         <span className={styles.editorTitle}>正文（富文本）</span>
