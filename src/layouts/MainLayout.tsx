@@ -5,6 +5,7 @@ import {
   HomeOutlined,
   IdcardOutlined,
   LogoutOutlined,
+  MailOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   SafetyOutlined,
@@ -129,6 +130,18 @@ const MainLayout: React.FC = () => {
           key: '/tree/archive',
           icon: <EnvironmentOutlined />,
           label: '古树档案',
+        },
+      ],
+    },
+    {
+      key: '/mail',
+      icon: <MailOutlined />,
+      label: '邮件工具',
+      children: [
+        {
+          key: '/mail/template',
+          icon: <MailOutlined />,
+          label: '邮件模板',
         },
       ],
     },

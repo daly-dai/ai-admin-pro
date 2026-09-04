@@ -44,6 +44,10 @@ export const routes = [
         path: 'tree/archive',
         element: lazyPage(() => import('src/pages/tree/archive')),
       },
+      {
+        path: 'mail/template',
+        element: lazyPage(() => import('src/features/mail-template')),
+      },
     ],
   },
   ...errorRoutes,
