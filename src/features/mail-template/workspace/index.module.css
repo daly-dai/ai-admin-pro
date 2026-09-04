@@ -1,4 +1,7 @@
-/* mail-template 工作台（详情页）样式 */
+/* mail-template 工作台（详情页）样式
+ * 布局：页头一行 + 一体白面板（.panel）= 顶部信息条(SDetail) + 下方左报表列表/右内容，
+ * 左右以 1px 边框分隔，去掉"两张悬浮卡"的模糊感。
+ */
 
 .page {
   display: flex;
@@ -13,147 +16,165 @@
   gap: 8px;
 }
 
-.basicCard {
+/* ---------- 一体工作面板 ---------- */
+.panel {
   background: #fff;
-  border-radius: 8px;
-}
-
-.basicLabel {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 12px;
-  font-weight: 600;
-}
-
-.basicSub {
-  font-size: 12px;
-  font-weight: 400;
-}
-
-.basicBody {
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.basicRow {
-  display: flex;
-  gap: 12px;
-  line-height: 1.7;
-}
-
-.basicKey {
-  flex: 0 0 64px;
-  color: #667085;
-}
-
-.basicBodyWrap {
-  flex: 1;
   min-width: 0;
 }
 
-.richBody {
-  border: 1px solid #e4e7ec;
-  border-radius: 6px;
-  padding: 12px 14px;
-  background: #fafbfc;
+/* ---------- 顶部信息条（SDetail 紧凑，不再是大折叠卡） ---------- */
+.panelInfo {
+  padding: 10px 16px 12px;
+  border-bottom: 1px solid #e4e7ec;
+  background: #fff;
 }
 
-.richBody :global(table) {
+.infoNameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.infoName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  color: #1d2939;
+}
+
+.infoTime {
+  flex: 0 0 auto;
+  font-size: 12px;
+}
+
+.infoEllipsis {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+/* 正文 hover 富文本全文（portal 渲染，类名作用于 overlay 根） */
+.tooltipHtml {
+  max-width: 560px;
+  max-height: 360px;
+  overflow: auto;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #1d2939;
+}
+
+.tooltipHtml :global(table) {
   border-collapse: collapse;
 }
 
-.richBody :global(td),
-.richBody :global(th) {
+.tooltipHtml :global(td),
+.tooltipHtml :global(th) {
   border: 1px solid #d9d9d9;
   padding: 4px 8px;
 }
 
-.basicHint {
-  display: block;
-  margin-top: 6px;
-  font-size: 12px;
-}
-
-.body {
+/* ---------- 主体：左列表 | 右内容（边框分隔） ---------- */
+.panelBody {
   display: flex;
-  gap: 12px;
   align-items: stretch;
-  min-height: 70vh;
-}
-
-.sidebar {
-  flex: 0 0 360px;
-  max-width: 360px;
-  background: #fff;
-  border-radius: 8px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex: 1;
+  min-height: calc(100vh - 250px);
   min-width: 0;
 }
 
-.sidebarToolbar {
+.sidebar {
+  flex: 0 0 300px;
+  max-width: 300px;
+  border-right: 1px solid #e4e7ec;
+  background: #fafbfc;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-bottom: 10px;
-  border-bottom: 1px dashed #e4e7ec;
+  min-width: 0;
 }
 
-.demoSwitchRow {
+.sidebarHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef0f4;
 }
 
-.demoSwitchText {
+.sidebarTitle {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sidebarCount {
   font-size: 12px;
-  color: #667085;
+  font-weight: 400;
+  color: #98a2b3;
 }
 
 .sidebarList {
   flex: 1;
   overflow: auto;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
+  min-height: 0;
 }
 
 .sidebarEmpty {
   font-size: 12px;
-  padding: 8px 0;
+  color: #98a2b3;
+  padding: 10px 6px;
 }
 
 .reportRow {
-  border: 1px solid #e4e7ec;
-  border-radius: 8px;
-  padding: 8px 10px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 6px;
+  padding: 7px 8px;
+  border-radius: 8px;
   cursor: default;
+  min-width: 0;
+}
+
+.reportRow:hover {
+  background: #f0f4fa;
 }
 
 .reportRowActive {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 1px #2563eb;
-  background: #f5f8ff;
+  background: #eef4ff;
+  box-shadow: inset 2px 0 0 #2563eb;
 }
 
-.reportRowMain {
+.reportMain {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  min-width: 0;
 }
 
 .reportIcon {
   color: #16a34a;
-  font-size: 16px;
+  font-size: 15px;
+  flex: 0 0 auto;
 }
 
 .reportName {
@@ -167,19 +188,75 @@
 
 .reportTime {
   font-size: 12px;
+  color: #98a2b3;
   flex: 0 0 auto;
 }
 
-.reportRowMeta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px 12px;
-  border-top: 1px dashed #eef0f4;
-  padding-top: 6px;
+.rowDel {
+  opacity: 0;
+  flex: 0 0 auto;
+  transition: opacity 0.15s ease;
 }
 
-.permissionChip {
+.reportRow:hover .rowDel,
+.reportRow:focus-within .rowDel {
+  opacity: 1;
+}
+
+/* 演示权限（折叠区，界面角落） */
+.sidebarFoot {
+  border-top: 1px solid #eef0f4;
+  padding: 6px 8px 8px;
+}
+
+.demoLabel {
+  font-size: 12px;
+  color: #475467;
+  font-weight: 500;
+}
+
+.demoBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.demoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: #475467;
+}
+
+.demoDivider {
+  border-top: 1px dashed #e4e7ec;
+}
+
+.demoReport {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.demoReportName {
+  font-size: 12px;
+  color: #344054;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.demoChipRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.demoChipLabel {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -187,24 +264,23 @@
   color: #667085;
 }
 
-.sidebarFoot {
-  border-top: 1px dashed #e4e7ec;
-  padding-top: 8px;
+.demoActions {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
 }
 
-.sidebarFootNote {
+.demoNote {
   font-size: 12px;
+  color: #98a2b3;
 }
 
+/* ---------- 右内容区（平铺 / iframe / 空态） ---------- */
 .content {
   flex: 1;
-  background: #fff;
-  border-radius: 8px;
   min-width: 0;
-  overflow: hidden;
+  background: #f6f8fa;
   display: flex;
 }
 
@@ -222,14 +298,16 @@
 .tiles {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
   padding: 16px;
   align-content: start;
   overflow: auto;
+  min-width: 0;
 }
 
 .tile {
+  background: #fff;
   border: 1px solid #e4e7ec;
   border-radius: 8px;
   padding: 12px;
@@ -237,11 +315,14 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  transition: box-shadow 0.15s ease;
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .tile:hover {
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  border-color: #2563eb;
 }
 
 .tileHead {
@@ -271,6 +352,7 @@
   font-size: 12px;
 }
 
+/* ---------- iframe 阅读区（工具栏 + 画布） ---------- */
 .reader {
   flex: 1;
   display: flex;
@@ -284,6 +366,7 @@
   gap: 12px;
   padding: 10px 16px;
   border-bottom: 1px solid #eef0f4;
+  background: #fff;
 }
 
 .readerName {
@@ -310,18 +393,24 @@
 
 .readerStage {
   flex: 1;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
+  position: relative;
+  min-height: 0;
   background: #eef1f5;
   overflow: hidden;
-  min-height: 0;
 }
 
-.readerStage > .readerFrame {
+.stageCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.readerFrame {
+  position: absolute;
+  inset: 12px;
   border: 0;
-  width: 100%;
-  height: calc(100vh - 320px);
-  min-height: 420px;
   background: #fff;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
 }
