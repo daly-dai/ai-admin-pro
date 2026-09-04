@@ -599,11 +599,11 @@ const WorkspacePage = () => {
         </Text>
       </div>
 
-      <div className={styles.panel}>
-        <div className={styles.panelInfo}>
-          <InfoBar template={template} />
-        </div>
+      <div className={styles.infoCard}>
+        <InfoBar template={template} />
+      </div>
 
+      <div className={styles.panel}>
         <div className={styles.panelBody}>
           <aside className={styles.sidebar}>
             <div className={styles.sidebarHead}>
