@@ -156,11 +156,17 @@ function cellInlineStyle(cell: ExcelCell, widthPx: number): string {
   return parts.join(';');
 }
 
-/** 该列在缩放后的像素宽 */
-function scaledColWidths(sheet: ParsedSheet): {
+/** 该列在缩放后的像素宽；preserveWidth=true 时保留 Excel 原始列宽（编辑/预览画布用，不被 600px 邮件宽压缩） */
+function scaledColWidths(
+  sheet: ParsedSheet,
+  preserveWidth?: boolean,
+): {
   widths: number[];
   scaleApplied: boolean;
 } {
+  if (preserveWidth) {
+    return { widths: [...sheet.colWidthPx], scaleApplied: false };
+  }
   const rawTotal = sheet.colWidthPx.reduce((sum, width) => sum + width, 0);
   const scaleApplied = rawTotal > EMAIL_BODY_WIDTH_PX;
   const scale = scaleApplied ? EMAIL_BODY_WIDTH_PX / rawTotal : 1;
@@ -216,10 +222,22 @@ function renderRow(row: ExcelCell[], widths: number[]): string {
   return `<tr>${cells.join('')}</tr>`;
 }
 
-/** 工作表 → 邮件安全表格 HTML */
-export function buildSheetEmailHtml(sheet: ParsedSheet): EmailTableResult {
+/** buildSheetEmailHtml 选项 */
+export interface SheetRenderOptions {
+  /** 保留 Excel 原始列宽（编辑/预览画布用），不压缩到 600px 邮件宽 */
+  preserveWidth?: boolean;
+}
+
+/** 工作表 → 邮件安全表格 HTML（options.preserveWidth 时保留原始列宽，供预览/编辑画布不挤压） */
+export function buildSheetEmailHtml(
+  sheet: ParsedSheet,
+  options?: SheetRenderOptions,
+): EmailTableResult {
   const warnings: string[] = [];
-  const { widths, scaleApplied } = scaledColWidths(sheet);
+  const { widths, scaleApplied } = scaledColWidths(
+    sheet,
+    options?.preserveWidth,
+  );
   if (scaleApplied) {
     warnings.push(
       `表格总宽超过 ${EMAIL_BODY_WIDTH_PX}px，已等比缩放至 ${EMAIL_BODY_WIDTH_PX}px 以内`,

@@ -125,7 +125,9 @@ const MailPreviewDrawer = createDrawer<MailPreviewParams>(
               if (cancelled) {
                 return;
               }
-              const tableHtml = buildSheetEmailHtml(sheet).html;
+              const tableHtml = buildSheetEmailHtml(sheet, {
+                preserveWidth: true,
+              }).html;
               setCombinedHtml(injectTableHtml(template.bodyHtml, tableHtml));
               setLoadState('ready');
             } catch (error) {
@@ -214,7 +216,7 @@ const MailPreviewDrawer = createDrawer<MailPreviewParams>(
           </div>
           <div style={{ marginTop: 12 }}>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              信纸为整封邮件效果，点按文字/表格可直接微调，所见即发送内容。
+              信纸为整封邮件效果，点按文字/表格可直接微调；表格按原始列宽展示，超宽可横向滚动。
             </Text>
           </div>
         </>

@@ -33,9 +33,6 @@ import {
 } from './communication';
 import styles from './index.module.css';
 
-/** 画布最大内容宽（超出等比缩小，保证表格不横向撑破 iframe） */
-const MAX_CONTENT_WIDTH = 960;
-
 const FONT_FALLBACK =
   "'Microsoft YaHei','PingFang SC','Hiragino Sans GB','Helvetica Neue',Arial,sans-serif";
 
@@ -325,13 +322,9 @@ const MockEditorPage = () => {
     return <span className={styles.cellText}>{value}</span>;
   };
 
-  const colWidths = (activeSheet: ParsedSheet): number[] => {
-    const total = activeSheet.colWidthPx.reduce((sum, width) => sum + width, 0);
-    const scale = total > MAX_CONTENT_WIDTH ? MAX_CONTENT_WIDTH / total : 1;
-    return activeSheet.colWidthPx.map((width) =>
-      Math.max(60, Math.round(width * scale)),
-    );
-  };
+  // 保留 Excel 原始列宽（不压缩），超宽靠 .stage 横向滚动；min 60px 防极端窄列挤成竖排
+  const colWidths = (activeSheet: ParsedSheet): number[] =>
+    activeSheet.colWidthPx.map((width) => Math.max(60, Math.round(width)));
 
   const renderGrid = (activeSheet: ParsedSheet): ReactNode => {
     const widths = colWidths(activeSheet);
