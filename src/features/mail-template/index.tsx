@@ -5,7 +5,7 @@
  * 页面零 antd Table/Form/Button/Descriptions（用 STable/SForm/SButton）；弹层走 P001 createModal。
  */
 import { SearchOutlined } from '@ant-design/icons';
-import type { ModalContainerRef, SColumnsType } from '@dalydb/sdesign';
+import type { DrawerContainerRef, SColumnsType } from '@dalydb/sdesign';
 import { SButton, STable, STitle } from '@dalydb/sdesign';
 import { useRequest } from 'ahooks';
 import { Input, Modal, Space, Spin, message } from 'antd';
@@ -27,12 +27,16 @@ interface TemplateListRow extends MailTemplate {
   reportCount: number;
 }
 
-type FormModalParams = { mode: 'create' | 'edit'; record?: MailTemplate };
+type FormDrawerParams = {
+  mode: 'create' | 'edit';
+  record?: MailTemplate;
+  onSaved?: () => void;
+};
 
 const MailTemplateListPage = () => {
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState('');
-  const formRef = useRef<ModalContainerRef<FormModalParams>>(null);
+  const formRef = useRef<DrawerContainerRef<FormDrawerParams>>(null);
 
   const {
     data: rows = [],
@@ -77,9 +81,10 @@ const MailTemplateListPage = () => {
     });
   };
 
-  const openCreate = () => formRef.current?.open({ mode: 'create' });
+  const openCreate = () =>
+    formRef.current?.open({ mode: 'create', onSaved: refresh });
   const openEdit = (record: TemplateListRow) =>
-    formRef.current?.open({ mode: 'edit', record });
+    formRef.current?.open({ mode: 'edit', record, onSaved: refresh });
   const enterWorkspace = (record: TemplateListRow) => {
     // 工作台页与其路由注册在 Task 4/7（路由改动为需确认操作），本 Task 只埋跳转
     navigate(`/mail/template/${record.id}`);
@@ -145,7 +150,7 @@ const MailTemplateListPage = () => {
     <Spin spinning={loading}>
       <STitle
         type="page"
-        desc="模板 CRUD · 名称即邮件主题 · 保存时正文须恰好包含 1 个占位符（Demo 数据存于浏览器 localStorage）"
+        desc="模板 CRUD · 名称即邮件主题 · 收件人/抄送为通讯录多选（userInfo）· 保存时正文须恰好包含 1 个占位符（Demo 数据存于浏览器 localStorage）"
         actionNode={<SButton actionType="create" onClick={openCreate} />}
       >
         邮件模板
@@ -166,7 +171,7 @@ const MailTemplateListPage = () => {
         rowKey="id"
         pagination={false}
       />
-      <TemplateFormModal ref={formRef} onSuccess={refresh} />
+      <TemplateFormModal ref={formRef} />
     </Spin>
   );
 };

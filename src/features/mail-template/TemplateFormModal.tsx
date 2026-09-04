@@ -1,10 +1,12 @@
 /**
- * 模板新增/编辑弹窗（P001：createModal 封装；Content 关闭即卸载，wangEditor 随之销毁，每次打开全新初始化）。
- * 校验单一来源：service/templateRules（T1 已红绿测毕）——本文件只做「原始输入解析 + 错误绑定」，
+ * 模板新增/编辑抽屉（P001：createDrawer 封装，宽屏富文本编辑体验；Content 关闭即卸载）。
+ * 校验单一来源：service/templateRules（已红绿测毕）——本文件只做「值校验 + 错误绑定」，
  * 禁止在此重复实现校验（tasks T3 约束）。
+ * 收件人/抄送 = 通讯录多选 userInfo（users.ts mock，真实后端按 userInfo 换邮箱）；
+ * 预设切换用 SForm.useWatch 驱动（P005：不依赖控件 onChange，避免被 Form 受控覆盖）；
+ * 编辑回显不依赖 initialValues 缓存——params 变化时经 effect 显式回填（正文含编辑器 pending flush）。
  */
-import type { ModalChildProps } from '@dalydb/sdesign';
-import { SForm, createModal } from '@dalydb/sdesign';
+import { SButton, SForm, createDrawer } from '@dalydb/sdesign';
 import type {
   IDomEditor,
   IEditorConfig,
@@ -15,9 +17,8 @@ import {
   Toolbar as WangToolbar,
 } from '@wangeditor/editor-for-react';
 import { useRequest } from 'ahooks';
-import type { RadioChangeEvent } from 'antd';
-import { Modal, Typography, message } from 'antd';
-import { useMemo, useRef, useState } from 'react';
+import { Drawer, Space, Typography, message } from 'antd';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // 运行时副作用：注册 wangEditor 内置模块与样式（须先于组件渲染，v1 同款）
 import '@wangeditor/editor';
@@ -30,15 +31,15 @@ import {
   findPresetBody,
 } from './presetBodies';
 import {
-  parseCcInput,
-  parseRecipientsInput,
   validateBodyPlaceholderCount,
+  validateUserList,
 } from './service/templateRules';
 import {
   createTemplateByPost,
   updateTemplateByPost,
 } from './service/templateService';
 import type { MailTemplate, MailTemplateInput } from './service/types';
+import { listUsersByGet } from './service/users';
 
 const { Text } = Typography;
 
@@ -52,33 +53,67 @@ const TOOLBAR_EXCLUDE_KEYS = [
   'uploadVideo',
 ];
 
-type Params = { mode: 'create' | 'edit'; record?: MailTemplate };
+/** 通讯录选项（模块级读取一次；label 含组织路径便于搜索/辨识） */
+const USER_OPTIONS = listUsersByGet().map((user) => ({
+  label: `${user.userInfo} · ${user.officeOrgPath}`,
+  value: user.userInfo,
+}));
 
-/** 表单原始值：收件人/抄送为多行字符串（提交时经 rules 解析成邮箱数组） */
+/** 新增默认预填正文（无预设兜底为空串） */
+const DEFAULT_PRESET_BODY = findPresetBody(DEFAULT_PRESET_ID)?.bodyHtml ?? '';
+
+/** 打开回填值（WHY 模块级纯函数：抽离 ??/三元分支，避免 effect 回调复杂度超限） */
+function buildInitialValues(params: Params): TemplateFormValues {
+  const record = params.mode === 'edit' ? params.record : undefined;
+  const createPreset = params.mode === 'create' ? DEFAULT_PRESET_ID : undefined;
+  return {
+    name: record?.name ?? '',
+    recipients: record?.recipients ?? [],
+    cc: record?.cc ?? [],
+    presetId: record?.presetId ?? createPreset,
+  };
+}
+
+/** 正文初始内容：编辑 = 原正文，新增 = 默认预设正文 */
+function buildInitialBody(record: MailTemplate | undefined): string {
+  return record?.bodyHtml ?? DEFAULT_PRESET_BODY;
+}
+
+type Params = {
+  mode: 'create' | 'edit';
+  record?: MailTemplate;
+  /** 保存成功回调（列表页刷新数据源） */
+  onSaved?: () => void;
+};
+
+/** 表单原始值：收件人/抄送为通讯录 userInfo 数组（提交时经 rules 清洗去重） */
 interface TemplateFormValues {
   name?: string;
-  recipients?: string;
-  cc?: string;
+  recipients?: string[];
+  cc?: string[];
   presetId?: string;
 }
 
 const TemplateFormContent = ({
   params,
+  open,
   onClose,
-  onSuccess,
-}: ModalChildProps<Params>) => {
+}: {
+  params: Params;
+  open: boolean;
+  onClose: () => void;
+}) => {
   const [form] = SForm.useForm();
   const isEdit = params.mode === 'edit';
   const editRecord = isEdit ? params.record : undefined;
 
   const editorRef = useRef<IDomEditor | null>(null);
+  const pendingBodyRef = useRef<string | null>(null);
+  const lastAppliedPresetRef = useRef<string | null | undefined>(undefined);
   const [activeEditor, setActiveEditor] = useState<IDomEditor | null>(null);
-  const [bodyHtml, setBodyHtml] = useState<string>(() => {
-    if (editRecord) {
-      return editRecord.bodyHtml;
-    }
-    return findPresetBody(DEFAULT_PRESET_ID)?.bodyHtml ?? '';
-  });
+  const [bodyHtml, setBodyHtml] = useState<string>(() =>
+    buildInitialBody(editRecord),
+  );
   const [bodyError, setBodyError] = useState<string | undefined>(undefined);
 
   const editorConfig = useMemo<Partial<IEditorConfig>>(
@@ -104,35 +139,65 @@ const TemplateFormContent = ({
       manual: true,
       onSuccess: () => {
         message.success(isEdit ? '更新成功' : '创建成功');
-        onSuccess?.();
+        params.onSaved?.();
+        onClose();
       },
     },
   );
 
-  /** 切换预设：替换编辑器正文（演示口径：预设为起点，可再手动修改） */
-  const handlePresetChange = (event: RadioChangeEvent) => {
-    const preset = findPresetBody(String(event.target.value));
-    if (!preset) {
-      return;
+  /** 回填/替换正文：更新 state；编辑器就绪则立即 setHtml，否则待 onCreated 时 flush */
+  const applyBodyHtml = useCallback((html: string) => {
+    setBodyHtml(html);
+    if (editorRef.current) {
+      editorRef.current.setHtml(html);
+    } else {
+      pendingBodyRef.current = html;
     }
-    setBodyHtml(preset.bodyHtml);
-    setBodyError(undefined);
-    editorRef.current?.setHtml(preset.bodyHtml);
-    message.info(`已应用预设「${preset.label}」，正文已替换`);
-  };
+  }, []);
 
   const handleEditorCreated = (createdEditor: IDomEditor) => {
     editorRef.current = createdEditor;
     setActiveEditor(createdEditor);
+    if (pendingBodyRef.current !== null) {
+      createdEditor.setHtml(pendingBodyRef.current);
+      pendingBodyRef.current = null;
+    }
   };
 
   const handleEditorChange = (changedEditor: IDomEditor) => {
-    const html = changedEditor.getHtml();
-    setBodyHtml(html);
+    setBodyHtml(changedEditor.getHtml());
     if (bodyError !== undefined) {
       setBodyError(undefined);
     }
   };
+
+  /** 打开回填（编辑/新增均走此处，不依赖 initialValues 缓存；正文含 pending flush） */
+  useEffect(() => {
+    lastAppliedPresetRef.current = params.record?.presetId ?? null;
+    form.setFieldsValue(buildInitialValues(params));
+    setBodyError(undefined);
+    applyBodyHtml(buildInitialBody(params.record));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- params 每次 open 为稳定新对象，仅其驱动回填
+  }, [params]);
+
+  /** 预设切换：useWatch 感知 radio 变化 → 替换正文（初始回填值与 ref 相等则跳过，不覆盖编辑态正文） */
+  const watchedPresetId = SForm.useWatch('presetId', form);
+  useEffect(() => {
+    const presetId = watchedPresetId;
+    if (
+      typeof presetId !== 'string' ||
+      presetId === lastAppliedPresetRef.current
+    ) {
+      return;
+    }
+    lastAppliedPresetRef.current = presetId;
+    const preset = findPresetBody(presetId);
+    if (!preset) {
+      return;
+    }
+    applyBodyHtml(preset.bodyHtml);
+    message.info(`已应用预设「${preset.label}」，正文已替换`);
+  }, [watchedPresetId, applyBodyHtml]);
 
   const handleFinish = (values: TemplateFormValues) => {
     const name = values.name?.trim() ?? '';
@@ -140,14 +205,14 @@ const TemplateFormContent = ({
       form.setFields([{ name: 'name', errors: ['请输入模板名称'] }]);
       return;
     }
-    const recipientsCheck = parseRecipientsInput(values.recipients ?? '');
+    const recipientsCheck = validateUserList(values.recipients, '收件人', true);
     if (!recipientsCheck.ok) {
       form.setFields([
         { name: 'recipients', errors: [recipientsCheck.message] },
       ]);
       return;
     }
-    const ccCheck = parseCcInput(values.cc ?? '');
+    const ccCheck = validateUserList(values.cc, '抄送', false);
     if (!ccCheck.ok) {
       form.setFields([{ name: 'cc', errors: [ccCheck.message] }]);
       return;
@@ -160,21 +225,11 @@ const TemplateFormContent = ({
     const presetId = values.presetId?.trim();
     run({
       name,
-      recipients: recipientsCheck.emails,
-      cc: ccCheck.emails,
+      recipients: recipientsCheck.users,
+      cc: ccCheck.users,
       bodyHtml,
       ...(presetId ? { presetId } : {}),
     });
-  };
-
-  const initialValues = {
-    name: editRecord?.name ?? '',
-    recipients: editRecord ? editRecord.recipients.join('\n') : '',
-    cc:
-      editRecord && editRecord.cc.length > 0
-        ? editRecord.cc.join('\n')
-        : undefined,
-    presetId: editRecord?.presetId ?? (isEdit ? undefined : DEFAULT_PRESET_ID),
   };
 
   const formItems = [
@@ -189,19 +244,27 @@ const TemplateFormContent = ({
     {
       label: '收件人',
       name: 'recipients',
-      type: 'textarea' as const,
+      type: 'select' as const,
       fieldProps: {
-        rows: 3,
-        placeholder: '多人以逗号 / 分号 / 换行分隔，至少 1 个合法邮箱',
+        mode: 'multiple',
+        options: USER_OPTIONS,
+        showSearch: true,
+        optionFilterProp: 'label',
+        placeholder: '搜索并多选收件人（显示 姓名/工号 · 组织路径）',
+        maxTagCount: 'responsive' as const,
       },
     },
     {
       label: '抄送',
       name: 'cc',
-      type: 'textarea' as const,
+      type: 'select' as const,
       fieldProps: {
-        rows: 2,
-        placeholder: '可选；填写则须全部为合法邮箱',
+        mode: 'multiple',
+        options: USER_OPTIONS,
+        showSearch: true,
+        optionFilterProp: 'label',
+        placeholder: '可选：搜索并多选抄送人',
+        maxTagCount: 'responsive' as const,
       },
     },
     {
@@ -214,26 +277,33 @@ const TemplateFormContent = ({
           label: `${preset.label}（${preset.description}）`,
           value: preset.id,
         })),
-        onChange: handlePresetChange,
       },
     },
   ];
 
   return (
-    <Modal
-      open
-      width={880}
+    <Drawer
+      open={open}
+      width={920}
       title={isEdit ? '编辑模板' : '新增模板'}
-      onCancel={onClose}
-      onOk={() => form.submit()}
-      confirmLoading={loading}
-      destroyOnClose
+      onClose={onClose}
+      footer={
+        <Space style={{ float: 'right' }}>
+          <SButton onClick={onClose}>取消</SButton>
+          <SButton
+            type="primary"
+            loading={loading}
+            onClick={() => form.submit()}
+          >
+            保存
+          </SButton>
+        </Space>
+      }
     >
       <SForm
         form={form}
         items={formItems}
         columns={1}
-        initialValues={initialValues}
         onFinish={handleFinish}
         labelWidth={88}
       />
@@ -263,8 +333,8 @@ const TemplateFormContent = ({
           {bodyError}
         </Text>
       )}
-    </Modal>
+    </Drawer>
   );
 };
 
-export default createModal<Params>(TemplateFormContent);
+export default createDrawer<Params>(TemplateFormContent);

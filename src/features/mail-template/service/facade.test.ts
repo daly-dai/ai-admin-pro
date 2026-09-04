@@ -42,7 +42,7 @@ function installLocalStorageStub(): void {
 function validInput(): MailTemplateInput {
   return {
     name: '月度经营报告',
-    recipients: ['a@x.com', 'b@y.cn'],
+    recipients: ['张三/112233', '刘洋/112234'],
     cc: [],
     bodyHtml: '<p>{{table}}</p>',
   };
@@ -86,8 +86,8 @@ describe('模板 CRUD 往返（经门面 + localStorage）', () => {
       createTemplateByPost({ ...validInput(), bodyHtml: '{{table}}{{table}}' }),
     ).toThrow('不允许存在多个占位符');
     expect(() =>
-      createTemplateByPost({ ...validInput(), recipients: ['oops'] }),
-    ).toThrow('收件人包含非法邮箱：oops');
+      createTemplateByPost({ ...validInput(), recipients: [] }),
+    ).toThrow('收件人不能为空，至少选择一名用户');
   });
 
   it('update 改名刷新 updatedAt；未命中抛错', () => {

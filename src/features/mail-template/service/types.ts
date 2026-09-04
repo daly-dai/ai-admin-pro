@@ -8,9 +8,9 @@ export interface MailTemplate {
   id: string;
   /** 名称 = 邮件主题 */
   name: string;
-  /** 收件人（已规范化邮箱） */
+  /** 收件人（通讯录多选选中的 userInfo 列表，形如 张三/112233；真实后端按 userInfo 换邮箱） */
   recipients: string[];
-  /** 抄送（可为空） */
+  /** 抄送（同上为 userInfo 列表；可为空） */
   cc: string[];
   /** 富文本正文（保存校验：恰好 1 个 {{table}}） */
   bodyHtml: string;
@@ -50,9 +50,11 @@ export interface Report {
 /** 报表列表项：不下发文件体（真实后端语义——列表只给元数据，取文件走 download） */
 export type ReportMeta = Omit<Report, 'fileBase64'>;
 
-/** 邮件发送 payload（PRD 数据模型） */
+/** 邮件发送 payload（PRD 数据模型；to/cc 为 userInfo，真实后端换取邮箱后发信） */
 export interface SendMailPayload {
+  /** 收件人 userInfo 列表（真实后端按 userInfo 解析出邮箱） */
   to: string[];
+  /** 抄送 userInfo 列表 */
   cc: string[];
   /** 主题 = 模板名 */
   subject: string;

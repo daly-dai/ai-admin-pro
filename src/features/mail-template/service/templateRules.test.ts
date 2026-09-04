@@ -1,13 +1,13 @@
 /**
  * templateRules 纯函数测试。期望值 = PRD 口径文案字面量（独立于实现）。
+ * 收件人/抄送语义（修订）：通讯录多选 userInfo 列表（真实后端按 userInfo 换邮箱），不再做邮箱格式校验。
  */
 import { describe, expect, it } from 'vitest';
 
 import {
   countBodyPlaceholders,
-  parseCcInput,
-  parseRecipientsInput,
   validateBodyPlaceholderCount,
+  validateUserList,
 } from './templateRules';
 
 describe('countBodyPlaceholders', () => {
@@ -36,63 +36,49 @@ describe('countBodyPlaceholders', () => {
   });
 });
 
-describe('parseRecipientsInput', () => {
-  it('单个合法邮箱', () => {
-    expect(parseRecipientsInput('a@x.com')).toEqual({
+describe('validateUserList（收件人/抄送 = 通讯录多选 userInfo）', () => {
+  it('收件人空数组 → 必填口径文案', () => {
+    expect(validateUserList([], '收件人', true)).toEqual({
+      ok: false,
+      message: '收件人不能为空，至少选择一名用户',
+    });
+  });
+
+  it('收件人 undefined → 必填口径文案', () => {
+    expect(validateUserList(undefined, '收件人', true)).toEqual({
+      ok: false,
+      message: '收件人不能为空，至少选择一名用户',
+    });
+  });
+
+  it('全部为空白项 → 视同未选', () => {
+    expect(validateUserList(['  ', '\t'], '收件人', true)).toEqual({
+      ok: false,
+      message: '收件人不能为空，至少选择一名用户',
+    });
+  });
+
+  it('合法列表 → 清洗返回（去空白、去重）', () => {
+    expect(
+      validateUserList(
+        [' 张三/112233 ', '李四/445566', '张三/112233'],
+        '收件人',
+        true,
+      ),
+    ).toEqual({ ok: true, users: ['张三/112233', '李四/445566'] });
+  });
+
+  it('抄送为空 → 可选通过（空数组）', () => {
+    expect(validateUserList([], '抄送', false)).toEqual({
       ok: true,
-      emails: ['a@x.com'],
+      users: [],
     });
   });
 
-  it('逗号/分号/中文逗号/换行混用 + 去空白', () => {
-    expect(parseRecipientsInput(' a@x.com ;b@y.cn，c@z.io\n d@w.cn ')).toEqual({
+  it('抄送填了 → 原样通过', () => {
+    expect(validateUserList(['王五/778899'], '抄送', false)).toEqual({
       ok: true,
-      emails: ['a@x.com', 'b@y.cn', 'c@z.io', 'd@w.cn'],
-    });
-  });
-
-  it('空输入 → 收件人必填（PRD 口径文案）', () => {
-    expect(parseRecipientsInput('')).toEqual({
-      ok: false,
-      message: '收件人不能为空，至少填写一个邮箱',
-    });
-  });
-
-  it('纯空白 → 收件人必填', () => {
-    expect(parseRecipientsInput('   \n\t ')).toEqual({
-      ok: false,
-      message: '收件人不能为空，至少填写一个邮箱',
-    });
-  });
-
-  it('含非法邮箱 → 全部列出', () => {
-    expect(parseRecipientsInput('a@x.com,bad1;bad2@')).toEqual({
-      ok: false,
-      message: '收件人包含非法邮箱：bad1、bad2@',
-    });
-  });
-});
-
-describe('parseCcInput', () => {
-  it('空串 → ok 空数组（抄送可选）', () => {
-    expect(parseCcInput('')).toEqual({ ok: true, emails: [] });
-  });
-
-  it('纯空白 → ok 空数组', () => {
-    expect(parseCcInput('   ')).toEqual({ ok: true, emails: [] });
-  });
-
-  it('合法列表 → 规范化返回', () => {
-    expect(parseCcInput('m@x.com, n@y.io')).toEqual({
-      ok: true,
-      emails: ['m@x.com', 'n@y.io'],
-    });
-  });
-
-  it('填了但非法 → 抄送口径文案', () => {
-    expect(parseCcInput('oops')).toEqual({
-      ok: false,
-      message: '抄送包含非法邮箱：oops',
+      users: ['王五/778899'],
     });
   });
 });

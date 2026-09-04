@@ -11,7 +11,7 @@ import {
 } from './templateCrud';
 import {
   validateBodyPlaceholderCount,
-  validateEmailList,
+  validateUserList,
 } from './templateRules';
 import { loadDb, saveDb } from './templateStore';
 import type { MailDbState, MailTemplate, MailTemplateInput } from './types';
@@ -25,7 +25,7 @@ function buildSeedDb(now: number): MailDbState {
       {
         id: SAMPLE_TEMPLATE_ID,
         name: '经营数据周报（示例模板）',
-        recipients: ['demo@example.com'],
+        recipients: ['张三/112233'],
         cc: [],
         bodyHtml:
           '<p>各位同事：</p><p>本周经营数据如下，请查收。</p><p>{{table}}</p>',
@@ -51,15 +51,15 @@ function newId(): string {
   return crypto.randomUUID();
 }
 
-function throwIfInvalidEmailList(
-  emails: string[] | undefined,
+function throwIfInvalidUserList(
+  users: string[] | undefined,
   field: '收件人' | '抄送',
   required: boolean,
 ): void {
-  if (emails === undefined) {
+  if (users === undefined) {
     return;
   }
-  const check = validateEmailList(emails, field, required);
+  const check = validateUserList(users, field, required);
   if (!check.ok) {
     throw new Error(check.message);
   }
@@ -86,8 +86,8 @@ export function getTemplateListByPost(query?: {
 }
 
 export function createTemplateByPost(input: MailTemplateInput): MailTemplate {
-  throwIfInvalidEmailList(input.recipients, '收件人', true);
-  throwIfInvalidEmailList(input.cc, '抄送', false);
+  throwIfInvalidUserList(input.recipients, '收件人', true);
+  throwIfInvalidUserList(input.cc, '抄送', false);
   throwIfInvalidBody(input.bodyHtml);
   const db = readDb();
   const now = Date.now();
@@ -108,8 +108,8 @@ export function updateTemplateByPost(
   if (!db.templates.some((template) => template.id === id)) {
     throw new Error('模板不存在或已被删除');
   }
-  throwIfInvalidEmailList(patch.recipients, '收件人', true);
-  throwIfInvalidEmailList(patch.cc, '抄送', false);
+  throwIfInvalidUserList(patch.recipients, '收件人', true);
+  throwIfInvalidUserList(patch.cc, '抄送', false);
   throwIfInvalidBody(patch.bodyHtml);
   const nextTemplates = updateTemplateRecord(db.templates, {
     id,
