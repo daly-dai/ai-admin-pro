@@ -14,6 +14,7 @@
     "prettier": "prettier -c --write . --cache",
     "prettier-import-sort": "npm run prettier -- --plugin=@ianvs/prettier-plugin-sort-imports",
     "preview": "rsbuild preview",
+    "test": "vitest run",
     "type-check": "tsc --noEmit",
     "verify": "tsx .ai/tools/verify-wrapper.ts",
     "verify:fix": "eslint src/ --fix && prettier --write src/",
@@ -73,7 +74,8 @@
     "prettier-plugin-packagejson": "^3.0.0",
     "tsx": "^4.21.0",
     "typescript": "^5.5.0",
-    "typescript-eslint": "^8.57.0"
+    "typescript-eslint": "^8.57.0",
+    "vitest": "^5.0.0"
   },
   "engines": {
     "node": ">=18.0.0"
