@@ -1,7 +1,7 @@
+import { Input } from 'antd';
 import type { TextAreaProps, TextAreaRef } from 'antd/lib/input/TextArea';
 import { memo, useCallback, useRef, type FC, type ReactNode } from 'react';
 
-import DebounceTextArea from '../DebounceTextArea';
 import styles from './index.module.css';
 
 interface DisguiseTextareaProps extends TextAreaProps {
@@ -32,6 +32,11 @@ const DisguiseTextarea: FC<DisguiseTextareaProps> = ({
 }) => {
   const textAreaRef = useRef<TextAreaRef>(null);
 
+  // TODO(防抖能力)：原 DebounceTextArea 组件缺失（仓库基线问题，已授权兜底修复）。
+  // isDebounce/debounceWait 暂不生效，仅保留接口兼容；需要真实防抖时按原组件语义补回。
+  void isDebounce;
+  void debounceWait;
+
   // ---- 仅同步滚动，不碰 computed style ----
   const handleScroll = useCallback(() => {
     const textArea = textAreaRef.current?.resizableTextArea?.textArea;
@@ -55,11 +60,9 @@ const DisguiseTextarea: FC<DisguiseTextareaProps> = ({
         {disguisedValue}
       </div>
 
-      {/* 真实 textarea：文字透明，光标可见 */}
-      <DebounceTextArea
+      {/* 真实 textarea：文字透明，光标可见（DebounceTextArea 缺失，暂以 antd TextArea 兜底） */}
+      <Input.TextArea
         ref={textAreaRef}
-        isDebounce={isDebounce}
-        debounceWait={debounceWait}
         className={styles.transparentTextarea}
         onScroll={handleScroll}
         {...textAreaProps}
