@@ -24,7 +24,9 @@ export interface MailTemplate {
 /** 新建/编辑模板入参（表单数据形状，不含服务端生成字段） */
 export interface MailTemplateInput {
   name: string;
+  /** 收件人：通讯录多选 userInfo 列表（对外逗号分隔；真实后端按 userInfo 换邮箱） */
   recipients: string[];
+  /** 抄送：同上 userInfo 列表；可为空 */
   cc: string[];
   bodyHtml: string;
   presetId?: string;

@@ -7,8 +7,8 @@ import { sendMailByPost } from './mailSender';
 import type { SendMailPayload } from './types';
 
 const PAYLOAD: SendMailPayload = {
-  to: ['a@x.com', 'b@y.cn'],
-  cc: ['c@z.io'],
+  to: ['张三/112233', '刘洋/112234'],
+  cc: ['陈静/112235'],
   subject: '经营数据周报',
   bodyHtml: '<p>正文</p><table><tr><td>1</td></tr></table>',
   attachments: [{ name: '报表.xlsx', content: 'UEsFBg==' }],

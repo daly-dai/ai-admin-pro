@@ -15,7 +15,7 @@ function makeTemplate(overrides: Partial<MailTemplate>): MailTemplate {
   return {
     id: 'template-1',
     name: '周报',
-    recipients: ['a@x.com'],
+    recipients: ['张三/112233'],
     cc: [],
     bodyHtml: '<p>{{table}}</p>',
     canUpload: true,
@@ -26,8 +26,8 @@ function makeTemplate(overrides: Partial<MailTemplate>): MailTemplate {
 
 const INPUT = {
   name: '月报',
-  recipients: ['a@x.com', 'b@y.cn'],
-  cc: ['c@z.io'],
+  recipients: ['张三/112233', '刘洋/112234'],
+  cc: ['陈静/112235'],
   bodyHtml: '<p>正文{{table}}</p>',
 };
 
@@ -38,8 +38,8 @@ describe('createTemplateRecord', () => {
     expect(list[0]).toMatchObject({
       id: 'new-1',
       name: '月报',
-      recipients: ['a@x.com', 'b@y.cn'],
-      cc: ['c@z.io'],
+      recipients: ['张三/112233', '刘洋/112234'],
+      cc: ['陈静/112235'],
       bodyHtml: '<p>正文{{table}}</p>',
       canUpload: true,
       updatedAt: 42,
@@ -47,10 +47,10 @@ describe('createTemplateRecord', () => {
   });
 
   it('入参数组拷贝（外部改 input 不影响已存实体）', () => {
-    const input = { ...INPUT, recipients: ['a@x.com'] };
+    const input = { ...INPUT, recipients: ['张三/112233'] };
     const list = createTemplateRecord([], input, { id: 'new-1', now: 1 });
-    input.recipients.push('evil@x.com');
-    expect(list[0].recipients).toEqual(['a@x.com']);
+    input.recipients.push('李四/445566');
+    expect(list[0].recipients).toEqual(['张三/112233']);
   });
 
   it('原数组不可变', () => {
