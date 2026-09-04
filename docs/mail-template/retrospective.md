@@ -38,9 +38,10 @@ exceljs CJS 导入形式、vitest 需 threads 池、node spawn 捕获输出 EPER
 
 ## 四、本模块复盘确认的两条新约定（已落 pitfalls P019/P020）
 
-1. **布局优先 flex**（用户修订措辞，非"禁止其它"）：容器/页面排布优先 `display:flex` +
-   `min-width:0` + `overflow` 约束防溢出；flex 表达不了时按场景选 CSS Grid / block；
-   明确**禁** `position:absolute; inset:*` 撑满容器这类不可靠写法（iframe 撑满曾翻车）。
+1. **布局优先 antd `Flex` 组件**（用户修订措辞，非"禁止其它"，且从"优先 flex 思路"进一步收敛为"优先 Flex 组件"）：
+   排布首选 antd `<Flex>`（vertical/gap/justify/align/wrap 声明式，比手写内联 flex 更可读）；Flex 表达不了的细粒度样式
+   （`min-width:0` 防撑破、`overflow` 约束、CSS Grid、block）再用 CSS Modules，底层仍是 flex 思路；
+   明确**禁** `position:absolute; inset:*` 撑满容器这类不可靠写法（iframe 撑满曾翻车）。新代码生效，既有代码不强制重构。
 2. **非标页面生成前先调 frontend-design skill**：CRUD/标准列表+表单页有 STable/SForm/SDetail 现成组件，
    不需要设计；工作台这类**非标/视觉复杂页面**若靠 AI 裸写，样式容易扭曲——生成代码前先加载
    skill `frontend-design`，走设计引导后再动手。
