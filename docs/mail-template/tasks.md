@@ -2,7 +2,7 @@
 
 > 需求 PRD：`docs/mail-template/prd.md`（v2，Q1–Q26 已收敛）。
 > 场景：模板 CRUD → CRUD Lane；工作台 + mock 在线编辑 + 预览/发送链路属非标部分；实施时遵循 AGENTS.md §零 检查清单、输出锁与两层闸门。
-> 执行状态：**Task 0 已完成 ✅，Task 1–7 待实施**。旧 v1 记录见 `specs/mail-template-tasks.md`（历史，勿覆盖）。
+> 执行状态：**Task 0–1 已完成 ✅，Task 2–7 待实施**。旧 v1 记录见 `specs/mail-template-tasks.md`（历史，勿覆盖）。
 
 ## 执行节奏（每 Task 统一）
 
@@ -23,7 +23,7 @@
 | 阶段             | Task 数 | 完成 | 待实施 |
 | ---------------- | ------- | ---- | ------ |
 | 测试基建         | 1       | 1    | 0      |
-| 服务层           | 1       | 0    | 1      |
+| 服务层           | 1       | 1    | 0      |
 | 渲染内核扩展     | 1       | 0    | 1      |
 | 模板列表 CRUD    | 1       | 0    | 1      |
 | 工作台（详情）   | 1       | 0    | 1      |
@@ -51,7 +51,7 @@
 - [ ] `pnpm verify` 三闸 0 error（冒烟用例在 src/ 内，被 tsc/eslint/prettier 兜住）
 - [ ] 用例显式 import、零 any；期望值为已知答案字面量（非实现推导）
 
-### Task 1 — service 层（mock 数据 + 权限过滤） ⬜
+### Task 1 — service 层（mock 数据 + 权限过滤） ✅
 
 | 项         | 内容                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -59,14 +59,14 @@
 | **输出锁** | `src/features/mail-template/service/` 下新增：`types.ts`（MailTemplate/Report/SendMailPayload 零 any）、**逻辑核纯函数模块**（如 `templateRules.ts`：占位符/邮箱/必填校验；`reportAccess.ts`：canView 过滤与同名冲突判定）与其同目录 `*.test.ts`、localStorage 适配器（`mockStore.ts`）与 service 门面（`mailTemplateService.ts` `reportService.ts` `mailSender.ts`）                                                                                                                  |
 | **模板**   | 读 `.ai/templates/` 相关 CRUD 模板；API 命名遵循 `{Entity}{name}By{HTTP}`                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | **做什么** | 数据模型零 any；**结构上把纯核函数与 localStorage 适配器分开**（为修改而设计：接真实后端时只替换适配器，逻辑核与测试原样保留）；localStorage store（元数据 + xlsx base64，大小守卫）；模板 CRUD；报表列表（**只返回 canView**）/上传（同名查重返回冲突，由前端确认后带 overwrite 再覆盖）/下载/保存（回存 fileBase64 并刷新 updatedAt）；发送（延迟成功）；Promise 延迟模拟。预置 1 个示例模板（不含报表）。 |
-| **TDD seam** | 被测：reportAccess 的 canView 过滤（无权限文件不进列表返回）、同名冲突判定（冲突标识 → overwrite 后覆盖/异名新增）、发送 payload 形状与延迟成功、占位符/邮箱校验（若落此层）；不测：localStorage 适配器薄壳与 store 组装（页面联调走查，必要时再 vi.stubGlobal）                                                                                                                                                                                                                      |
+| **TDD seam** | 已落并随本 Task 测毕：reportAccess 的 canView 过滤（无权限文件不进列表返回）、同名冲突判定（冲突标识 → overwrite 后覆盖/异名新增）、发送 payload 形状与延迟成功、占位符/邮箱校验（service 防御）；不测：localStorage 适配器薄壳与 store 组装（门面集成测试以 stub localStorage 覆盖）                                                                                                                                    |
 
-**验收标准**：
+**验收标准**（已达成）：
 
-- [ ] `npx vitest run` 全绿（本 Task 逻辑核用例先行红→绿）
-- [ ] 刷新后数据不丢；canView=false 的报表不出现在报表列表返回中
-- [ ] 同名上传先返回冲突标识，带确认后覆盖；异名新增
-- [ ] 发送返回成功 + 回显完整 payload；API 命名与类型约束通过 eslint/tsc
+- [x] `npx vitest run` 全绿（本 Task 45 条：纯核红→绿 + 门面集成 stub 往返）
+- [x] 刷新后数据不丢（每次调用重读 localStorage，集成测试验证）；canView=false 的报表不出现在报表列表返回中
+- [x] 同名上传先返回冲突标识，带确认后覆盖（保留原 id）；异名新增
+- [x] 发送返回成功 + 回显完整 payload（fake timers 断言）；API 命名与类型约束通过 eslint/tsc
 
 ### Task 2 — 渲染内核扩展：exceljs 值回写 ⬜
 
@@ -89,14 +89,14 @@
 | 项         | 内容                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **类型**   | CRUD Lane（列表页）                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| **输出锁** | `src/features/mail-template/index.tsx` `index.module.css`（改造）+ `TemplateFormModal.tsx`（createModal）+ 预设正文数据文件 + **`validation.ts`（校验规则纯函数）+ 同目录 `validation.test.ts`**                                                                                                                                                                                                                                                                                   |
+| **输出锁** | `src/features/mail-template/index.tsx` `index.module.css`（改造）+ `TemplateFormModal.tsx`（createModal）+ 预设正文数据文件（**校验规则不再新建——复用 T1 已测的 `service/templateRules.ts`，单一来源**） |
 | **模板**   | 读 `.ai/sdesign/components/` S 组件文档与 CRUD 模板                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| **做什么** | STable 列表（模板名称/收件人/抄送/报表数/更新时间/操作：编辑、删除、进入工作台）+ 名称搜索；新增/编辑共用弹窗表单（收件人必填多人邮箱校验、抄送可选、预设 2 套正文选择 + wangEditor，保存校验**恰好 1 个** `{{table}}`）；删除确认（级联删报表）；示例模板可见可删。**校验规则抽 `validation.ts` 纯函数**，供表单与测试共用。                                                                                    |
-| **TDD seam** | 被测：validation 纯函数——多人邮箱解析与非法邮箱拦截、恰好 1 个 `{{table}}`（0 个 / ≥2 个均拒绝）、收件人必填；不测：STable 页面渲染、wangEditor 初始化、弹窗交互（走验收走查 + 演示口径提示文案核对）                                                                                                                                                                                                            |
+| **做什么** | STable 列表（模板名称/收件人/抄送/报表数/更新时间/操作：编辑、删除、进入工作台）+ 名称搜索；新增/编辑共用弹窗表单（收件人必填多人邮箱校验、抄送可选、预设 2 套正文选择 + wangEditor，保存校验**恰好 1 个** `{{table}}`）；删除确认（级联删报表）；示例模板可见可删。**校验接入复用 `service/templateRules`**（T1 已红绿测毕：parseRecipientsInput/parseCcInput/validateBodyPlaceholderCount），表单只做值解析与错误绑定，禁止重复实现校验。 |
+| **TDD seam** | 被测：无新增纯逻辑（复用 T1 已测 rules）；如表单出现新的纯逻辑（如预设正文选择与 bodyHtml 合并）则抽函数补测；不测：STable 页面渲染、wangEditor 初始化、弹窗交互（走验收走查 + 演示口径提示文案核对） |
 
 **验收标准**：
 
-- [ ] `npx vitest run` 全绿（validation 用例）
+- [ ] `npx vitest run` 全绿（既有 rules/门面用例持续通过；新纯逻辑另补）
 - [ ] 新增/编辑/删除/搜索闭环；校验规则（0 个/≥2 个占位符、非法邮箱）分别拦截并给出 PRD 口径提示
 - [ ] 页面零 antd Table/Form/Button/Descriptions；表单弹层符合 P001
 - [ ] 「进入工作台」跳转 `/mail/template/:id`
