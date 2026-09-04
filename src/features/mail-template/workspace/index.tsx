@@ -115,16 +115,7 @@ const InfoBar = ({ template }: { template: MailTemplate }) => {
   const items: SDetailItem[] = [
     {
       label: '模板名称',
-      render: () => (
-        <div className={styles.infoNameRow}>
-          <span className={styles.infoName} title={template.name}>
-            {template.name}
-          </span>
-          <Text type="secondary" className={styles.infoTime}>
-            更新于 {dayjs(template.updatedAt).format('YYYY-MM-DD HH:mm')}
-          </Text>
-        </div>
-      ),
+      render: () => <EllipsisValue text={template.name} />,
     },
     {
       label: '收件人',
@@ -165,8 +156,8 @@ const InfoBar = ({ template }: { template: MailTemplate }) => {
     <SDetail
       items={items}
       dataSource={{}}
-      columns="minmax(200px,1.5fr) minmax(0,1fr) minmax(0,1fr)"
-      gap={24}
+      columns="minmax(140px,1.1fr) minmax(0,1fr) minmax(0,1fr)"
+      gap={16}
       colon={false}
     />
   );
@@ -603,6 +594,9 @@ const WorkspacePage = () => {
         <STitle type="page" hasBottomMargin={false}>
           工作台
         </STitle>
+        <Text type="secondary" className={styles.topbarTime}>
+          模板更新于 {dayjs(template.updatedAt).format('YYYY-MM-DD HH:mm')}
+        </Text>
       </div>
 
       <div className={styles.panel}>

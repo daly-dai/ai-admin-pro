@@ -16,6 +16,12 @@
   gap: 8px;
 }
 
+.topbarTime {
+  margin-left: auto;
+  font-size: 12px;
+  color: #98a2b3;
+}
+
 /* ---------- 一体工作面板 ---------- */
 .panel {
   background: #fff;
@@ -29,31 +35,9 @@
 
 /* ---------- 顶部信息条（SDetail 紧凑，不再是大折叠卡） ---------- */
 .panelInfo {
-  padding: 10px 16px 12px;
+  padding: 12px 16px 14px;
   border-bottom: 1px solid #e4e7ec;
   background: #fff;
-}
-
-.infoNameRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.infoName {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-weight: 600;
-  color: #1d2939;
-}
-
-.infoTime {
-  flex: 0 0 auto;
-  font-size: 12px;
 }
 
 .infoEllipsis {
@@ -393,24 +377,29 @@
 
 .readerStage {
   flex: 1;
-  position: relative;
+  display: flex;
+  min-width: 0;
   min-height: 0;
   background: #eef1f5;
   overflow: hidden;
+  padding: 12px;
 }
 
 .stageCenter {
-  position: absolute;
-  inset: 0;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .readerFrame {
-  position: absolute;
-  inset: 12px;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
   border: 0;
   background: #fff;
+  border-radius: 4px;
   box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
 }
