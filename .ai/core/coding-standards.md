@@ -126,17 +126,65 @@ const isLoading = loading;
 
 ## 可读性约束
 
-> ⛔ 以下 5 条是全局硬约束，所有 Lane、所有模板通用。生成代码时必须遵守。
+> ⛔ 下列是全局硬约束，所有 Lane、所有模板通用。生成代码时必须遵守。规则随实践增减，编号不固定。
 
-| #   | 规则                  | 反例                                     | 正例                                                              |
-| --- | --------------------- | ---------------------------------------- | ----------------------------------------------------------------- |
-| R1  | 禁止 else 嵌套        | `if(a){...}else{if(b){...}else{...}}`    | 用 early return：`if(!a) return; if(!b) return; ...`              |
-| R2  | 禁止 JSX 内 transform | `{data.filter(x=>x.ok).map(x=><Card/>)}` | 提到 JSX 外赋给语义化变量：`const visibleData = data.filter(...)` |
-| R3  | 单文件单组件          | 一个文件 `export` 两个以上组件           | 一个文件 `export default` 一个组件 + 最多一个辅助组件             |
-| R4  | 逻辑函数 ≤ 40 行      | 80 行含条件/循环/变换的 useEffect        | 提取 `fetchData()`、`renderChart()` 等子函数                      |
-| R5  | 复杂逻辑必须注释      | 正则后面无说明                           | `// WHY: 匹配 ISO 8601 且允许毫秒省略`                            |
+| 规则                   | 反例                                     | 正例                                                                 |
+| ---------------------- | ---------------------------------------- | -------------------------------------------------------------------- |
+| 禁止 else 嵌套         | `if(a){...}else{if(b){...}else{...}}`    | 用 early return：`if(!a) return; if(!b) return; ...`                 |
+| 禁止 JSX 内 transform  | `{data.filter(x=>x.ok).map(x=><Card/>)}` | 提到 JSX 外赋给语义化变量：`const visibleData = data.filter(...)`    |
+| 单文件单组件           | 一个文件 `export` 两个以上组件           | 一个文件 `export default` 一个组件 + 最多一个辅助组件                |
+| 逻辑函数 ≤ 40 行       | 80 行含条件/循环/变换的 useEffect        | 提取 `fetchData()`、`renderChart()` 等子函数                         |
+| 复杂逻辑必须注释       | 正则后面无说明                           | `// WHY: 匹配 ISO 8601 且允许毫秒省略`                               |
+| 组件超 500 行必须拆分  | 单组件文件 800 行                        | 拆成子组件，每个拆分组件独立文件夹 `组件名/index.tsx`                |
+| useEffect 禁止复杂逻辑 | useEffect 内写循环/变换/async 请求流     | 复杂逻辑拆到 useEffect 外（独立函数/useMemo/useCallback/useRequest） |
 
-> ⚠️ R4 例外：纯声明式配置不计入 40 行。ECharts `option`、Table `columns`、Form `items` 是数据声明，不含控制流，行数由数据量决定。
+> ⚠️ 逻辑函数 ≤ 40 行例外：纯声明式配置不计入 40 行。ECharts `option`、Table `columns`、Form `items` 是数据声明，不含控制流，行数由数据量决定。
+
+#### 组件超 500 行必须拆分（独立文件夹）
+
+单组件 `.tsx` 超过 **500 行** → 必须拆分。被拆出的每个子组件放在**独立文件夹**，形态固定：
+
+```
+组件名/
+  index.tsx      // 该子组件的唯一样式入口/默认导出
+  /（模块级私有文件，如图表 option、hooks、样式模块）
+```
+
+- ❌ 平铺散文件：`ListView.tsx` + `ChartBox.tsx` + `FilterBar.tsx` 同目录裸放，无文件夹归组。
+- ✅ 独立文件夹：`components/ReportList/index.tsx`、`components/ReportChart/index.tsx`。
+- 每个拆分组件一个目录、`index.tsx` 是唯一导出入口，目录内私有件不进全局命名空间。
+
+#### useEffect 禁止复杂逻辑（必须拆出去）
+
+`useEffect` 内**只做**触发/订阅/清理这三件事。**禁止**在 effect 体内写数据变换、循环/forEach、连串 setState、async 请求流。
+
+```typescript
+// ❌ 禁止：effect 内做数据流 + 状态变换
+useEffect(() => {
+  const fetchList = async () => {
+    setLoading(true);
+    const data = await getList({ page, size });
+    const filtered = data.filter((item) => item.ok).map((item) => item.name);
+    setRows(filtered);
+    setLoading(false);
+  };
+  fetchList();
+}, [page, size]);
+
+// ✅ 正确：取数交给 useRequest，派生交给 useMemo，effect 只兜触发
+const { data, loading } = useRequest(() => getList({ page, size }), {
+  refreshDeps: [page, size],
+});
+const names = useMemo(
+  () => (data ?? []).filter((item) => item.ok).map((item) => item.name),
+  [data],
+);
+```
+
+- 复杂取数 → `useRequest`（禁手动 useState loading/data + effect 内 await）。
+- 派生计算 → `useMemo`。
+- 回调稳定 → `useCallback`。
+- 其余不能并入上述的复杂逻辑 → 提到 effect 外的独立具名函数。
 
 ## 未使用参数处理
 

@@ -142,6 +142,24 @@ function parsePrettierErrors(output: string): ErrorEntry[] {
 
 // ─── Main ───────────────────────────────────────────────
 
+// ─── Preflight: sdesign AI 文档同步校验 ─────────────────
+// .ai/sdesign 是 @dalydb/sdesign 包内 ai/ 的镜像，漂移会让 AI 读到过期组件文档。
+// 有漂移则提示先跑 pnpm sync-ai-docs 并终止；包未安装/无 ai 目录(status 2)时静默跳过。
+try {
+  execSync('tsx .ai/tools/sync-sdesign-docs.ts --check', {
+    cwd: PROJECT_ROOT,
+    stdio: 'pipe',
+    encoding: 'utf-8',
+  });
+} catch (err) {
+  const execErr = err as { status?: number; stderr?: string };
+  if (execErr.status === 1) {
+    if (execErr.stderr) process.stderr.write(execErr.stderr);
+    process.stderr.write('\n[verify-wrapper] .ai/sdesign 组件文档与 @dalydb/sdesign 包内 ai/ 不一致，请先运行: pnpm sync-ai-docs\n');
+    process.exit(1);
+  }
+  // status 2 = ai 目录不存在（未安装）→ 跳过，不阻断 verify
+}
 const commands: Array<{
   name: string;
   cmd: string;

@@ -36,6 +36,7 @@
 | 6   | `.ai/sdesign/components/{用到的 S 组件}.md`        | 生成前（首次生成时必读，不受防循环规则限制） |
 | 7   | `.ai/pitfalls/index.md`                            | 生成前                                       |
 | 8   | `.ai/recipes/index.md`（如果有配方匹配表）         | 后置任务时                                   |
+| 9   | `.ai/core/coding-standards.md`（可读性约束）       | 生成前                                       |
 
 > 禁止跳过。禁止凭记忆写代码。
 
@@ -133,6 +134,7 @@
 | 需要               | 文件                                        |
 | ------------------ | ------------------------------------------- |
 | 认知底座           | `.ai/project-brief.md`                      |
+| 代码规范           | `.ai/core/coding-standards.md`              |
 | 路由策略 + 配方    | `.ai/core/routing-strategy.md`              |
 | Lane 详细流程      | `.ai/conventions/lanes.md`                  |
 | 修改路径           | `.ai/conventions/modify-paths.md`           |
