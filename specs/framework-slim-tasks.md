@@ -27,13 +27,13 @@
 | 阶段                                                 | Task 数 | 完成  | 待实施 |
 | ---------------------------------------------------- | ------- | ----- | ------ |
 | 0 准备（记录 + 保险）                                | 2       | 2     | 0      |
-| 1 正确性（模板 / 命名 / 闸门 / 文档治理 / 入口收敛） | 6       | 1     | 5      |
+| 1 正确性（模板 / 命名 / 闸门 / 文档治理 / 入口收敛） | 6       | 2     | 4      |
 | 2 领域知识（pitfalls / 规范区清场）                  | 2       | 0     | 2      |
 | 3 路由与入口                                         | 2       | 0     | 2      |
 | 4 技能收尾                                           | 1       | 0     | 1      |
 | 5 测量与 R1 定案                                     | 1       | 0     | 1      |
 | 6 可选机制                                           | 1       | 0     | 1      |
-| **合计**                                             | **15**  | **3** | **12** |
+| **合计**                                             | **15**  | **4** | **11** |
 
 > 标 `【复盘并入】` 的三个 Task（1.4 / 1.5 / 2.2）来自 2026-09-07 复盘的对账补充，见 `specs/framework-slim-baseline.md` §5.2。
 
@@ -201,16 +201,36 @@
 
 **验收标准**：
 
-- [ ] `grep -rn "getListByGet" .ai/` → **0 命中**
-- [ ] `grep -rn "getByIdByGet" .ai/` → **0 命中**
-- [ ] `grep -rn "updateByPut\|deleteByDelete\|createByPost" .ai/` → **0 命中**
-- [ ] `api-conventions.md` L19 的 `ByGet` 适用范围已改写，且**不再把 `getAllDictByGet` / `getUserRolesByGet` / `getRolePermissionsByGet` 判为违规**
-- [ ] `api-conventions.md` L15（必须带实体前缀）与全文示例**不再自相矛盾**（原 L59 违反 L15）
-- [ ] `api-conventions.md` L22（禁止 `ByPut`/`ByDelete`/`ByPatch`）保留不变
-- [ ] 七处修改点逐一记录（6 个文件）：`api-conventions.md:19`、`api-conventions.md:59`、`task-gates.md:33`、`verification.md:34`、`typescript-conventions.md:118`、`coding-standards.md:12`、`verify-errors.md:35`
-- [ ] `pnpm verify` 通过
+- [x] `grep -rn "getListByGet" .ai/` → 仅剩 **1 处有意保留的反例**（`api-conventions.md:60` 新增的"只写 `getListByGet` 这类无实体前缀的名字是错的"）
+- [x] `grep -rn "getByIdByGet" .ai/` → **0 命中**
+- [x] `grep -rn "updateByPut\|deleteByDelete\|createByPost" .ai/` → **0 命中**
+- [x] `api-conventions.md:19` 的 `ByGet` 适用范围已改写为「只读查询（按 ID 查单条 / 辅助只读接口）」，**不再把 `getAllDictByGet` / `getUserRolesByGet` / `getRolePermissionsByGet` 判为违规**
+- [x] `api-conventions.md:15`（必须带实体前缀）与全文示例**不再自相矛盾**（原 L59 违反 L15）
+- [x] `api-conventions.md:22`（禁止 `ByPut`/`ByDelete`/`ByPatch`）**保留不变**
+- [x] 修改点逐条记录——**实测 9 处 / 7 个文件**（原估 7 处 / 6 文件，漏了 `modal-drawer-encapsulation.md:15` 和 `api-conventions.md:32`）
+- [x] `verify` 通过（`verify-wrapper` exit 0，`raw.jsonl` 零新增，仍 299）
 
-**状态**：⬜ 待实施
+**状态**：✅ 已完成（2026-09-09）
+
+> ### 复盘
+>
+> **Q1 verify 报过什么错**：0 error。`verify-wrapper` exit 0，`raw.jsonl` 仍 299。
+>
+> **Q2 根因**：无。
+>
+> **Q3 需要沉淀吗：有 2 条，都已就地写入**
+>
+> 1. **`coding-standards.md:12` 是根子，不是示例错误。** 它的**规则本身**写成 `{name}By{HTTP}`——**缺 `{Entity}`**；而 `api-conventions.md:11` 写的是 `{Entity}{name}By{HTTP}`。**两个 SSOT 在规则层面就冲突**，示例只是症状。原先只当"示例用词过时"，实际是规则分叉。
+> 2. **`ByGet` 的适用范围不是"改宽"，是"改准"。** 原文"仅按 ID 查单条"若字面执行，**`src/` 现有代码自己就违规**（`getAllDictByGet` / `getUserRolesByGet` / `getRolePermissionsByGet` 都不是按 ID）。已改为"只读查询"。
+>
+> ### 与原计划的偏差
+>
+> | 项       | 原估          | 实测                                                        |
+> | -------- | ------------- | ----------------------------------------------------------- |
+> | 修改点数 | 7 处 / 6 文件 | **9 处 / 7 文件**                                           |
+> | 漏找的   | —             | `modal-drawer-encapsulation.md:15`、`api-conventions.md:32` |
+>
+> 原因：原清单来自测量报告的 grep（只扫了 `AGENTS.md`/`AGENTS-LITE.md`/`.ai/conventions`/`.ai/core`），**没扫 `.ai/pitfalls/`**。本次全库重扫补齐。
 
 ---
 
@@ -497,20 +517,23 @@
 
 > 不做，但**不留白**——明确记在这里，避免被误当作遗漏。
 
-| 项                                                     | 为什么等                                                                                                                               | 潜在收益                                      |
-| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| `SKILL.md §3/§4/§5/§6` 删除                            | 与 `.ai/` 语义重复，但属技能内容                                                                                                       | 7,925                                         |
-| `SKILL.md §7` 删除                                     | 从未被任何步骤引用                                                                                                                     | 1,483                                         |
-| `SKILL.md §2` 内部去重                                 | 5 张步骤表两两相似度 53–68%                                                                                                            | ~3,100                                        |
-| `SKILL.md` 7 处读取指令矛盾                            | 技能内容                                                                                                                               | 消除（含 `:29` vs `:41`、`:28` vs §2 步骤 2） |
-| `SKILL.md:364` 非法栅栏                                | 跟着 §3–§5 删除一起作废，无需单独破例                                                                                                  | §3/§4/§5 共 5,686 的渲染修复                  |
-| `.ai/pitfalls/index.md` 的读取要求（技能侧）           | 技能侧规约                                                                                                                             | 随 R1                                         |
-| `AGENTS-LITE.md` 瘦身（14,104 → ~4,000）               | 它本身可能就是 R1 要退场的东西                                                                                                         | ~10,000                                       |
-| 技能层整体去留（R1）                                   | 用户决定                                                                                                                               | 338,288 → 0                                   |
-| **G4「`src/` 禁 `../`」落地 lint**                     | `src/` 现有 **21 处违反**（`features/mail-template` 17 + `router/routes` 5）。落 lint 会立刻失败，**需先清理 21 个文件**，属另一个改造 | 见复盘 M3                                     |
-| **eslint 拦截范围扩到 `src/features` / `src/layouts`** | 会一次性引爆 `MainLayout` 裸 Button 等既有问题                                                                                         | 见复盘 M2                                     |
-| **`.ai/sdesign/` 本体修矛盾**                          | 它是包文档逐字节拷贝 + gitignored + 会被 `sync-sdesign-docs.ts` 覆盖——**改了等于丢**。只能标注（Task 1.4）                             | —                                             |
-| **`.ai` 全库对齐外部最佳实践（复盘 P2 四项）**         | 季度级，非本次范围                                                                                                                     | 见复盘 P2                                     |
+| 项                                                     | 为什么等                                                                                                                                                            | 潜在收益                                      |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `SKILL.md §3/§4/§5/§6` 删除                            | 与 `.ai/` 语义重复，但属技能内容                                                                                                                                    | 7,925                                         |
+| `SKILL.md §7` 删除                                     | 从未被任何步骤引用                                                                                                                                                  | 1,483                                         |
+| `SKILL.md §2` 内部去重                                 | 5 张步骤表两两相似度 53–68%                                                                                                                                         | ~3,100                                        |
+| `SKILL.md` 7 处读取指令矛盾                            | 技能内容                                                                                                                                                            | 消除（含 `:29` vs `:41`、`:28` vs §2 步骤 2） |
+| `SKILL.md:364` 非法栅栏                                | 跟着 §3–§5 删除一起作废，无需单独破例                                                                                                                               | §3/§4/§5 共 5,686 的渲染修复                  |
+| `.ai/pitfalls/index.md` 的读取要求（技能侧）           | 技能侧规约                                                                                                                                                          | 随 R1                                         |
+| `AGENTS-LITE.md` 瘦身（14,104 → ~4,000）               | 它本身可能就是 R1 要退场的东西                                                                                                                                      | ~10,000                                       |
+| 技能层整体去留（R1）                                   | 用户决定                                                                                                                                                            | 338,288 → 0                                   |
+| **G4「`src/` 禁 `../`」落地 lint**                     | `src/` 现有 **21 处违反**（`features/mail-template` 17 + `router/routes` 5）。落 lint 会立刻失败，**需先清理 21 个文件**，属另一个改造                              | 见复盘 M3                                     |
+| **eslint 拦截范围扩到 `src/features` / `src/layouts`** | 会一次性引爆 `MainLayout` 裸 Button 等既有问题                                                                                                                      | 见复盘 M2                                     |
+| **`.ai/sdesign/` 本体修矛盾**                          | 它是包文档逐字节拷贝 + gitignored + 会被 `sync-sdesign-docs.ts` 覆盖——**改了等于丢**。只能标注（Task 1.4）                                                          | —                                             |
+| **`.ai` 全库对齐外部最佳实践（复盘 P2 四项）**         | 季度级，非本次范围                                                                                                                                                  | 见复盘 P2                                     |
+| **`.ai/templates/` 里 7 处 `{project}/` 前缀**         | **待你定**：`{project}` 只在 `SKILL.md:48-57` 定义（"项目根目录 / cwd"），`.ai/` 里零定义；`AGENTS.md` 与 `SKILL.md` 正文全用无前缀形式。倾向去掉前缀（见下方说明） | 消除 7 处未定义 token                         |
+
+> **`{project}` 说明**：它解决的问题是真的——技能可能被全局装到 `~/.qoder/skills/`，那时裸 `.ai/...` 会按技能目录解析。但 `.ai/templates/` 里的文件**本来就在项目里**，前缀多余；且强模型路径**永远读不到** `SKILL.md` 那张定义表。出现在：`crud-page.md:3`、`api-module.md:4`、`detail-page.md:3,154`、`dashboard-page.md:4`、`form-page.md:3,331`。规则（`.ai/...` 从 cwd 解析）要留，**token 要去掉**。
 
 ---
 
