@@ -1,6 +1,48 @@
 # pnpm verify 常见错误速查
 
 > AI 看到 verify 错误时，先查此表再动手。匹配签名 → 执行修复方法 → 重新 verify。
+>
+> ⚠️ 表未匹配、准备去读 `.ai/sdesign/components/` 之前，**先读下面这节**。
+
+---
+
+## 🔴 组件文档可信度裁定（查组件文档前必读）
+
+`.ai/sdesign/` 是 **`@dalydb/sdesign` 包内 `ai/` 的逐字节拷贝**（37 份，MD5 全等），由 `pnpm sync-ai-docs` 同步。**改它没有意义——下一次同步即被覆盖。** 它本身含以下已知失真，**读取时必须带这个裁定**：
+
+### 1. 「首选组件」自相矛盾 → **以 `SProTable` 为准**
+
+| 出处                                                                              | 说法                                                    |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `README.md:186,188`、`SProTable.md:1,9,16`                                        | **SProTable 新项目优先**；`SSearchTable → 历史项目兼容` |
+| `README.md:197,218,257`、`SSearchTable.md:1,18`、`STable.md:12,15`、`SForm.md:27` | **SSearchTable 列表页首选**                             |
+
+**同一个 `README.md` 里 10 行之内两种相反说法。**
+
+**裁定依据**：`src/` 实测 `SProTable` **16 处 / 4 文件**，`SSearchTable` / `useSearchTable` **0 处**。技能侧 `references/` 同向（`SProTable` 19 处，`SSearchTable` 0 处）。
+
+> **用 `SSearchTable` 就是与真实代码脱节。**
+
+### 2. `headTitle` / `requestFn` / `formProps` 的来历 —— 这是高频报错的根源
+
+`SSearchTable.md:18` 的示例用的是 **`headTitle` / `requestFn` / `formProps`** —— 那是 **SSearchTable 的 API**。
+本项目用 **SProTable**，对应的是 **`title` / `request` / `searchProps`**（见 `.ai/templates/crud-page.md`）。
+
+> 读了组件文档却用了 `headTitle`/`formProps` → TS2353/TS2322，**根因不是"记错了"，是读了另一个组件的文档**。
+
+### 3. 已知无专属文档的组件（README 提到，但 `components/*.md` 不存在）
+
+`SDynamicContainer` / `SNoPage` / `STextEllipsis` —— **包有导出**（`dist/index.d.ts:93,153,201`），但**没有 `components/{Name}.md`**。需要它们的 API 时**读 `node_modules/@dalydb/sdesign/dist/` 的类型声明**，不要去 `components/` 找。
+
+### 4. `useProTable.md` 有两份且内容不同
+
+`.ai/sdesign/components/useProTable.md`（2,480 字节）与 `.ai/sdesign/hooks/useProTable.md`（2,735 字节）**不是同一份**。引用前先确认读的是哪一份。
+
+### 5. 只读单条以外也有 `ByGet`
+
+`getAllDictByGet` / `getUserRolesByGet` / `getRolePermissionsByGet` 都是合法的 GET。详见 `.ai/conventions/api-conventions.md`。
+
+---
 
 | 错误签名                                                                       | 分类       | 修复方法                                                                                                     |
 | ------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------ |

@@ -1,4 +1,4 @@
-﻿# .ai/ 配置目录索引
+# .ai/ 配置目录索引
 
 > 项目入口为根目录 `AGENTS.md`（执行管道）。本目录是资产库——模板、规约、错题集、组件文档。
 
@@ -31,6 +31,7 @@
 ├── templates/                    # 代码模板（填空式）
 │   ├── api-module.md             # API 模块模板
 │   ├── crud-page.md              # CRUD 列表页模板
+│   ├── search-table-page.md      # 查询列表页模板（只读）
 │   ├── form-page.md              # 表单页模板
 │   ├── detail-page.md            # 详情页模板
 │   ├── dashboard-page.md         # 大屏页面骨架模板
@@ -41,23 +42,27 @@
 │       ├── prd-standard.md       # 标准 PRD 模板
 │       └── prd-fallback.md       # 非标场景 PRD 兜底模板
 ├── pitfalls/                     # 错题集
-│   ├── index.md                  # 全局索引（P001-P018）
-│   ├── verify-errors.md          # 错误速查表
+│   ├── index.md                  # 全局索引（P001-P020）
+│   ├── verify-errors.md          # 错误速查表（含组件文档可信度裁定）
 │   └── *.md                      # 各错题详情
-├── sdesign/                      # 组件库文档（手动维护）
-│   └── components/
+├── sdesign/                      # 组件库文档 —— ⚠️ 由 `pnpm sync-ai-docs` 从
+│   │                             #    @dalydb/sdesign 包内 ai/ 同步（37 份，MD5 全等）
+│   │                             #    **不是人工维护；改了下一次同步即被覆盖**
+│   ├── components/               #    35 份组件文档
+│   └── hooks/                    #    hooks 文档（useProTable.md 与 components/ 下重复且内容不同）
 └── tools/                        # 工具脚本
     ├── pitfall-scan.ts           # 高频错误聚合
+    ├── sync-sdesign-docs.ts      # sdesign 文档同步 + `--check` 漂移校验
     └── verify-wrapper.ts         # verify 增强包装器
 ```
 
 ## 开发流程
 
 ```
-用户需求 → AGENTS.md §一 执行策略（前置判断）
-  → §二 场景匹配 → Lane 分发（CRUD / 大屏 / 多Tab / 非标）
-  → §四 生成流程（读模板 → 读组件文档 → 读错题集 → 填空 → verify）
-  → §五 修改路径（迭代）
+用户需求 → AGENTS.md §零 执行前检查清单
+  → §一 场景匹配 → Lane 分发（CRUD / 大屏 / 多Tab / 非标）
+  → §三 生成流程（读模板 → 读错题集 → 填空 → verify）
+  → §一「小修改」→ 修改路径（.ai/conventions/modify-paths.md）
 ```
 
 ## 验证
