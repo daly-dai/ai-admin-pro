@@ -27,13 +27,13 @@
 | 阶段                                                 | Task 数 | 完成  | 待实施 |
 | ---------------------------------------------------- | ------- | ----- | ------ |
 | 0 准备（记录 + 保险）                                | 2       | 2     | 0      |
-| 1 正确性（模板 / 命名 / 闸门 / 文档治理 / 入口收敛） | 6       | 2     | 4      |
+| 1 正确性（模板 / 命名 / 闸门 / 文档治理 / 入口收敛） | 6       | 3     | 3      |
 | 2 领域知识（pitfalls / 规范区清场）                  | 2       | 0     | 2      |
 | 3 路由与入口                                         | 2       | 0     | 2      |
 | 4 技能收尾                                           | 1       | 0     | 1      |
 | 5 测量与 R1 定案                                     | 1       | 0     | 1      |
 | 6 可选机制                                           | 1       | 0     | 1      |
-| **合计**                                             | **15**  | **4** | **11** |
+| **合计**                                             | **15**  | **5** | **10** |
 
 > 标 `【复盘并入】` 的三个 Task（1.4 / 1.5 / 2.2）来自 2026-09-07 复盘的对账补充，见 `specs/framework-slim-baseline.md` §5.2。
 
@@ -272,30 +272,58 @@
 
 **验收标准**：
 
-- [ ] `.ai/README.md` 不再自称「手动维护」，改为「由 `pnpm sync-ai-docs` 从 `@dalydb/sdesign` 包同步」
-- [ ] `.ai/pitfalls/verify-errors.md` 含一行裁定：**组件首选以 `SProTable` 为准**。依据——`STable.md` / `SSearchTable.md` 的「首选 SSearchTable」表述与 `SProTable.md` 及库自身 `index.d.ts:166` vs `:220` 相互矛盾；而 `src/` 实测 `SProTable` 16 处、`SSearchTable`/`useSearchTable` **0 处**
-- [ ] 技能侧同向已验证：`references/` 用 `SProTable` 19 处、`SSearchTable` 0 处 → **技能是对的，包文档是错的**
-- [ ] 5 个死链（`SDynamicContainer` / `SNoPage` / `STextEllipsis` / `useGetDictData` / `useScale`）已标注「包内不存在，勿依赖」
-- [ ] `useProTable.md` 双份（`components/` 与 `hooks/`，MD5 不同，components 版尾部损坏）已标注
-- [ ] **`.ai/sdesign/` 本体零修改**（它 gitignored，改了等于丢）
-- [ ] 复核文件计数：`.ai/sdesign/components/**/*.md` 实际文件数（本次实测 **35**，2026-09-07 复盘写 34——以复核为准）
-- [ ] `pnpm verify` 通过
+- [x] `.ai/README.md` 不再自称「手动维护」，改为「由 `pnpm sync-ai-docs` 从 `@dalydb/sdesign` 包同步（37 份，MD5 全等）」+ 明确「改了下一次同步即被覆盖」
+- [x] `.ai/pitfalls/verify-errors.md` 新增「🔴 组件文档可信度裁定（查组件文档前必读）」整节，含 **5 条裁定**
+- [x] 裁定第 1 条：**组件首选以 `SProTable` 为准**。依据——`README.md` 同一文件内 L186/188 说 SProTable 优先、L197/218/257 说 SSearchTable 首选（**10 行之内两种相反说法**）；`src/` 实测 `SProTable` 16 处 / 4 文件、`SSearchTable`/`useSearchTable` **0 处**
+- [x] 技能侧同向已验证：`references/` 用 `SProTable` 19 处、`SSearchTable` 0 处 → **技能是对的，包文档是错的**
+- [x] 裁定第 2 条（**本次新增，复盘没有**）：`SSearchTable.md:18` 教的 **`headTitle` / `requestFn` / `formProps`** 是 **SSearchTable 的 API**；本项目用 SProTable，对应 `title` / `request` / `searchProps`。**这是 `headTitle`/`formProps` 高频报错的根源——不是"记错"，是读了另一个组件的文档**
+- [x] 无专属文档的组件已标注——**实测 3 个，不是 5 个**：`SDynamicContainer` / `SNoPage` / `STextEllipsis`（包有导出 `dist/index.d.ts:93/153/201`，无 `components/{Name}.md`）→ 指引改读 `node_modules/@dalydb/sdesign/dist/` 类型声明。**复盘的 `useGetDictData` / `useScale` 文档实测存在**
+- [x] `useProTable.md` 双份已标注（`components/` 2,480 字节 vs `hooks/` 2,735 字节，内容不同）
+- [x] **`.ai/sdesign/` 本体零修改**——用 `sync-sdesign-docs.ts --check` 证明：`文档与包内 ai/ 一致（37 份）`，exit 0
+- [x] 复核文件计数：`.ai/sdesign/` **37 份**（`components/` 35 + `hooks/` 1 + 根 1）。复盘写 34、我先前写 35 都只算了 `components/`
+- [x] `verify` 通过（exit 0，`raw.jsonl` 零新增，仍 299）
 
-> **为何是 Task 3.1 的前置**：Task 3.1 要把组件文档降为「报错才查」。**如果这份文档自己给相反的首选指令，降级后模型一查就被误导。**
+**状态**：✅ 已完成（2026-09-09）
 
-**状态**：⬜ 待实施
+> ### 复盘
+>
+> **Q1 verify 报过什么错**：0 error。`verify-wrapper` exit 0，`raw.jsonl` 仍 299。
+>
+> **Q2 根因**：无。
+>
+> **Q3 需要沉淀吗：有 3 条**
+>
+> 1. **"首选矛盾"的破坏力比复盘描述的大。** 复盘只说"库自身 index.d.ts:166 vs :220 矛盾"。实测是 **`.ai/sdesign/README.md` 一个文件内、10 行之内**，L186/188 推 SProTable、L197/218/257 推 SSearchTable。**不需要跨文件比对就能撞上矛盾。**
+> 2. **`headTitle`/`requestFn`/`formProps` 的根因找到了。** 这三个正是 `crud-template.md:215–217,240–242` 用 ✅/❌ 专门警告的名字。它们**不是凭空记错，是 `SSearchTable.md:18` 教的**——而那个组件全项目 0 使用。**文档给的是另一个组件的 API。**
+> 3. **复盘的死链清单过时了。** 它说 5 个"有实现无文档"，实测只有 3 个；`useGetDictData` 和 `useScale` 的文档都在。**这份复盘本身的时效性需要打折**——实施前逐条复核是必要的，不能直接照抄。
+>
+> ### 与计划的偏差（1 处，含输出锁冲突的解决）
+>
+> **`.ai/README.md` 同时在 Task 1.4 和 Task 1.5 的输出锁里——违反拆分规约 R2（锁必须互斥）。**
+>
+> 解决：**Task 1.4 独占 `.ai/README.md`**，把该文件的所有陈旧项一次修完（不只组件文档那一行）：
+>
+> | 行    | 原                                                                                | 改                                                  |
+> | ----- | --------------------------------------------------------------------------------- | --------------------------------------------------- |
+> | 44    | `index.md # 全局索引（P001-P018）`                                                | `P001-P020`（实际 20 条）                           |
+> | 47-48 | `sdesign/ # 组件库文档（手动维护）`                                               | 同步来源 + 「勿手改」+ `hooks/` 说明                |
+> | 33    | 模板清单缺 `search-table-page.md`                                                 | 补                                                  |
+> | 50    | `tools/` 缺 `sync-sdesign-docs.ts`                                                | 补                                                  |
+> | 57-60 | 章节引用**四处全错**：`§一 执行策略`/`§二 场景匹配`/`§四 生成流程`/`§五 修改路径` | `§零`/`§一 场景匹配`/`§三 生成流程`/`§一「小修改」` |
+>
+> `AGENTS.md` 实际只有 §零–§四，**原文件引用的「§五」不存在**（这也是 2026-09-07 复盘 P0-2 记的"§五 死链"）。**Task 1.5 的输出锁相应减去 `.ai/README.md`。**
 
 ---
 
 ### Task 1.5 — 双入口参数收敛（不预判 R1）`【复盘并入】`
 
-| 项         | 内容                                                                              |
-| ---------- | --------------------------------------------------------------------------------- |
-| **类型**   | docs                                                                              |
-| **输出锁** | `AGENTS-LITE.md`、`.ai/conventions/task-splitting.md`、`.ai/README.md`            |
-| **模板**   | 无                                                                                |
-| **做什么** | 两个入口的同族规则**参数不一致**。本 Task **只收敛参数，不删任何入口**——R1 未定。 |
-| **功能点** | ① 同族规则单一口径；② 两处死链修复。                                              |
+| 项         | 内容                                                                                                 |
+| ---------- | ---------------------------------------------------------------------------------------------------- |
+| **类型**   | docs                                                                                                 |
+| **输出锁** | `AGENTS-LITE.md`、`.ai/conventions/task-splitting.md`（`.ai/README.md` 已移交 Task 1.4，避免锁冲突） |
+| **模板**   | 无                                                                                                   |
+| **做什么** | 两个入口的同族规则**参数不一致**。本 Task **只收敛参数，不删任何入口**——R1 未定。                    |
+| **功能点** | ① 同族规则单一口径；② 两处死链修复。                                                                 |
 
 **验收标准**：
 
