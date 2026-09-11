@@ -32,7 +32,7 @@
 | `SForm` / `formItems` / `SFormItems` / `SForm.Group` / `useWatch` / `GroupItemsType` / `FormItemType` | `.ai/sdesign/components/SForm.md`            |
 | `SDetail` / `SDetailItem` / `SDetail.Group` / `SDetailGroupProps`                                     | `.ai/sdesign/components/SDetail.md`          |
 | `SButton` / `actionType`                                                                              | `.ai/sdesign/components/SButton.md`          |
-| `createRequest` / API 方法签名 / `getListByGet` / `createByPost` 等                                   | `src/plugins/request/`（查源码）             |
+| `createRequest` / API 方法签名 / `getUserListByPost` / `createUserByPost` 等                          | `src/plugins/request/`（查源码）             |
 | `PageQuery` / `PageResult` / 全局类型                                                                 | `src/types/index.ts`                         |
 | `createModal` / `ModalChildProps`                                                                     | `.ai/sdesign/components/SModalContainer.md`  |
 | `createDrawer` / `DrawerChildProps`                                                                   | `.ai/sdesign/components/SDrawerContainer.md` |

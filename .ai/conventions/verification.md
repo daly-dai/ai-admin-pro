@@ -1,4 +1,4 @@
-﻿# 验证流程规范
+# 验证流程规范
 
 > ⚠️ **验证阶段仅用于检查和修复已生成文件中的错误，禁止创建新文件或添加新功能。**
 
@@ -31,7 +31,7 @@ Level 1 通过后逐条检查：
 - [ ] 业务页面使用 sdesign 组件（SProTable/SForm/SButton/SDetail），未使用不存在的 sdesign 组件
 - [ ] 大屏场景使用 EChartsBase 基座，未直接 import echarts-for-react
 - [ ] 无 any 类型，未直接 import axios，类型导入用 `import type`
-- [ ] API 方法名带 HTTP 后缀（getListByGet/createByPost 等）
+- [ ] API 方法名带**实体前缀** + HTTP 后缀（getUserListByPost / createUserByPost 等）
 - [ ] 确认弹窗用 antd `Modal.confirm`（禁止 SConfirm）
 - [ ] Modal/Drawer 使用 `createModal`/`createDrawer` 工厂函数（`@dalydb/sdesign`），禁止手动管理 open 状态
 - [ ] 所有 API 调用通过 useRequest 包装（SProTable request.service 除外）

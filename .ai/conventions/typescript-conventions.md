@@ -115,10 +115,10 @@ function createUser(name: string, email: string, role: string, status: number) {
 ```typescript
 // ✅ 正确
 import type { User } from 'src/api/user/types';
-import { getUserListByGet } from 'src/api/user';
+import { getUserListByPost } from 'src/api/user';
 
 // ❌ 错误
-import { User, getUserListByGet } from '../../api/user';
+import { User, getUserListByPost } from '../../api/user';
 ```
 
 ## 四、命名

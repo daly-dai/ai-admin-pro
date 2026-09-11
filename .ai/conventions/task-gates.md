@@ -30,7 +30,7 @@
 | G2  | 零 `import axios`（使用 `createRequest`）                                                                             | eslint              |
 | G3  | 纯类型导入用 `import type { X }`                                                                                      | eslint              |
 | G4  | 跨模块导入用 `src/` 别名，禁止 `../`                                                                                  | review              |
-| G5  | API 方法名带 HTTP 后缀（`getListByGet` / `createByPost` 等）                                                          | review              |
+| G5  | API 方法名带**实体前缀**+ HTTP 后缀（`getUserListByPost` / `createUserByPost` 等）                                    | review              |
 | G6  | 未使用参数加 `_` 前缀                                                                                                 | eslint              |
 | G7  | 无 SConfirm（用 `Modal.confirm`）                                                                                     | review              |
 | G8  | 弹层用 `createModal` / `createDrawer` 工厂函数                                                                        | review              |

@@ -16,7 +16,7 @@
 
 | HTTP | 后缀     | 适用场景                                     | 示例                                                                               |
 | ---- | -------- | -------------------------------------------- | ---------------------------------------------------------------------------------- |
-| GET  | `ByGet`  | 仅「按 ID 查单条」                           | `getUserByIdByGet` / `getRoleByIdByGet`                                            |
+| GET  | `ByGet`  | 只读查询（按 ID 查单条 / 辅助只读接口）      | `getUserByIdByGet` / `getAllDictByGet` / `getUserRolesByGet`                       |
 | POST | `ByPost` | 其余全部（列表 / 搜索 / 新增 / 更新 / 删除） | `getUserListByPost` / `createUserByPost` / `updateUserByPost` / `deleteUserByPost` |
 
 > ⚠️ 本项目后端**统一 POST**：列表查询、模糊搜索、增、改、删均走 POST。**禁止 `ByPut` / `ByDelete` / `ByPatch`**——后端不提供对应 HTTP 方法，用了会与真实代码脱节。
@@ -25,12 +25,12 @@
 
 > 必须用 `useRequest` 包装 API 调用，禁止手动 useState 管理 loading/data。
 
-| 场景     | 模式                                                    | 模板参考       |
-| -------- | ------------------------------------------------------- | -------------- |
-| 列表查询 | SProTable `request.service` 直传                        | crud-page.md   |
-| 写操作   | `useRequest(apiFn, { manual: true, onSuccess })`        | crud-page.md   |
-| 详情加载 | `useRequest(() => getByIdByGet(id!), { ready: !!id })`  | detail-page.md |
-| 表单提交 | `useRequest(apiFn, { manual: true })` + onFinish 调 run | crud-page.md   |
+| 场景     | 模式                                                           | 模板参考       |
+| -------- | -------------------------------------------------------------- | -------------- |
+| 列表查询 | SProTable `request.service` 直传                               | crud-page.md   |
+| 写操作   | `useRequest(apiFn, { manual: true, onSuccess })`               | crud-page.md   |
+| 详情加载 | `useRequest(() => get{Entity}ByIdByGet(id!), { ready: !!id })` | detail-page.md |
+| 表单提交 | `useRequest(apiFn, { manual: true })` + onFinish 调 run        | crud-page.md   |
 
 ### useRequest 常用配置
 
@@ -56,7 +56,8 @@
 
 > 通用硬约束（no any / no axios / import type / src/ 路径）→ `AGENTS.md` 第二节。
 
-- **方法名必须添加 HTTP 方法后缀**（`getListByGet` 等）
+- **方法名必须带实体前缀 + HTTP 方法后缀**（`{Entity}{动作}By{HTTP}`，如 `getUserListByPost`、`getUserByIdByGet`）
+  > ⚠️ 只写 `getListByGet` / `getListByPost` 这类**无实体前缀**的名字是错的 —— 排查时无法定位是哪个模块。详见上方「方法命名规则」。
 - 所有方法需要泛型注解（返回类型由泛型推导）
 - 添加 JSDoc 注释
 - 页面中使用 useRequest 包装 API 调用

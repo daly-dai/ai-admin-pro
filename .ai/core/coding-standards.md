@@ -4,15 +4,15 @@
 
 ## 命名规范
 
-| 对象     | 命名规则              | 示例                                      |
-| -------- | --------------------- | ----------------------------------------- |
-| 实体类型 | `{Entity}`            | `Product`                                 |
-| 查询参数 | `{Entity}Query`       | `ProductQuery`                            |
-| 表单数据 | `{Entity}FormData`    | `ProductFormData`                         |
-| 接口方法 | `{name}By{HTTP}`      | `getListByGet`                            |
-| 页面组件 | `PascalCase` + `Page` | `ProductPage`                             |
-| 容器组件 | `{Entity}{Layer}`     | `ProductFormModal`, `ProductDetailDrawer` |
-| Hooks    | `use` + `PascalCase`  | `useProductList`                          |
+| 对象     | 命名规则                 | 示例                                      |
+| -------- | ------------------------ | ----------------------------------------- |
+| 实体类型 | `{Entity}`               | `Product`                                 |
+| 查询参数 | `{Entity}Query`          | `ProductQuery`                            |
+| 表单数据 | `{Entity}FormData`       | `ProductFormData`                         |
+| 接口方法 | `{Entity}{动作}By{HTTP}` | `getUserListByPost`                       |
+| 页面组件 | `PascalCase` + `Page`    | `ProductPage`                             |
+| 容器组件 | `{Entity}{Layer}`        | `ProductFormModal`, `ProductDetailDrawer` |
+| Hooks    | `use` + `PascalCase`     | `useProductList`                          |
 
 ### 语义化命名
 

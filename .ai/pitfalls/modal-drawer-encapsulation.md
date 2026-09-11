@@ -12,7 +12,7 @@ const {Entity}Page = () => {
 
   return (
     <>
-      <SProTable tableProps={{ columns }} request={{ service: getListByGet }} />
+      <SProTable tableProps={{ columns }} request={{ service: get{Entity}ListByPost }} />
       {modalOpen && (
         <Modal open onCancel={() => setModalOpen(false)}>  {/* ❌ */}
           <{Entity}Form id={editingId} onSuccess={() => setModalOpen(false)} />
