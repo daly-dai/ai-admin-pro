@@ -1,7 +1,6 @@
 # 表单页代码模板
 
-> 组件库文档: `.ai/sdesign/components/SForm.md`
-> 📋 可读性约束 → `.ai/core/coding-standards.md`
+> 组件库文档: `{project}/.ai/sdesign/components/SForm.md`
 
 ## 核心组件
 
@@ -35,12 +34,13 @@ cascader | table
 SDatePicker → datePicker | SDatePickerRange → datePickerRange | SCascader → cascader
 ```
 
-> 联动规则见 `.ai/pitfalls/index.md` P005。
+> ⛔ `dependency` 已弃用。字段联动统一使用 `SForm.useWatch` + 动态 items。
 
 ## 决策点
 
-- **新增页**：调用 `create{Entity}ByPost`
-- **编辑页**：`get{Entity}ByIdByGet` 加载 + `update{Entity}ByPost` 提交
+- **新增页** → `create.tsx`：调用 `create{Entity}ByPost`
+- **编辑页** → `edit.tsx`：`get{Entity}ByIdByGet` 加载回显 + `update{Entity}ByPost` 提交
+- **Modal 弹窗** → `FormModal.tsx`（createModal 工厂）：字段 <= 8，通过 `mode: 'create' | 'edit'` 区分
 - **分组表单**：`SForm.Group` + `groupItems`
 - **字段联动**：`SForm.useWatch(fieldName, form)` + 条件展开 items
 
@@ -48,30 +48,274 @@ SDatePicker → datePicker | SDatePickerRange → datePickerRange | SCascader �
 
 | 模式       | 适用场景                                                             |
 | ---------- | -------------------------------------------------------------------- |
+| **独立页** | 字段 > 8，含复杂控件 → `create.tsx` + `edit.tsx`                     |
 | **Modal**  | 字段 <= 8，无复杂联动 → `createModal`（`@dalydb/sdesign`）封装子组件 |
-| **独立页** | 字段 > 8，含复杂控件 → `create.tsx` / `edit.tsx`                     |
 
 > 弹层封装原则（createModal 工厂模式）→ 详见 `crud-page.md`「弹层封装原则」
 
-## 快速示例
+---
 
-> import: `SForm` `SFormItems` `SForm.useWatch` from `@dalydb/sdesign`
+## 填空模板：create.tsx（独立页 — 新增）
+
+> 使用方法：复制到 `create.tsx`，只修改 `@FILL` 标记内容。
 
 ```tsx
-// 基础表单
-<SForm items={formItems} columns={2} onFinish={save} />
+// ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
+import { SForm, SButton } from '@dalydb/sdesign';
+import { message, Card, Spin } from 'antd';
+import { useRequest } from 'ahooks';
+import { useNavigate } from 'react-router-dom';
+// @FILL: 导入 API 函数
+// ✅ import { create{Entity}ByPost } from 'src/api/{module}';
+// @FILL: 导入类型 — 必须用 import type
+// ✅ import type { ProductFormData } from 'src/api/{module}/types';
+// ❌ import { ProductFormData }（类型导入必须加 type 关键字）
 
-// 分组表单
-<SForm.Group groupItems={[
-  { title: '基本信息', items: [...] },
-  { title: '工作信息', items: [...] },
-]} />
+export default () => {
+  const [form] = SForm.useForm();
+  const navigate = useNavigate();
 
-// 字段联动（useWatch + 动态 items）
+  const { run: handleSubmit, loading } = useRequest(
+    // @FILL: 替换为新增 API
+    // ✅ (values: ProductFormData) => create{Entity}ByPost(values)
+    (values: Record<string, unknown>) => Promise.resolve(values),
+    {
+      manual: true,
+      onSuccess: () => {
+        message.success('创建成功');
+        navigate(-1);
+      },
+    },
+  );
+
+  // ⚠️ formItems 禁止显式注解（P006 同理）：加了注解会让 type 宽化，fieldProps 失去补全
+  // ✅ const formItems = [...]   // 让 TS 逐项 point-wise 推断 type → fieldProps 精确类型
+  // ⚠️ 仅当出现 TS2322「类型宽化」时才补 `: SFormItems[]` 作为补救（见 .ai/pitfalls/verify-errors.md）
+  const formItems = [
+    // @FILL: 新增页表单项配置
+    // ✅ { label: '名称', name: 'name', type: 'input', required: true }
+    // ✅ { label: '状态', name: 'status', type: 'select', fieldProps: { dictKey: 'statusCode' } }
+    // ❌ { label: '状态', name: 'status', type: 'select', fieldProps: { options: [...] } }  // 禁止硬编码 options
+    // ❌ { type: 'dependency' }  // 已弃用，联动用 SForm.useWatch
+  ];
+
+  return (
+    // ⚠️ SForm 不支持 loading prop，用 Spin 包裹
+    // ✅ <Spin spinning={loading}><SForm ... /></Spin>
+    // ❌ <SForm loading={loading} ... />  // loading 不是合法 prop → TS 报错
+    <Spin spinning={loading}>
+      <Card title="@FILL:新增标题">
+        <SForm
+          form={form}
+          items={formItems}
+          columns={2}
+          onFinish={handleSubmit}
+        />
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <SButton actionType="back" onClick={() => navigate(-1)} />
+          <SButton
+            actionType="save"
+            style={{ marginLeft: 16 }}
+            onClick={() => form.submit()}
+            loading={loading}
+          />
+        </div>
+      </Card>
+    </Spin>
+  );
+};
+```
+
+---
+
+## 填空模板：edit.tsx（独立页 — 编辑）
+
+> 使用方法：复制到 `edit.tsx`，只修改 `@FILL` 标记内容。
+
+```tsx
+// ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
+import { SForm, SButton } from '@dalydb/sdesign';
+import { message, Card, Spin } from 'antd';
+import { useRequest } from 'ahooks';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+// @FILL: 导入 API 函数
+// ✅ import { get{Entity}ByIdByGet, update{Entity}ByPost } from 'src/api/{module}';
+// @FILL: 导入类型 — 必须用 import type
+// ✅ import type { ProductFormData } from 'src/api/{module}/types';
+// ❌ import { ProductFormData }（类型导入必须加 type 关键字）
+
+export default () => {
+  const [form] = SForm.useForm();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+
+  // 编辑模式：加载详情回显
+  const { loading: detailLoading } = useRequest(
+    // @FILL: 替换为详情 API
+    // ✅ () => get{Entity}ByIdByGet(id!)
+    () => Promise.resolve({} as Record<string, unknown>),
+    {
+      ready: !!id,
+      onSuccess: (data) => {
+        form.setFieldsValue(data);
+      },
+    },
+  );
+
+  // 提交更新
+  const { run: handleSubmit, loading } = useRequest(
+    // @FILL: 替换为更新 API
+    // ✅ (values: ProductFormData) => update{Entity}ByPost(id!, values)
+    (values: Record<string, unknown>) => Promise.resolve(values),
+    {
+      manual: true,
+      onSuccess: () => {
+        message.success('编辑成功');
+        navigate(-1);
+      },
+    },
+  );
+
+  // ⚠️ formItems 禁止显式注解（P006 同理）：加了注解会让 type 宽化，fieldProps 失去补全
+  // ✅ const formItems = [...]   // 让 TS 逐项 point-wise 推断 type → fieldProps 精确类型
+  // ⚠️ 仅当出现 TS2322「类型宽化」时才补 `: SFormItems[]` 作为补救（见 .ai/pitfalls/verify-errors.md）
+  const formItems = [
+    // @FILL: 编辑页表单项配置（通常与新增页相同）
+    // ✅ { label: '名称', name: 'name', type: 'input', required: true }
+    // ❌ { type: 'dependency' }  // 已弃用
+  ];
+
+  return (
+    // ⚠️ SForm 不支持 loading prop，用 Spin 包裹
+    <Spin spinning={detailLoading || loading}>
+      <Card title="@FILL:编辑标题">
+        <SForm
+          form={form}
+          items={formItems}
+          columns={2}
+          onFinish={handleSubmit}
+        />
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <SButton actionType="back" onClick={() => navigate(-1)} />
+          <SButton
+            actionType="save"
+            style={{ marginLeft: 16 }}
+            onClick={() => form.submit()}
+            loading={loading}
+          />
+        </div>
+      </Card>
+    </Spin>
+  );
+};
+```
+
+---
+
+## 填空模板：{Entity}FormModal.tsx（createModal 弹窗表单）
+
+> 使用方法：复制到 `components/{Entity}FormModal.tsx`，只修改 `@FILL` 标记内容。
+> 父组件通过 `ref.current.open({ mode: 'create' | 'edit', id? })` 打开。
+
+```tsx
+// ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
+import { SForm, createModal } from '@dalydb/sdesign';
+import type { ModalChildProps } from '@dalydb/sdesign';
+import { Modal, message } from 'antd';
+import { useRequest } from 'ahooks';
+// @FILL: 导入 API 函数
+// ✅ import { create{Entity}ByPost, update{Entity}ByPost, get{Entity}ByIdByGet } from 'src/api/{module}';
+// @FILL: 导入类型 — 必须用 import type
+// ✅ import type { ProductFormData } from 'src/api/{module}/types';
+
+// @FILL: 替换泛型参数类型名
+// ✅ type FormParams = { mode: 'create' | 'edit'; id?: string };
+type FormParams = { mode: 'create' | 'edit'; id?: string };
+
+const FormContent = ({
+  params,
+  onClose,
+  onSuccess,
+}: ModalChildProps<FormParams>) => {
+  const [form] = SForm.useForm();
+  const isEdit = params.mode === 'edit';
+
+  // 编辑时加载详情
+  useRequest(
+    // @FILL: 替换为详情 API
+    // ✅ () => get{Entity}ByIdByGet(params.id!)
+    () => Promise.resolve({} as Record<string, unknown>),
+    {
+      ready: isEdit && !!params.id,
+      onSuccess: (data) => {
+        form.setFieldsValue(data);
+      },
+    },
+  );
+
+  // 提交（新增或编辑）
+  const { run: handleSubmit, loading } = useRequest(
+    // @FILL: 替换为新增/编辑 API
+    // ✅ (values) => isEdit ? update{Entity}ByPost(params.id!, values) : create{Entity}ByPost(values)
+    (values: Record<string, unknown>) => Promise.resolve(values),
+    {
+      manual: true,
+      onSuccess: () => {
+        message.success(isEdit ? '编辑成功' : '创建成功');
+        onSuccess?.();
+      },
+    },
+  );
+
+  // ⚠️ formItems 禁止显式注解（P006 同理）：加了注解会让 type 宽化，fieldProps 失去补全
+  const formItems = [
+    // @FILL: 表单项配置
+    // ✅ { label: '名称', name: 'name', type: 'input', required: true }
+    // ✅ { label: '状态', name: 'status', type: 'select', fieldProps: { dictKey: 'statusCode' } }
+    // ❌ { label: '状态', name: 'status', type: 'select', fieldProps: { options: [...] } }  // 禁止硬编码 options
+    // ❌ { type: 'dependency' }  // 已弃用，联动用 SForm.useWatch
+  ];
+
+  return (
+    <Modal
+      open
+      title={isEdit ? '@FILL:编辑标题' : '@FILL:新增标题'}
+      onCancel={onClose}
+      onOk={() => form.submit()}
+      confirmLoading={loading}
+    >
+      {/* ⚠️ SForm 不支持 loading prop */}
+      <SForm
+        form={form}
+        items={formItems}
+        columns={1}
+        onFinish={handleSubmit}
+      />
+    </Modal>
+  );
+};
+
+// @FILL: 修改导出名称
+// ✅ export default createModal<FormParams>(FormContent);
+export default createModal<FormParams>(FormContent);
+```
+
+---
+
+## 字段联动示例
+
+```tsx
+// SForm.useWatch + 条件展开 items（禁止 type: 'dependency'）
 const typeValue = SForm.useWatch('type', form);
 
-const formItems: SFormItems[] = [
-  { label: '类型', name: 'type', type: 'select', fieldProps: { options: typeOptions } },
+const formItems = [
+  {
+    label: '类型',
+    name: 'type',
+    type: 'select',
+    fieldProps: { options: typeOptions },
+  },
   // 条件展开：仅当 type === '1' 时显示
   ...(typeValue === '1'
     ? [{ label: '扩展字段', name: 'extra', type: 'input' as const }]
@@ -84,4 +328,4 @@ const formItems: SFormItems[] = [
 - `columns` 属性控制每行列数（常用 1 / 2 / 3）
 - 宽字段用 `colProps: { span: 24 }`
 
-> 完整 Props → `.ai/sdesign/components/SForm.md`
+> 完整 Props → `{project}/.ai/sdesign/components/SForm.md`

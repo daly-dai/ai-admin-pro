@@ -108,11 +108,12 @@ export default OrderItemTable;
 ```tsx
 import { SForm } from '@dalydb/sdesign';
 import { EditableProTable } from '@ant-design/pro-components';
-import type { SFormItems } from '@dalydb/sdesign';
 
 // columns 定义同范例一，此处省略
 
-const formItems: SFormItems = [
+// formItems 禁止显式注解（P006 同理）
+// ⚠️ 此前误写成 `: SFormItems`——那是**单条** item 类型，这里赋的是数组，类型不匹配
+const formItems = [
   {
     label: '订单名称',
     name: 'orderName',

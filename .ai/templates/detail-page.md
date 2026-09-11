@@ -1,13 +1,12 @@
 # 详情页代码模板
 
-> 组件库文档: `.ai/sdesign/components/SDetail.md`
-> 📋 可读性约束 → `.ai/core/coding-standards.md`
+> 组件库文档: `{project}/.ai/sdesign/components/SDetail.md`
 
 ## 核心组件
 
 - **SDetail**：配置式详情展示（items 数组）
 - **SDetail.Group**：分组详情
-- **SButton.Group**：操作按钮（actionType: edit/delete/back）
+- **SButton**：操作按钮（外层 `<Space>` 并列，配 `compact`）
 
 ## SDetailItem 类型
 
@@ -16,9 +15,11 @@
 | `'text'`      | 默认文本                         |
 | `'dict'`      | 字典映射（配合 dictKey/dictMap） |
 | `'file'`      | 文件列表                         |
-| `'img'`       | 图片展示                         |
 | `'rangeTime'` | 时间范围                         |
 | `'checkbox'`  | 复选展示                         |
+
+> 完整 `ItemType` 联合：`'text' | 'dict' | 'file' | 'rangeTime' | 'checkbox' | 'empty' | 'placeholder' | 'tag'`
+> （权威来源 `.ai/sdesign/components/SDetail.md`。**不存在 `'img'`** —— 早期模板曾写错，已删除。）
 
 | 关键属性  | 说明                                      |
 | --------- | ----------------------------------------- |
@@ -35,25 +36,119 @@
 
 > 弹层封装原则同 Modal（createDrawer 与 createModal 用法一致）→ 详见 `crud-page.md`「弹层封装原则」
 
-## 快速示例
+---
 
-> import: `SDetail` `SDetailItem` from `@dalydb/sdesign`，`useRequest` from `ahooks`，`Spin` from `antd`
+## 填空模板：detail.tsx（独立页）
+
+> 使用方法：复制到 `detail.tsx`，只修改 `@FILL` 标记内容。
 
 ```tsx
-// 基础用法
-<SDetail title="详情" dataSource={data} items={items} column={2} />
+// ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
+import { SDetail, SButton } from '@dalydb/sdesign';
+import type { SDetailItem } from '@dalydb/sdesign';
+import { Card, Spin } from 'antd';
+import { useRequest } from 'ahooks';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+// @FILL: 导入 API 函数
+// ✅ import { get{Entity}ByIdByGet } from 'src/api/{module}';
 
-// 分组展示
-<SDetail.Group groupItems={[
-  { groupTitle: '基本信息', items: [...] },
-  { groupTitle: '金额信息', items: [...] },
-]} />
+export default () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
 
-// 数据加载（SDetail 无 loading 属性，用 Spin 包裹）
-const { data: detail, loading } = useRequest(() => getByIdByGet(id!), { ready: !!id });
-<Spin spinning={loading}>
-  <SDetail dataSource={detail} items={items} column={2} />
-</Spin>
+  // 加载详情
+  const { data: detail, loading } = useRequest(
+    // @FILL: 替换为详情 API
+    // ✅ () => get{Entity}ByIdByGet(id!)
+    () => Promise.resolve({} as Record<string, unknown>),
+    {
+      ready: !!id,
+    },
+  );
+
+  // ⚠️ 必须用显式类型注解
+  // ✅ const detailItems: SDetailItem[] = [...]
+  const detailItems: SDetailItem[] = [
+    // @FILL: 详情项配置
+    // ✅ { label: '名称', name: 'name' }  // 默认 type: 'text'
+    // ✅ { label: '状态', name: 'status', type: 'dict', dictKey: 'statusCode' }  // 枚举优先用 dictKey（SConfigProvider 全局字典）
+    // ✅ { label: '状态', name: 'status', type: 'dict', dictMap: { 1: '启用', 0: '禁用' } }  // dictMap 仅无全局字典时用
+    // ❌ { label: '状态', name: 'status', render: (v) => v === 1 ? '启用' : '禁用' }  // 禁止 render 硬编码枚举
+    // ✅ { label: '金额', name: 'amount', render: (value) => `¥${value}` }  // render 签名: (value?, record?) => ReactNode
+    // 可选 type: 'text'(默认) | 'dict' | 'file' | 'rangeTime' | 'checkbox'
+  ];
+
+  return (
+    // ⚠️ SDetail 不支持 loading prop，用 Spin 包裹
+    // ✅ <Spin spinning={loading}><SDetail ... /></Spin>
+    // ❌ <SDetail loading={loading} ... />  // loading 不是合法 prop → TS 报错
+    <Spin spinning={loading}>
+      <Card
+        title="@FILL:页面标题"
+        extra={<SButton actionType="back" onClick={() => navigate(-1)} />}
+      >
+        <SDetail dataSource={detail} items={detailItems} columns={2} />
+      </Card>
+    </Spin>
+  );
+};
 ```
 
-> 完整 Props → `.ai/sdesign/components/SDetail.md`
+---
+
+## 填空模板：{Entity}DetailDrawer.tsx（createDrawer 详情抽屉）
+
+> 使用方法：复制到 `components/{Entity}DetailDrawer.tsx`，只修改 `@FILL` 标记内容。
+> 父组件通过 `ref.current.open({ id })` 打开。
+
+```tsx
+// ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
+import { SDetail, createDrawer } from '@dalydb/sdesign';
+import type { SDetailItem, DrawerChildProps } from '@dalydb/sdesign';
+import { Drawer, Spin } from 'antd';
+import { useRequest } from 'ahooks';
+// @FILL: 导入 API 函数
+// ✅ import { get{Entity}ByIdByGet } from 'src/api/{module}';
+
+// @FILL: 定义泛型参数类型
+// ✅ type DetailParams = { id: string };
+type DetailParams = { id: string };
+
+const DetailContent = ({ params, onClose }: DrawerChildProps<DetailParams>) => {
+  // 加载详情
+  const { data: detail, loading } = useRequest(
+    // @FILL: 替换为详情 API
+    // ✅ () => get{Entity}ByIdByGet(params.id)
+    () => Promise.resolve({} as Record<string, unknown>),
+  );
+
+  const detailItems: SDetailItem[] = [
+    // @FILL: 详情项配置
+    // ✅ { label: '名称', name: 'name' }
+    // ✅ { label: '状态', name: 'status', type: 'dict', dictKey: 'statusCode' }  // 枚举优先用 dictKey
+    // ✅ { label: '状态', name: 'status', type: 'dict', dictMap: { 1: '启用', 0: '禁用' } }  // 无全局字典时用 dictMap
+    // ❌ { label: '状态', name: 'status', render: (v) => v === 1 ? '启用' : '禁用' }  // 禁止 render 硬编码枚举
+    // ✅ { label: '金额', name: 'amount', render: (value) => `¥${value}` }
+    // 可选 type: 'text'(默认) | 'dict' | 'file' | 'rangeTime' | 'checkbox'
+  ];
+
+  return (
+    // ⚠️ SDetail 不支持 loading prop，用 Spin 包裹
+    <Drawer open title="@FILL:抽屉标题" width={600} onClose={onClose}>
+      <Spin spinning={loading}>
+        {/* ⚠️ SDetail.Group 顶层 prop 是 items，不是 groupItems */}
+        {/* ✅ <SDetail.Group items={[{ groupTitle: '基本信息', items: [...] }]}> */}
+        {/* ❌ <SDetail.Group groupItems={...}>  // groupItems 是分组内嵌套子组的字段，不是顶层 prop → TS2339 */}
+        <SDetail dataSource={detail} items={detailItems} columns={1} />
+      </Spin>
+    </Drawer>
+  );
+};
+
+// @FILL: 修改导出名称
+// ✅ export default createDrawer<DetailParams>(DetailContent);
+export default createDrawer<DetailParams>(DetailContent);
+```
+
+> 完整 Props → `{project}/.ai/sdesign/components/SDetail.md`

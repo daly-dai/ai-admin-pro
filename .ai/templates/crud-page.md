@@ -1,7 +1,6 @@
-# CRUD 页面代码模板
+# CRUD 列表页代码模板
 
-> 组件库文档: `.ai/sdesign/components/`
-> 📋 可读性约束 → `.ai/core/coding-standards.md`
+> 组件库文档: `{project}/.ai/sdesign/components/`
 
 ## 决策点
 
@@ -40,8 +39,6 @@ src/pages/{module}/components/ — 页面私有组件（FormModal/DetailDrawer �
 ## 弹层封装原则
 
 > 使用 `createModal` / `createDrawer` 工厂函数封装弹层。Content 在 open=false 时完全卸载，内部所有状态自动销毁，无需手动 resetFields。
->
-> import: `createModal` `ModalChildProps` `SForm` `SFormItems` from `@dalydb/sdesign`，`useRequest` from `ahooks`，`Modal` `message` from `antd`
 
 ```tsx
 // {Entity}FormModal.tsx — 使用 createModal 工厂
@@ -75,150 +72,192 @@ export default createModal<Params>(FormContent);
 
 // 列表页通过 ref 触发
 import type { ModalContainerRef, SProTableRef } from '@dalydb/sdesign';
-import { useRef } from 'react';
 
 const tableRef = useRef<SProTableRef>(null);                    // 表格 ref，调用 refresh()
 const formRef = useRef<ModalContainerRef<Params>>(null);        // Modal ref，调用 open(params)
+const detailRef = useRef<ModalContainerRef<{ id: string }>>(null); // 详情 Drawer ref
 
 <SButton actionType="create" onClick={() => formRef.current?.open({ mode: 'create' })} />
 <SProTable ref={tableRef} ... />
 <{Entity}FormModal ref={formRef} onSuccess={() => tableRef.current?.refresh()} />
+<{Entity}DetailDrawer ref={detailRef} />
 ```
 
 核心：`createModal` 管理 open 生命周期 | ref 暴露 `open(params)` | Content 关闭即销毁
 
-## 快速示例
+---
+
+## 填空模板：index.tsx（主路径）
+
+> **默认使用填空模板**。模板注释已内嵌组件 API 约束和常见反例，无需额外读组件文档。仅 `pnpm verify` 报错且 `.ai/pitfalls/verify-errors.md` 未匹配签名时，才按需读对应组件文档。
+
+### 使用方法
+
+1. **复制下方"填空模板"** 到目标 `.tsx` 文件中。
+2. **对 AI 发出指令**：
+   > "请根据以下需求，**只修改**代码中所有 `@FILL` 标记的内容，**严禁修改任何其他已存在的代码**。需求：……"
+3. `pnpm verify` 报错时 → 先查 .ai/pitfalls/verify-errors.md 匹配签名 → 未匹配才读组件文档。
+
+### 填空模板
 
 ```tsx
-// 列表页
-<SProTable
-  title={{ children: '用户管理' }}
-  request={{
-    service: api.getUsers,
-    options: {
-      paginationFields: { list: 'dataList', total: 'totalSize' },
-      transformRequestParams: (params) => {
-        const { pageIndex, ...rest } = params;
-        return { ...rest, pageNum: pageIndex };
+// ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
+import type {
+  SProTableRef,
+  ModalContainerRef,
+  SColumnsType,
+} from '@dalydb/sdesign';
+import { SProTable, SButton } from '@dalydb/sdesign';
+import { message, Modal, Space } from 'antd';
+import { useRequest } from 'ahooks';
+import { useRef } from 'react';
+// @FILL: 导入 API 函数
+// ✅ import { get{Entity}ListByPost, delete{Entity}ByPost } from 'src/api/{module}';
+// ❌ import axios / import { createRequest }（API 层已封装，页面只导函数）
+// @FILL: 导入类型 — 必须用 import type
+// ✅ import type { Product } from 'src/api/{module}/types';
+// ❌ import { Product }（类型导入必须加 type 关键字）
+// @FILL: 导入 FormModal 组件（有弹窗时）
+// ✅ import ProductFormModal from './components/ProductFormModal';
+// @FILL: 导入 DetailDrawer 组件（有详情抽屉时）
+// ✅ import ProductDetailDrawer from './components/ProductDetailDrawer';
+
+export default () => {
+  const tableRef = useRef<SProTableRef>(null);
+  // @FILL: 定义弹窗 ref（有弹窗时）
+  // ✅ const formRef = useRef<ModalContainerRef<{ mode: 'create' | 'edit'; id?: string }>>(null);
+  // @FILL: 定义详情抽屉 ref（有详情时）
+  // ✅ const detailRef = useRef<ModalContainerRef<{ id: string }>>(null);
+
+  // 删除操作
+  const { run: handleDelete } = useRequest(
+    // @FILL: 替换为删除 API
+    // ✅ delete{Entity}ByPost
+    // ❌ (id: string) => delete{Entity}ByPost(id)  // 不需要额外包装，直接传函数引用
+    delete{Entity}ByPost,
+    {
+      manual: true,
+      onSuccess: () => {
+        message.success('删除成功');
+        tableRef.current?.refresh();
       },
     },
-  }}
-  searchProps={{ items: searchItems, columns: 4 }}
-  tableProps={{ columns, rowKey: 'id' }}
-/>
+  );
 
-// 表单页
-<SForm items={formItems} columns={2} onFinish={save} />
-
-// 详情页
-<SDetail title="详情" dataSource={data} items={detailItems} column={2} />
-```
-
-## searchItems 定义
-
-> 类型 `SFormItems` from `@dalydb/sdesign`，禁止显式注解
-
-```tsx
-// ⚠️ 禁止类型注解，让 TS 逐项推断 fieldProps 精确类型（P006）
-const searchItems = [
-  { label: '关键词', name: 'keyword', type: 'input' },
-  {
-    label: '状态',
-    name: 'status',
-    type: 'select',
-    fieldProps: { dictKey: 'userStatus', allowClear: true },
-  },
-  { label: '创建时间', name: 'dateRange', type: 'datePickerRange' },
-];
-```
-
-## columns 定义
-
-> 需要 import：`SButton` `SButton.Group` from `@dalydb/sdesign`，`Modal` from `antd`
-
-```tsx
-// ⚠️ 必须显式类型注解 SColumnsType<Entity>（P006）
-const columns: SColumnsType<User> = [
-  {
-    title: '序号',
-    dataIndex: 'index',
-    width: 60,
-    render: (_text, _record, index) => index + 1,
-  },
-  { title: '用户名', dataIndex: 'username', width: 120 },
-  { title: '状态', dataIndex: 'status', width: 80, dictKey: 'userStatus' },
-  {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    width: 180,
-    render: 'datetime' as const,
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    width: 220,
-    render: (_text, record) => (
-      <SButton.Group
-        items={[
-          {
-            actionType: 'edit',
-            compact: true,
-            onClick: () =>
-              formRef.current?.open({ mode: 'edit', id: record.id }),
-          },
-          {
-            actionType: 'delete',
-            compact: true,
-            onClick: () => {
+  // ⚠️ columns 必须显式类型注解 SColumnsType<Entity>，否则 TS2322 报错
+  // ✅ const columns: SColumnsType<Product> = [...]
+  // ❌ const columns = [...]   // 缺类型注解 → TS 报错
+  // @FILL: 将 Record<string, unknown> 替换为实际实体类型
+  const columns: SColumnsType<Record<string, unknown>> = [
+    // @FILL: 表格列配置
+    // ✅ { title: '名称', dataIndex: 'name' }
+    // ✅ { title: '时间', dataIndex: 'createTime', render: 'datetime' as const }
+    // ✅ { title: '状态', dataIndex: 'status', dictKey: 'statusCode' }  // 枚举列用 dictKey，SConfigProvider 自动回显
+    // ❌ { title: '状态', dataIndex: 'status', render: (text) => text === 1 ? '启用' : '禁用' }  // 禁止硬编码枚举
+    // ❌ render: (text, record) => ...  // 未使用参数不加 _ 前缀 → ESLint 报错
+    {
+      title: '操作',
+      dataIndex: 'action',
+      width: 220,
+      // ✅ 未使用参数加 _ 前缀；操作列用 <Space> 包裹并列 SButton + compact
+      render: (_text, record: Record<string, unknown>) => (
+        // ✅ <Space> + <SButton ... compact />（与 P018 及 src/pages/system/*/index.tsx 现有写法一致）
+        // ❌ <SButton.Group items={[...]} /> → 与 P018 及全仓现有写法不一致
+        <Space>
+          <SButton
+            actionType="edit"
+            compact
+            onClick={() => {
+              // @FILL: 打开编辑弹窗
+              // ✅ formRef.current?.open({ mode: 'edit', id: record.id as string });
+            }}
+          />
+          <SButton
+            actionType="delete"
+            compact
+            onClick={() => {
+              // ✅ 确认弹窗用 Modal.confirm，禁止 SConfirm
               Modal.confirm({
                 title: '确认删除',
-                content: `确认删除？`,
-                onOk: () => handleDelete(record.id),
+                // @FILL: 替换确认内容
+                content: `确定删除吗？`,
+                onOk: () => handleDelete(record.id as string),
               });
-            },
+            }}
+          />
+          {/* @FILL: 有详情时取消注释
+          <SButton
+            actionType="view"
+            compact
+            onClick={() => detailRef.current?.open({ id: record.id as string })}
+          />
+          */}
+        </Space>
+      ),
+    },
+  ];
+
+  // ⚠️ searchItems 禁止显式注解（P006）：加了注解会让 type 宽化成 22 路联合，fieldProps 失去补全
+  // ✅ const searchItems = [...]            // 让 TS 逐项 point-wise 推断 type → fieldProps 精确类型
+  // ⚠️ 仅当出现 TS2322「类型宽化 / 不可赋值」时才补 `: SFormItems[]` 作为补救
+  //    （补救时需临时补回 import type { SFormItems }，见 .ai/pitfalls/verify-errors.md）
+  // 注意：columns 必须注解（SColumnsType<Entity>），searchItems 禁止注解——两者策略相反，见 P006
+  const searchItems = [
+    // @FILL: 搜索项配置
+    // ✅ { label: '名称', name: 'name', type: 'input' }
+    // ✅ { label: '状态', name: 'status', type: 'select', fieldProps: { dictKey: 'statusCode' } }
+    // ❌ { label: '状态', name: 'status', type: 'select', fieldProps: { options: [...] } }  // 禁止硬编码 options
+    // 可选 type: input | select | datePicker | datePickerRange
+  ];
+
+  return (
+    <>
+      <SProTable
+        ref={tableRef}
+        // ⚠️ SProTable 用 title 不是 headTitle
+        // ✅ title={{ children: '用户管理' }}
+        // ❌ headTitle={{ children: '...' }}  // headTitle 不存在 → TS 报错
+        title={{ children: '@FILL:页面标题' }}
+        // @FILL: 替换为列表 API；service 传函数引用，不是调用结果
+        // ✅ request={{ service: get{Entity}ListByPost, options: { paginationFields: { list: 'dataList', total: 'totalSize' } } }}
+        request={{
+          service: () => Promise.resolve({ dataList: [], totalSize: 0 }),
+          options: {
+            // @FILL: 按后端分页响应结构调整字段映射
+            // ✅ paginationFields: { list: 'dataList', total: 'totalSize' }
+            paginationFields: { list: 'dataList', total: 'totalSize' },
           },
-          {
-            actionType: 'view',
-            compact: true,
-            onClick: () => detailRef.current?.open({ id: record.id }),
-          },
-        ]}
+        }}
+        tableTitle={{
+          actionNode: (
+            <SButton
+              actionType="create"
+              onClick={() => {
+                // @FILL: 打开新增弹窗
+                // ✅ formRef.current?.open({ mode: 'create' });
+              }}
+            />
+          ),
+        }}
+        // ⚠️ searchProps 不是 formProps
+        // ✅ searchProps={{ items: searchItems, columns: 4 }}
+        // ❌ formProps={{ items: searchItems }}  // SProTable 用 searchProps
+        searchProps={{ items: searchItems, columns: 4 }}
+        tableProps={{
+          columns: columns,
+          rowKey: '@FILL:主键字段', // 通常为 'id'
+        }}
       />
-    ),
-  },
-];
+      {/* @FILL: 放置弹窗组件（有弹窗时） */}
+      {/* ✅ <ProductFormModal ref={formRef} onSuccess={() => tableRef.current?.refresh()} /> */}
+      {/* @FILL: 放置详情抽屉（有详情时） */}
+      {/* ✅ <ProductDetailDrawer ref={detailRef} /> */}
+    </>
+  );
+};
 ```
 
-## 列表页完整骨架
-
-```tsx
-import type { ModalContainerRef, SColumnsType, SFormItems, SProTableRef } from '@dalydb/sdesign';
-import { SButton, SProTable } from '@dalydb/sdesign';
-import { useRequest } from 'ahooks';
-import { message, Modal } from 'antd';
-import { useRef } from 'react';
-
-const tableRef = useRef<SProTableRef>(null);
-const formRef = useRef<ModalContainerRef<{ mode: 'create' | 'edit'; id?: string }>>(null);
-const detailRef = useRef<ModalContainerRef<{ id: string }>>(null);
-
-const { run: handleDelete } = useRequest(delete{Entity}ByPost, {
-  manual: true,
-  onSuccess: () => { message.success('删除成功'); tableRef.current?.refresh(); },
-});
-
-<SProTable
-  ref={tableRef}
-  title={{ children: '{模块}管理' }}
-  request={{ service: get{Entity}ListByPost, options: { paginationFields: { list: 'dataList', total: 'totalSize' } } }}
-  tableTitle={{ actionNode: <SButton actionType="create" onClick={() => formRef.current?.open({ mode: 'create' })} /> }}
-  searchProps={{ items: searchItems, columns: 4 }}
-  tableProps={{ columns, rowKey: 'id' }}
-/>
-
-<{Entity}FormModal ref={formRef} onSuccess={() => tableRef.current?.refresh()} />
-<{Entity}DetailDrawer ref={detailRef} />
-```
+---
 
 ## useRequest 用法
 
@@ -256,8 +295,6 @@ const { run: handleUpdate } = useRequest((values) => update{Entity}ByPost(id!, v
 
 ## SForm 控件类型
 
-> 完整列表见 `sdesign/components/SForm.md`。联动规则见 `.ai/pitfalls/index.md` P005。
-
 ```
 input | inputNumber | password | textarea | select | slider |
 radio | radioGroup | switch | treeSelect | upload |
@@ -269,48 +306,21 @@ cascader | table
 SDatePicker → datePicker | SDatePickerRange → datePickerRange | SCascader → cascader
 ```
 
+> ⛔ `dependency` 已弃用。字段联动统一使用 `SForm.useWatch` + 动态 items。
+
 ## 确认弹窗
 
-> 删除、批量操作等危险操作使用 antd `Modal.confirm`。详见 `.ai/pitfalls/index.md` P004。
+> 删除、批量操作等危险操作使用 antd `Modal.confirm`。禁止 SConfirm。
 
-## 操作按钮组
+## 枚举列的字典回显
 
-> 表格操作列使用 `SButton.Group` + `compact`（t-link 样式），禁止无包裹。
+> 字典通过 SConfigProvider 全局注入，组件通过 `dictKey` 显式指定字典编码。
 
-```tsx
-// ✅ SButton.Group + compact（标准操作按钮）
-<SButton.Group
-  items={[
-    { actionType: 'edit', compact: true, onClick: handleEdit },
-    { actionType: 'delete', compact: true, onClick: handleDelete },
-    { actionType: 'view', compact: true, onClick: handleView },
-  ]}
-/>
+| 场景               | 做法                                          | 示例                                                                                           |
+| ------------------ | --------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| SProTable 枚举列   | `dictKey` 指定字典编码                        | `{ title: '状态', dataIndex: 'statusCode', dictKey: 'statusCode' }`                            |
+| SForm 下拉框       | `fieldProps.dictKey` 指定                     | `{ name: 'statusCode', label: '状态', type: 'select', fieldProps: { dictKey: 'statusCode' } }` |
+| SDetail 枚举字段   | `dictKey` 指定，type='dict'                   | `{ name: 'statusCode', label: '状态', type: 'dict', dictKey: 'statusCode' }`                   |
+| STable 手动 render | `dictMapData?.['code']?.[record.code] ?? '-'` | 见 dict-conventions                                                                            |
 
-// ✅ Space + compact（非标准按钮：含 Tooltip、Divider、自定义渲染时退回）
-<Space>
-  <SButton actionType="edit" compact onClick={handleEdit} />
-  <Tooltip title="刷新"><Button icon={<ReloadOutlined />} onClick={refresh} /></Tooltip>
-</Space>
-
-// ❌ 错误 — 无包裹，按钮挤在一起
-<>
-  <SButton actionType="edit" compact onClick={...} />
-  <SButton actionType="delete" compact onClick={...} />
-</>
-```
-
-## STable 列配置
-
-> `dictKey` 字典映射、`render` 快捷类型（datetime/date/ellipsis）。完整 Props 见 `sdesign/components/STable.md`。
-
-### 枚举列的字典回显
-
-| 场景                             | 做法                                          | 示例                                                    |
-| -------------------------------- | --------------------------------------------- | ------------------------------------------------------- |
-| SProTable 枚举列                 | `dataIndex` 匹配 dict code，自动回显          | `{ title: '状态', dataIndex: 'statusCode' }`            |
-| SForm 下拉框                     | `name` 匹配 dict code，自动填 options         | `{ name: 'statusCode', label: '状态', type: 'select' }` |
-| SDetail 枚举字段                 | 同上，name 匹配 dict code                     | `{ name: 'statusCode', label: '状态' }`                 |
-| STable 手动 render（非标准场景） | `dictMapData?.['code']?.[record.code] ?? '-'` | 见 dict-conventions                                     |
-
-> 字典已通过 SConfigProvider 全局注入。**不需要在 items/columns 中写硬编码 options。** 如果 dict code 不确定 → 问用户。
+> **禁止在 items/columns 中写硬编码 options 或 render 枚举映射。**
