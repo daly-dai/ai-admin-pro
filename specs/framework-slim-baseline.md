@@ -259,3 +259,45 @@ Get-ChildItem '.dsh/skills/sdesign-gen-page/references' -File | ForEach-Object {
 | verify 轮次                       | 待记    | 待记                  |
 
 > ⚠️ **混淆提示**：阶段 1–2 是**正确性**、阶段 3 是**上下文**。两者都会让 verify 错误减少。若需分开归因，阶段 1–2 跑一轮、阶段 3 再跑一轮。
+
+---
+
+## 7. 强模型路径 A 档：改造前 / 后实测对照（Task 3.1 产出）
+
+口径：`AGENTS.md §零` 检查清单的 9 项 + 模板（CRUD 模块取 `crud-page` + `api-module`）。全部为**实测字符数**，同一份清单两次量。
+
+| 项                                    | 改造前     | 改造后     | 变化                         |
+| ------------------------------------- | ---------- | ---------- | ---------------------------- |
+| `AGENTS.md`                           | 6,030      | **7,498**  | **+1,468** ⚠️                |
+| 1 `.ai/project-brief.md`              | 7,578      | 7,578      | —                            |
+| 2 `.ai/core/routing-strategy.md`      | 3,020      | 3,020      | —                            |
+| 3 `.ai/conventions/task-splitting.md` | 2,318      | 2,318      | —                            |
+| 4 `.ai/conventions/lanes.md`          | 2,908      | 2,908      | —                            |
+| 5 `.ai/templates/crud-page.md`        | 9,695      | 11,588     | +1,893（Task 1.1 并入 R 族） |
+| 5 `.ai/templates/api-module.md`       | 1,636      | 5,142      | +3,506（Task 1.1 并入 R 族） |
+| 6 `.ai/sdesign/components/*`（4 篇）  | 17,861     | **0**      | **−17,861**（Task 3.1 降级） |
+| 7 `.ai/pitfalls/index.md`             | 11,280     | **2,123**  | **−9,157**（Task 2.1）       |
+| 8 `.ai/recipes/index.md`              | 551        | 551        | —                            |
+| 9 `.ai/core/coding-standards.md`      | 6,873      | 6,873      | —                            |
+| **合计**                              | **69,750** | **49,599** | **−20,151（−28.9%）**        |
+
+### ⚠️ 三条必须说清的偏差
+
+**① `AGENTS.md` 自己变大了 24%（6,030 → 7,498）。** 入口增长是因为新增了 B 档路由规则（把「≤20 行」判据换成「是否新建文件」）、组件文档可信度指针、pitfalls 只读相关行的说明。**入口增长换来路径整体 −29%。** 但它指向一个未做的项：2026-09-07 复盘 P0-3 要求入口降到「<2k 字符短索引」——**已登记进「暂不实施」。**
+
+**② 基线的 80,105 与本次实测的 69,750 口径不同，不可直接比。** 80,105 来自测量报告的「最坏情况」，构成是 `SKILL.md 32,421 + AGENTS-LITE 14,104 + crud-template 10,995 + api-template 4,136 + verify-errors 5,439 + pitfalls 11,280 + 组件文档 17,861 + editable-table 4,069`——**混入了技能路径的 `SKILL.md` 与 `AGENTS-LITE`**，不是纯 `AGENTS.md` 路径。
+
+> 也就是说：**此前说的「强模型路径 80,105」是错的**——它是"两条路径的最坏并集"。本表是第一条口径自洽的强模型路径读数。**两个数都保留，但只能在同一口径内比较。**
+
+**③ 模板变大（+5,399）是 Task 1.1 的一次性成本**，买的是 Task 4.1 删掉 3×`references/`（−131,529）。上表已包含它，所以 −28.9% 是**扣掉这笔成本之后**的净收益。
+
+### 复现命令
+
+```powershell
+foreach($p in @('AGENTS.md','.ai/project-brief.md','.ai/core/routing-strategy.md',
+  '.ai/conventions/task-splitting.md','.ai/conventions/lanes.md',
+  '.ai/templates/crud-page.md','.ai/templates/api-module.md',
+  '.ai/pitfalls/index.md','.ai/recipes/index.md','.ai/core/coding-standards.md')){
+  "$p = $((Get-Content -Raw -Encoding UTF8 -LiteralPath $p).Length)"
+}
+```
