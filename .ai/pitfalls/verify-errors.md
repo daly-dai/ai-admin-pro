@@ -42,6 +42,16 @@
 
 `getAllDictByGet` / `getUserRolesByGet` / `getRolePermissionsByGet` 都是合法的 GET。详见 `.ai/conventions/api-conventions.md`。
 
+### 6. `SButton.Group` 以**文档**为准（与裁定 1 方向相反）
+
+`SButton.md:18` 与 `README.md:30` **一致**写着：
+
+> 优先使用 `SButton.Group` → 多个操作按钮并排时，**不要手动排列多个 `SButton`**
+
+且 `SButtonsProps.spaceProps?: React.ComponentProps<typeof Space>` 证明 **`SButton.Group` 内部就是 `Space`**。
+
+**裁定依据**：这份文档**不自相矛盾**，所以裁定 1 的「文档矛盾则以 `src` 为准」**不适用**。`src/` 里 4 处 `<Space>` + 手动 `SButton` 是**旧写法**——新代码按 `SButton.Group`，既有文件保留（口径同 P019「新代码生效，既有代码不必重构」）。
+
 ---
 
 | 错误签名                                                                       | 分类       | 修复方法                                                                                                     |

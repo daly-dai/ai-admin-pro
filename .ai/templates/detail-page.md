@@ -6,7 +6,7 @@
 
 - **SDetail**：配置式详情展示（items 数组）
 - **SDetail.Group**：分组详情
-- **SButton**：操作按钮（外层 `<Space>` 并列，配 `compact`）
+- **SButton.Group**：操作按钮组（`items` 里每项带 `compact`）
 
 ## SDetailItem 类型
 

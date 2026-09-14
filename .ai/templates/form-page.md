@@ -62,6 +62,7 @@ SDatePicker → datePicker | SDatePickerRange → datePickerRange | SCascader �
 ```tsx
 // ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
 import { SForm, SButton } from '@dalydb/sdesign';
+import type { SFormItems } from '@dalydb/sdesign';
 import { message, Card, Spin } from 'antd';
 import { useRequest } from 'ahooks';
 import { useNavigate } from 'react-router-dom';
@@ -88,10 +89,8 @@ export default () => {
     },
   );
 
-  // ⚠️ formItems 禁止显式注解（P006 同理）：加了注解会让 type 宽化，fieldProps 失去补全
-  // ✅ const formItems = [...]   // 让 TS 逐项 point-wise 推断 type → fieldProps 精确类型
-  // ⚠️ 仅当出现 TS2322「类型宽化」时才补 `: SFormItems[]` 作为补救（见 .ai/pitfalls/verify-errors.md）
-  const formItems = [
+  // ✅ formItems 显式类型注解 `SFormItems[]`（P006）
+  const formItems: SFormItems[] = [
     // @FILL: 新增页表单项配置
     // ✅ { label: '名称', name: 'name', type: 'input', required: true }
     // ✅ { label: '状态', name: 'status', type: 'select', fieldProps: { dictKey: 'statusCode' } }
@@ -135,6 +134,7 @@ export default () => {
 ```tsx
 // ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
 import { SForm, SButton } from '@dalydb/sdesign';
+import type { SFormItems } from '@dalydb/sdesign';
 import { message, Card, Spin } from 'antd';
 import { useRequest } from 'ahooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -177,10 +177,8 @@ export default () => {
     },
   );
 
-  // ⚠️ formItems 禁止显式注解（P006 同理）：加了注解会让 type 宽化，fieldProps 失去补全
-  // ✅ const formItems = [...]   // 让 TS 逐项 point-wise 推断 type → fieldProps 精确类型
-  // ⚠️ 仅当出现 TS2322「类型宽化」时才补 `: SFormItems[]` 作为补救（见 .ai/pitfalls/verify-errors.md）
-  const formItems = [
+  // ✅ formItems 显式类型注解 `SFormItems[]`（P006）
+  const formItems: SFormItems[] = [
     // @FILL: 编辑页表单项配置（通常与新增页相同）
     // ✅ { label: '名称', name: 'name', type: 'input', required: true }
     // ❌ { type: 'dependency' }  // 已弃用
@@ -221,6 +219,7 @@ export default () => {
 ```tsx
 // ===== 固定部分：严禁修改已存在的代码结构，仅允许修改 @FILL 标记行 =====
 import { SForm, createModal } from '@dalydb/sdesign';
+import type { SFormItems } from '@dalydb/sdesign';
 import type { ModalChildProps } from '@dalydb/sdesign';
 import { Modal, message } from 'antd';
 import { useRequest } from 'ahooks';
@@ -268,8 +267,8 @@ const FormContent = ({
     },
   );
 
-  // ⚠️ formItems 禁止显式注解（P006 同理）：加了注解会让 type 宽化，fieldProps 失去补全
-  const formItems = [
+  // ✅ formItems 显式类型注解 `SFormItems[]`（P006）
+  const formItems: SFormItems[] = [
     // @FILL: 表单项配置
     // ✅ { label: '名称', name: 'name', type: 'input', required: true }
     // ✅ { label: '状态', name: 'status', type: 'select', fieldProps: { dictKey: 'statusCode' } }
@@ -309,7 +308,7 @@ export default createModal<FormParams>(FormContent);
 // SForm.useWatch + 条件展开 items（禁止 type: 'dependency'）
 const typeValue = SForm.useWatch('type', form);
 
-const formItems = [
+const formItems: SFormItems[] = [
   {
     label: '类型',
     name: 'type',
@@ -317,6 +316,7 @@ const formItems = [
     fieldProps: { options: typeOptions },
   },
   // 条件展开：仅当 type === '1' 时显示
+  // ⚠️ 注解不会穿透条件展开 —— 展开项必须自己写 `as const`（P006 唯一的例外）
   ...(typeValue === '1'
     ? [{ label: '扩展字段', name: 'extra', type: 'input' as const }]
     : []),

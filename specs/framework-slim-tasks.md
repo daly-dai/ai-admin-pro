@@ -27,14 +27,14 @@
 | 阶段                                                 | Task 数 | 完成  | 待实施 |
 | ---------------------------------------------------- | ------- | ----- | ------ |
 | 0 准备（记录 + 保险）                                | 2       | 2     | 0      |
-| 1 正确性（模板 / 命名 / 闸门 / 文档治理 / 入口收敛） | 7       | 3     | 4      |
+| 1 正确性（模板 / 命名 / 闸门 / 文档治理 / 入口收敛） | 7       | 4     | 3      |
 | 2 领域知识（pitfalls / 规范区清场）                  | 2       | 1     | 1      |
 | 3 路由与入口                                         | 2       | 1     | 1      |
 | 4 技能收尾                                           | 1       | 0     | 1      |
 | 5 测量与 R1 定案                                     | 1       | 0     | 1      |
 | 6 可选机制                                           | 1       | 0     | 1      |
 | 7 错误飞轮（日志瘦身 / 改向 / 定时）                 | 3       | 0     | 3      |
-| **合计**                                             | **19**  | **7** | **12** |
+| **合计**                                             | **19**  | **8** | **11** |
 
 > 标 `【复盘并入】` 的三个 Task（1.4 / 1.5 / 2.2）来自 2026-09-07 复盘的对账补充，见 `specs/framework-slim-baseline.md` §5.2。
 
@@ -252,11 +252,11 @@
 - [ ] 探针文件验证后已删除（`git status` 无残留）
 - [ ] 现状 `src/` 代码全部通过（无误伤）——`pnpm verify` 通过
 - [ ] 顺手清理**指向不存在路径的 ignore**：`editable-tables`（目录不存在）、`register`（空目录）
-- [ ] ⚠️ **改 `eslint.config.mjs` 属 `AGENTS.md` §二「需确认」操作，本 Task 开工前需再次确认**
+- [ ] ✅ **改 `eslint.config.mjs` 已获批准（2026-09-13）**——原为 `AGENTS.md` §二「需确认」项，用户决定：做
 - [ ] 规则注释里写明理由与来源（`api-conventions.md` L22）
 - [ ] **不在本 Task 扩拦截范围到 `src/features` / `src/layouts`**——会把 `MainLayout` 裸 Button 等问题一次性引爆，另案
 
-**状态**：⬜ 待实施（需确认）
+**状态**：⬜ 待实施（已批准开工 2026-09-13）
 
 ---
 
@@ -338,7 +338,7 @@
 - [ ] ⚠️ **会改 `AGENTS-LITE.md`，需确认**——它不在技能目录内、有 git 历史、可回退，但属技能路径入口
 - [ ] `pnpm verify` 通过
 
-**状态**：⬜ 待实施（需确认）
+**状态**：⏸ 暂缓——用户决定（2026-09-13）：等 AGENTS 相关改造（含 `AGENTS.md` 瘦身）全部完毕后再动
 
 ---
 
@@ -406,24 +406,35 @@ pitfalls/index.md:15   searchItems 禁止注解
 
 **验收标准**：
 
-- [ ] `.ai/pitfalls/index.md:15` P006 反转为「`columns` 与 `searchItems` **都**显式注解；禁止用 `as const` 绕开」
-- [ ] `.ai/pitfalls/index.md:24` P018 反转为「用 `SButton.Group items`」，理由改为「禁止手动排列多个 `SButton`，也禁止无包裹」
-- [ ] `project-brief.md:74` 同步；**`:78` 的「18 条」改为策略陈述**——与 Task 3.1 对 `AGENTS.md` 的处理一致（数字会继续漂，去掉比改成「19」耐久）
-- [ ] `task-gates.md:103`（searchItems）、`:125`（formItems）两条闸门反转
-- [ ] `task-gates.md:106` 操作列闸门改为 `SButton.Group`
-- [ ] `templates/crud-page.md:200-204` 的 5 行警告整段删除，替换为 1 行正向说明；操作列 `158-197` 改为 `SButton.Group`，并核实 `:111` 的 `Space` import 是否还需要
-- [ ] `templates/search-table-page.md:66-70` 同上
-- [ ] `templates/form-page.md:91-93 / 180-182 / 271` 三处同上
-- [ ] `templates/editable-table.md:114` 删除
-- [ ] `templates/detail-page.md:9` 改为 `SButton.Group`
-- [ ] `verify-errors.md:62` **保持不动**（本就是注解写法）；在「🔴 组件文档可信度裁定」新增**裁定 6**：`SButton.Group` 以**文档**为准——**与裁定 1 方向相反**，因这份文档**不自相矛盾**，裁定 1 的「文档矛盾则依 `src`」不适用
-- [ ] 模板中 `type: 'x' as const` 全清（位置：`form-page.md:321`）
-- [ ] ⚠️ `render: 'datetime' as const`（`crud-page.md:154`、`search-table-page.md:60`）**先探针验证再决定**——`render` 是**另一个联合位置**，未验不得顺手删
-- [ ] **`src/` 零改动**：本 Task 只纠正架构与规范，不碰业务代码。新代码按新规约，既有文件保留——口径同 P019 的「新代码生效，既有代码不必重构」
-- [ ] `grep` 确认 `.ai/` 内不再有「禁止注解」「禁止类型注解」的旧口径残留
-- [ ] `pnpm verify` 通过
+- [x] `.ai/pitfalls/index.md:15` P006 反转为「`columns` 与 `searchItems` **都**显式注解；禁止用 `as const` 绕开」
+- [x] `.ai/pitfalls/index.md:24` P018 反转为「用 `SButton.Group items`」，理由改为「禁止手动排列多个 `SButton`，也禁止无包裹」
+- [x] `project-brief.md:74` 同步；**`:78` 的「18 条」改为策略陈述**——与 Task 3.1 对 `AGENTS.md` 的处理一致（数字会继续漂，去掉比改成「19」耐久）
+- [x] `task-gates.md:103`（searchItems）、`:125`（formItems）两条闸门反转
+- [x] `task-gates.md:106` 操作列闸门改为 `SButton.Group`
+- [x] `templates/crud-page.md:200-204` 的 5 行警告整段删除，替换为 1 行正向说明；操作列 `158-197` 改为 `SButton.Group`，并核实 `:111` 的 `Space` import 是否还需要
+- [x] `templates/search-table-page.md:66-70` 同上
+- [x] `templates/form-page.md:91-93 / 180-182 / 271` 三处同上
+- [x] `templates/editable-table.md:114` 删除
+- [x] `templates/detail-page.md:9` 改为 `SButton.Group`
+- [x] `verify-errors.md:62` **保持不动**（本就是注解写法）；在「🔴 组件文档可信度裁定」新增**裁定 6**：`SButton.Group` 以**文档**为准——**与裁定 1 方向相反**，因这份文档**不自相矛盾**，裁定 1 的「文档矛盾则依 `src`」不适用
+- [x] 模板中 `type: 'x' as const` 已清，**条件展开除外**——探针 v7 证明 `...(cond ? [{…}] : [])` 内的项注解不生效，必须保留 `as const`（P006 例外）
+- [x] ✅ 探针已验证：`render: 'datetime'` **不需要** `as const`（对照探针暴露了 `render` 的联合类型 `"ellipsis" | "datetime" | "date" | "index" | fn`），两处已删
+- [x] **`src/` 零改动**：本 Task 只纠正架构与规范，不碰业务代码。新代码按新规约，既有文件保留——口径同 P019 的「新代码生效，既有代码不必重构」
+- [x] `grep` 确认 `.ai/` 内不再有「禁止注解」「禁止类型注解」的旧口径残留
+- [x] `pnpm verify` 通过
 
-**状态**：⬜ 待实施（需确认——改 `.ai/` 规范属 `AGENTS.md` §二「需确认」）
+**状态**：✅ 已完成（2026-09-13）
+
+> **复盘 Q1（verify 报过什么错）**：`0 error`。但**探针报了 2 次**，两次都是真发现：
+>
+> - 探针 v6：`render: 'not-a-real-render'` → TS2322，报错里暴露出 `render` 的可选值联合（`"ellipsis" | "datetime" | "date" | "index" | fn`）→ 反证 `render: 'datetime'` **不需要** `as const`，两处已删
+> - 探针 v7：**条件展开 `...(cond ? [{…}] : [])` 内的项注解不生效** → `Type '{…type: string…}' is not assignable to 'SFormItems'`。**这是注解唯一的真实盲区**，那一处 `as const` 必须保留
+>
+> **Q2（根因）**：两次都不是"写错"，而是**注解的作用域边界**——`const items: SFormItems[] = [...]` 只覆盖数组字面量里**直接写出**的项，不穿透条件展开的操作数。
+>
+> **Q3（是否沉淀）**：**是**，已落地三处——① `P006` 规则正文加了「例外」；② `form-page.md` 字段联动示例加了行内注释；③ 本 Task 原验收项「`type: 'x' as const` 全清」据此改写。
+>
+> **与计划的一处偏离（计划错、探针纠正）**：原验收项要求「`type: 'x' as const` 全清（位置：`form-page.md:321`）」。**探针证明该项必须保留**——已保留并注明。**计划不能凌驾于实测。**
 
 **依赖**：无。已核 **Task 1.5 输出锁为 `AGENTS-LITE.md` + `task-splitting.md`，与本 Task 无交集**。
 
@@ -645,6 +656,8 @@ pitfalls/index.md:15   searchItems 禁止注解
 - [ ] 已接入 `verify-wrapper.ts` 前置，与现有 `.ai/sdesign/` 漂移校验同一入口
 - [ ] 现状下 `pnpm verify` 通过
 - [ ] ⚠️ **本 Task 需明确批准后才开工**（与「本轮只做移动/拆分/删除」的原则冲突）
+- [ ] ⚠️ **检查范围必须收窄**（2026-09-13 发现）：现写「断言源 = `.ai/sdesign/components/*.md`」，但包文档只认 `getListByGet`（`SProTable.md:20`），**项目命名 `get{Entity}ListByPost` 会被全部误报**。范围限定为「**S 组件的 prop 名 / 子组件名**」，排除项目命名 / 业务组件 / 占位符
+- [ ] 用户决定（2026-09-13）：**先不动**——批准前需先改上面这条范围
 
 **状态**：⬜ 待实施（待批准）
 

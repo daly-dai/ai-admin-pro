@@ -12,7 +12,7 @@
 - **P002｜可编辑表格** — STable / SForm `type:'table'` 不支持行内编辑；用 `EditableProTable` 经 `customCom` 嵌入
 - **P004｜确认弹窗** — 用 antd `Modal.confirm`，禁用 `SConfirm`
 - **P005｜字段联动** — 用 `SForm.useWatch` + 条件展开 items，禁用 `type:'dependency'`
-- **P006｜列表列配置** — `columns` 必须注解 `SColumnsType<Entity>`；`searchItems` 禁止注解（注解会让 type 宽化，`fieldProps` 失去补全）
+- **P006｜列/表单项类型注解** — `columns` 与 `searchItems` **都**显式注解（`SColumnsType<Entity>` / `SFormItems[]`）；禁止用 `as const` 绕开。**例外**：条件展开 `...(cond ? [{…}] : [])` 内的项注解不生效，仍需 `as const`
 - **P007｜SProTable 分页** — `paginationFields` 的 key 是 `current`，不是 `pageNum`；仅 `current`/`pageSize`/`total`/`list`
 - **P008｜枚举列 / 下拉** — 禁止硬编码 options 或 `{1:'启用'}`；走 `dictKey` + `useDictStore.dictMapData`
 - **P009｜组件迁移** — 报 `Cannot find name` 且该名来自旧代码 → 先判断新组件是否已内置；不需要就删，禁止自动补
@@ -21,7 +21,7 @@
 - **P013｜新增 vs 编辑** — 默认共用一个表单页（`?id=` 或 `mode`）；差异大时先向用户确认再拆
 - **P015｜外部实现未知** — 用 `// TODO: 补充 {描述}` 占位，禁止凭空猜测实现
 - **P017｜Zustand `set`** — `set` 回调内禁止 for / if / filter / map；数据处理放外部纯函数
-- **P018｜表格操作列** — `<Space>` + `<SButton actionType compact />`；禁止无包裹（按钮会挤在一起）
+- **P018｜表格操作列** — 用 `SButton.Group items={[{ actionType, compact: true, onClick }]}`；禁止手动排列多个 `SButton`，也禁止无包裹
 - **P019｜布局** — 优先 antd `<Flex>`，细粒度再 CSS Modules；禁止 `position:absolute; inset:*` 撑满
 - **P020｜非标 UI** — 非标页（工作台 / 组合详情 / 大屏）生成前先加载 `frontend-design` skill
 - **P021｜API 命名** — `{Entity}{动作}By{HTTP}` 必须带实体前缀；后端统一 POST（仅只读走 `ByGet`），禁止 `ByPut`/`ByDelete`，分页用 `PageResult<T>`

@@ -71,11 +71,11 @@ useRequest 模式：列表 → SProTable request.service 直传 | 写操作 → 
 | P003 | 未用参数 → 加 `_` 前缀，禁止 void / eslint-disable             |
 | P004 | 确认弹窗 → `Modal.confirm`，禁止 SConfirm                      |
 | P005 | 字段联动 → `SForm.useWatch` + 条件展开，禁止 type:'dependency' |
-| P006 | searchItems 禁止类型注解，columns 必须注解                     |
+| P006 | columns 与 searchItems 都显式注解类型，禁止 as const 绕开      |
 | P007 | 分页配置 `paginationFields` 用 `current`，非 `pageNum`         |
 | P008 | 枚举列/下拉 → 禁止硬编码，用 `dictKey` 指定字典                |
 
-完整 18 条 → `.ai/pitfalls/index.md`
+完整清单（只收工具判不出的陷阱）→ `.ai/pitfalls/index.md`
 
 ## 7. Lane 速览
 

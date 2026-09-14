@@ -106,9 +106,10 @@ import type {
   SProTableRef,
   ModalContainerRef,
   SColumnsType,
+  SFormItems,
 } from '@dalydb/sdesign';
 import { SProTable, SButton } from '@dalydb/sdesign';
-import { message, Modal, Space } from 'antd';
+import { message, Modal } from 'antd';
 import { useRequest } from 'ahooks';
 import { useRef } from 'react';
 // @FILL: 导入 API 函数
@@ -151,7 +152,7 @@ export default () => {
   const columns: SColumnsType<Record<string, unknown>> = [
     // @FILL: 表格列配置
     // ✅ { title: '名称', dataIndex: 'name' }
-    // ✅ { title: '时间', dataIndex: 'createTime', render: 'datetime' as const }
+    // ✅ { title: '时间', dataIndex: 'createTime', render: 'datetime' }
     // ✅ { title: '状态', dataIndex: 'status', dictKey: 'statusCode' }  // 枚举列用 dictKey，SConfigProvider 自动回显
     // ❌ { title: '状态', dataIndex: 'status', render: (text) => text === 1 ? '启用' : '禁用' }  // 禁止硬编码枚举
     // ❌ render: (text, record) => ...  // 未使用参数不加 _ 前缀 → ESLint 报错
@@ -159,50 +160,45 @@ export default () => {
       title: '操作',
       dataIndex: 'action',
       width: 220,
-      // ✅ 未使用参数加 _ 前缀；操作列用 <Space> 包裹并列 SButton + compact
+      // ✅ 未使用参数加 _ 前缀；操作列用 SButton.Group（P018，组件文档首选）
       render: (_text, record: Record<string, unknown>) => (
-        // ✅ <Space> + <SButton ... compact />（与 P018 及 src/pages/system/*/index.tsx 现有写法一致）
-        // ❌ <SButton.Group items={[...]} /> → 与 P018 及全仓现有写法不一致
-        <Space>
-          <SButton
-            actionType="edit"
-            compact
-            onClick={() => {
-              // @FILL: 打开编辑弹窗
-              // ✅ formRef.current?.open({ mode: 'edit', id: record.id as string });
-            }}
-          />
-          <SButton
-            actionType="delete"
-            compact
-            onClick={() => {
-              // ✅ 确认弹窗用 Modal.confirm，禁止 SConfirm
-              Modal.confirm({
-                title: '确认删除',
-                // @FILL: 替换确认内容
-                content: `确定删除吗？`,
-                onOk: () => handleDelete(record.id as string),
-              });
-            }}
-          />
-          {/* @FILL: 有详情时取消注释
-          <SButton
-            actionType="view"
-            compact
-            onClick={() => detailRef.current?.open({ id: record.id as string })}
-          />
-          */}
-        </Space>
+        <SButton.Group
+          items={[
+            {
+              actionType: 'edit',
+              compact: true,
+              onClick: () => {
+                // @FILL: 打开编辑弹窗
+                // ✅ formRef.current?.open({ mode: 'edit', id: record.id as string });
+              },
+            },
+            {
+              actionType: 'delete',
+              compact: true,
+              onClick: () => {
+                // ✅ 确认弹窗用 Modal.confirm，禁止 SConfirm
+                Modal.confirm({
+                  title: '确认删除',
+                  // @FILL: 替换确认内容
+                  content: `确定删除吗？`,
+                  onOk: () => handleDelete(record.id as string),
+                });
+              },
+            },
+            // @FILL: 有详情时取消注释
+            // {
+            //   actionType: 'view',
+            //   compact: true,
+            //   onClick: () => detailRef.current?.open({ id: record.id as string }),
+            // },
+          ]}
+        />
       ),
     },
   ];
 
-  // ⚠️ searchItems 禁止显式注解（P006）：加了注解会让 type 宽化成 22 路联合，fieldProps 失去补全
-  // ✅ const searchItems = [...]            // 让 TS 逐项 point-wise 推断 type → fieldProps 精确类型
-  // ⚠️ 仅当出现 TS2322「类型宽化 / 不可赋值」时才补 `: SFormItems[]` 作为补救
-  //    （补救时需临时补回 import type { SFormItems }，见 .ai/pitfalls/verify-errors.md）
-  // 注意：columns 必须注解（SColumnsType<Entity>），searchItems 禁止注解——两者策略相反，见 P006
-  const searchItems = [
+  // ✅ searchItems 显式类型注解 `SFormItems[]`（P006）
+  const searchItems: SFormItems[] = [
     // @FILL: 搜索项配置
     // ✅ { label: '名称', name: 'name', type: 'input' }
     // ✅ { label: '状态', name: 'status', type: 'select', fieldProps: { dictKey: 'statusCode' } }
