@@ -27,14 +27,14 @@
 | 阶段                                                 | Task 数 | 完成  | 待实施 |
 | ---------------------------------------------------- | ------- | ----- | ------ |
 | 0 准备（记录 + 保险）                                | 2       | 2     | 0      |
-| 1 正确性（模板 / 命名 / 闸门 / 文档治理 / 入口收敛） | 6       | 3     | 3      |
+| 1 正确性（模板 / 命名 / 闸门 / 文档治理 / 入口收敛） | 7       | 3     | 4      |
 | 2 领域知识（pitfalls / 规范区清场）                  | 2       | 1     | 1      |
 | 3 路由与入口                                         | 2       | 1     | 1      |
 | 4 技能收尾                                           | 1       | 0     | 1      |
 | 5 测量与 R1 定案                                     | 1       | 0     | 1      |
 | 6 可选机制                                           | 1       | 0     | 1      |
 | 7 错误飞轮（日志瘦身 / 改向 / 定时）                 | 3       | 0     | 3      |
-| **合计**                                             | **18**  | **7** | **11** |
+| **合计**                                             | **19**  | **7** | **12** |
 
 > 标 `【复盘并入】` 的三个 Task（1.4 / 1.5 / 2.2）来自 2026-09-07 复盘的对账补充，见 `specs/framework-slim-baseline.md` §5.2。
 
@@ -362,6 +362,70 @@
 - [ ] `pnpm verify` 通过
 
 **状态**：⬜ 待实施
+
+---
+
+### Task 1.7 — P006 / P018 双反转：按组件文档与 tsc 实测纠正两条规则
+
+| 项         | 内容                                                                                                                                                                                                     |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **类型**   | docs                                                                                                                                                                                                     |
+| **输出锁** | `.ai/pitfalls/index.md`、`.ai/pitfalls/verify-errors.md`、`.ai/project-brief.md`、`.ai/conventions/task-gates.md`、`.ai/templates/{crud-page,search-table-page,form-page,editable-table,detail-page}.md` |
+| **模板**   | 无                                                                                                                                                                                                       |
+| **做什么** | 两条规则与其**全部载体**同时反转：**P006**（`searchItems` / `formItems` 由「禁止注解」改为「显式注解」）、**P018**（操作列由 `<Space>` + 手动 `SButton` 改为 `SButton.Group`）。                         |
+| **功能点** | ① 规则本体反转；② 载体（模板 / 闸门 / brief）同步；③ 立裁定 6；④ 划清裁定 1 的适用边界。                                                                                                                 |
+
+**为什么（实测，均可复现）**：
+
+**P006 现状是自相矛盾的**：
+
+```
+verify-errors.md:62    TS2322(SFormItems) 的修法 = 显式注解  const items: SFormItems[] = [...]
+pitfalls/index.md:15   searchItems 禁止注解
+```
+
+而不注解 → `type: 'select'` 被推断成 `string` → TS2322 → 模板又说「这时补注解补救」。**`as const` 的唯一作用，就是绕开 P006 自己制造出来的错。**
+
+探针实测（`tsc 5.9.3`，`SFormItems`）：
+
+| 测什么                                           | 注解 `SFormItems[]`                   | `as const` 不注解       |
+| ------------------------------------------------ | ------------------------------------- | ----------------------- |
+| 声明处写错 prop（`type:'input'` + `showSearch`） | ✅ TS2353 → 指出 `SInputProps`        | ❌ 不报（推迟到使用处） |
+| 声明处写错 type 值（`'selectt'`）                | ✅ TS2820 +「Did you mean 'select'?」 | ❌ 推迟                 |
+| `items[0].type`                                  | 22 路联合 + `undefined`               | 字面量                  |
+| `items[0].fieldProps`                            | ❌ TS2339 属性不存在                  | ✅ 可访问               |
+| 喂给 `<SForm items>`                             | ✅                                    | ✅                      |
+
+**注解唯一的弱点（`items[i]` 索引访问）在本仓不可达**：`git grep` 全仓 **0 处**；而索引访问的用途（动态显隐）由声明式 `hidden?: boolean` 承担——探针证明该 prop 存在，`.ai/templates/form-page.md:20` 也已文档化。
+
+**P018 则是标注反了**：`SButton.md:18` 与 `README.md:30` **一致**写着
+
+> 优先使用 `SButton.Group` → 多个操作按钮并排时，**不要手动排列多个 `SButton`**
+
+且 `SButtonsProps.spaceProps?: React.ComponentProps<typeof Space>` 证明 **`SButton.Group` 内部就是 `Space`**。`crud-page.md:165` 却把文档首选标成了 `❌`。
+
+**验收标准**：
+
+- [ ] `.ai/pitfalls/index.md:15` P006 反转为「`columns` 与 `searchItems` **都**显式注解；禁止用 `as const` 绕开」
+- [ ] `.ai/pitfalls/index.md:24` P018 反转为「用 `SButton.Group items`」，理由改为「禁止手动排列多个 `SButton`，也禁止无包裹」
+- [ ] `project-brief.md:74` 同步；**`:78` 的「18 条」改为策略陈述**——与 Task 3.1 对 `AGENTS.md` 的处理一致（数字会继续漂，去掉比改成「19」耐久）
+- [ ] `task-gates.md:103`（searchItems）、`:125`（formItems）两条闸门反转
+- [ ] `task-gates.md:106` 操作列闸门改为 `SButton.Group`
+- [ ] `templates/crud-page.md:200-204` 的 5 行警告整段删除，替换为 1 行正向说明；操作列 `158-197` 改为 `SButton.Group`，并核实 `:111` 的 `Space` import 是否还需要
+- [ ] `templates/search-table-page.md:66-70` 同上
+- [ ] `templates/form-page.md:91-93 / 180-182 / 271` 三处同上
+- [ ] `templates/editable-table.md:114` 删除
+- [ ] `templates/detail-page.md:9` 改为 `SButton.Group`
+- [ ] `verify-errors.md:62` **保持不动**（本就是注解写法）；在「🔴 组件文档可信度裁定」新增**裁定 6**：`SButton.Group` 以**文档**为准——**与裁定 1 方向相反**，因这份文档**不自相矛盾**，裁定 1 的「文档矛盾则依 `src`」不适用
+- [ ] 模板中 `type: 'x' as const` 全清（位置：`form-page.md:321`）
+- [ ] ⚠️ `render: 'datetime' as const`（`crud-page.md:154`、`search-table-page.md:60`）**先探针验证再决定**——`render` 是**另一个联合位置**，未验不得顺手删
+- [ ] **`src/` 零改动**：本 Task 只纠正架构与规范，不碰业务代码。新代码按新规约，既有文件保留——口径同 P019 的「新代码生效，既有代码不必重构」
+- [ ] `grep` 确认 `.ai/` 内不再有「禁止注解」「禁止类型注解」的旧口径残留
+- [ ] `pnpm verify` 通过
+
+**状态**：⬜ 待实施（需确认——改 `.ai/` 规范属 `AGENTS.md` §二「需确认」）
+
+**依赖**：无。已核 **Task 1.5 输出锁为 `AGENTS-LITE.md` + `task-splitting.md`，与本 Task 无交集**。
 
 ---
 
